@@ -1,0 +1,268 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background-color: #f4f4f4;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 900px;
+  max-height: 95vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 5px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #333;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 26px;
+  font-weight: bold;
+  color: #aaa;
+  cursor: pointer;
+  padding: 0 5px;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: #000;
+}
+
+.modal-body {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; /* Allow scroll for the main content area if it overflows */
+  padding-right: 10px; /* Space for scrollbar */
+}
+
+.section {
+  padding: 5px;
+  padding-left: 12px;
+  padding-right: 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background-color: #f9f9f9;
+}
+
+.section h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #555;
+  font-size: 16px;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* Horizontal gap between form-items in a row */
+  margin-bottom: 5px; /* Vertical gap between form-rows */
+  align-items: center;
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+  flex-basis: calc(50% - 5px); /* Half width for two columns per row */
+  min-width: 280px; /* Minimum width for each column item */
+  gap: 8px; /* Space between label and its input */
+}
+
+.form-item label {
+  flex-shrink: 0;
+  min-width: 110px; /* Consistent width for labels */
+  text-align: right; /* Align text to the right */
+  font-weight: bold;
+  color: #666;
+  font-size: 12px;
+}
+
+.form-item input[type="text"] {
+  flex-grow: 1; /* Input fills remaining space */
+  padding: 6px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+.form-item input[readonly] {
+  background-color: #e9e9e9;
+  cursor: not-allowed;
+}
+
+/* STYLES FOR INLINED STATUS RADIO BUTTONS (matching image_e176fc.png) */
+.form-item.status-field {
+  align-items: center;
+  flex-basis: calc(50% - 5px); /* Occupy the right half of the row */
+  justify-content: flex-start; /* Align contents to the start (left) */
+  padding-top: 0; /* Ensure no extra padding, rely on form-row gap */
+}
+
+.status-field label {
+  min-width: unset; /* Allow the "Status" label to take only necessary width */
+  text-align: left; /* Align "Status" label to the left of its group */
+  font-weight: normal; /* As per screenshot (not bold) */
+  color: #333; /* Darker color as in screenshot */
+  margin-right: 15px; /* Gap between "Status" label and its radio buttons */
+  font-size: 12px; /* Consistent font size with other form texts */
+  flex-shrink: 0; /* Prevent label from shrinking */
+}
+
+.status-field .radio-group {
+  display: flex;
+  gap: 15px; /* Horizontal gap between radio options (Hold, Active, Inactive) */
+  flex-wrap: wrap; /* Allow wrapping if space is tight */
+  align-items: center;
+}
+
+.status-field .radio-item {
+  display: flex;
+  align-items: center;
+  font-size: 12px; /* Consistent font size for radio button labels */
+}
+
+.status-field .radio-item input[type="radio"] {
+  margin-right: 5px;
+}
+
+.status-field .radio-item label {
+  font-weight: normal; /* Radio button labels are not bold */
+  color: #333; /* Consistent color for radio button labels */
+  cursor: pointer;
+}
+
+/* MODAL FOOTER */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+  margin-top: 15px;
+  gap: 8px;
+}
+
+.modal-footer button {
+  padding: 8px 18px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.cancel-button {
+  background-color: #f0f0f0;
+  color: #555;
+  border-radius: 40px;
+}
+
+.cancel-button:hover {
+  background-color: #e0e0e0;
+}
+
+.save-button {
+  /* background-color: #4caf50; */
+  color: white;
+  background-color: #000;
+  border-radius: 40px;
+}
+
+.save-button:hover {
+  background-color: #45a049;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    padding: 12px;
+  }
+  .modal-body {
+    padding-right: 0; /* Remove scrollbar space on small screens */
+  }
+  .form-row {
+    flex-direction: column;
+    gap: 5px;
+  }
+  .form-item {
+    flex-basis: 100%;
+    justify-content: space-between;
+    min-width: unset; /* Allow items to take full width and wrap */
+    flex-wrap: wrap;
+  }
+  .form-item label {
+    text-align: left;
+    min-width: unset;
+    flex-basis: 40%;
+    font-size: 11px;
+  }
+  .form-item input {
+    flex-basis: 55%;
+    font-size: 11px;
+  }
+  .modal-header h2 {
+    font-size: 20px;
+  }
+  .section h3 {
+    font-size: 15px;
+  }
+  .status-field {
+    /* Adjust for stacked layout on mobile */
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px; /* Space between "Status" label and radio buttons when stacked */
+    flex-basis: 100%; /* Take full width on mobile */
+  }
+  .status-field label {
+    flex-basis: 40%;
+    /*margin-right: 0; /* No margin right when stacked vertically */
+  }
+  .status-field.radio-group {
+    flex-basis: 55%;
+    flex-direction: column; /* Stack radio buttons vertically */
+    gap: 8px;
+  }
+  .status-field label,
+  .radio-item label {
+    font-size: 11px;
+    margin-left: 5px;
+  }
+  .modal-footer button {
+    font-size: 13px;
+    padding: 6px 15px;
+  }
+}

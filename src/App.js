@@ -1,6 +1,8 @@
 import logo from "./logo.svg";
 import "./App.css";
 import { Plus, Edit } from 'lucide-react'; // Import Plus and Edit icons
+import AddCustomer from "./AddCustomer"
+import "./cust.css"
 
 import React, { useState, useMemo, useEffect } from "react"; // Added useEffect import
 
@@ -363,6 +365,36 @@ const ConfirmationMessage = ({ message, onConfirm, onCancel }) => {
             className="bg-gray-300 text-gray-800 rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-400 transition-colors duration-200"
           >
             No
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const DeleteConfirmationMessage = ({ message, onConfirm, onCancel }) => {
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50 font-sans">
+      <div className="bg-white rounded-lg shadow-xl p-6 max-w-sm w-full text-center">
+        <h3 className="text-lg font-semibold mb-4 text-gray-800">
+          Confirmation Confirmation
+        </h3>
+        <p className="mb-6 text-gray-700">{message}</p>
+        <div className="flex justify-center space-x-4">
+          
+          <button
+            onClick={onCancel}
+            className="bg-gray-300 text-gray-800 rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-400 transition-colors duration-200"
+          >
+            No
+          </button>
+
+          <button
+            onClick={onConfirm}
+            style={{backgroundColor: "red"}}
+            className=" text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+          >
+            Yes
           </button>
         </div>
       </div>
@@ -1387,17 +1419,26 @@ const App = () => {
   const [animate, setAnimate] = useState(false);
   const [selectedRows, setSelectedRows] = useState([]);
   const [showCustomerModal, setShowCustomerModal] = useState(false);
+  
+  const [selectedCustomerForEdit, setSelectedCustomerForEdit] = useState(undefined);
+  const [selectedCustomerForDelete, setSelectedCustomerForDelete] = useState(undefined);
   const [modalVisible, setModalVisible] = useState(false);
+  const [latestId, setLatestId] = useState(undefined)
 
   const handleOpenCustomerModal = () => {
+    const latestId = CustomerData.map((c) => parseInt(c.customerId.replace("CB", ""))).sort((a, b) => b-a)[0]
+    const strLatestId = "CB" + String(latestId+1).padStart(8, "0")
+    setLatestId(strLatestId)
+
     setShowCustomerModal(true);
+
     setTimeout(() => setModalVisible(true), 10); // trigger animation
   };
   const handleCloseCustomerModal = () => {
     setModalVisible(false);
     setTimeout(() => setShowCustomerModal(false), 250); // match animation duration
   };
-  const CustomerData = [
+  const _initialCustomerData = [
     {
       customerId: "CB00010001",
       Customer: "Belkin",
@@ -1498,6 +1539,7 @@ const App = () => {
       status: "Active",
     },
   ];
+  const [CustomerData, setCustomerData] = useState(_initialCustomerData)
   const filteredData = CustomerData.filter(
     (row) =>
       row.company.toLowerCase().includes(searchValue.toLowerCase()) ||
@@ -1629,136 +1671,38 @@ const App = () => {
                       className={`bg-white rounded shadow-lg w-full max-w-2xl mx-2 relative border border-gray-300
         ${modalVisible ? "modal-fade-in" : "modal-fade-out"}`}
                     >
-                      {/* Modal Header */}
-                      <div className="flex items-center justify-between border-b px-6 py-3 bg-gray-50">
-                        <h2 className="text-lg font-semibold tracking-wide">
-                          Customer Search
-                        </h2>
-                        <button
-                          className="text-gray-500 hover:text-black text-xl"
-                          onClick={handleCloseCustomerModal}
-                          aria-label="Close"
-                        >
-                          &times;
-                        </button>
-                      </div>
-                      {/* Modal Body */}
-                      <div className="px-6 py-5">
-                        <form>
-                          <div className="grid grid-cols-2 gap-x-6 gap-y-3">
-                            <div className="flex flex-col">
-                              <label className="text-sm font-medium text-gray-700 mb-1">
-                                MDN
-                              </label>
-                              <input className="border border-gray-300 rounded px-2 py-1 text-sm" />
-                            </div>
-                            <div className="flex flex-col">
-                              <label className="text-sm font-medium text-gray-700 mb-1">
-                                Billing System
-                              </label>
-                              <select className="border border-gray-300 rounded px-2 py-1 text-sm">
-                                <option>Choose...</option>
-                                <option>System 1</option>
-                                <option>System 2</option>
-                              </select>
-                            </div>
-                            <div className="flex flex-col">
-                              <label className="text-sm font-medium text-gray-700 mb-1">
-                                Business / Last Name
-                              </label>
-                              <input className="border border-gray-300 rounded px-2 py-1 text-sm" />
-                            </div>
-                            <div className="flex flex-col">
-                              <label className="text-sm font-medium text-gray-700 mb-1">
-                                City
-                              </label>
-                              <input className="border border-gray-300 rounded px-2 py-1 text-sm" />
-                            </div>
-                            <div className="flex flex-col">
-                              <label className="text-sm font-medium text-gray-700 mb-1">
-                                Device ID
-                              </label>
-                              <input className="border border-gray-300 rounded px-2 py-1 text-sm" />
-                            </div>
-                            <div className="flex flex-col">
-                              <label className="text-sm font-medium text-gray-700 mb-1">
-                                SIM Number
-                              </label>
-                              <input className="border border-gray-300 rounded px-2 py-1 text-sm" />
-                            </div>
-                            <div className="flex flex-col">
-                              <label className="text-sm font-medium text-gray-700 mb-1">
-                                Credit Approval Number
-                              </label>
-                              <input className="border border-gray-300 rounded px-2 py-1 text-sm" />
-                            </div>
-                            <div className="flex flex-col">
-                              <label className="text-sm font-medium text-gray-700 mb-1">
-                                CBR #
-                              </label>
-                              <input className="border border-gray-300 rounded px-2 py-1 text-sm" />
-                            </div>
-                            <div className="flex flex-col">
-                              <label className="text-sm font-medium text-gray-700 mb-1">
-                                POE Work Email
-                              </label>
-                              <input className="border border-gray-300 rounded px-2 py-1 text-sm" />
-                            </div>
-                            <div className="flex flex-col">
-                              <label className="text-sm font-medium text-gray-700 mb-1">
-                                Account Reference #
-                              </label>
-                              <input className="border border-gray-300 rounded px-2 py-1 text-sm" />
-                            </div>
-                            <div className="flex flex-col">
-                              <label className="text-sm font-medium text-gray-700 mb-1">
-                                Mac Address
-                              </label>
-                              <input className="border border-gray-300 rounded px-2 py-1 text-sm" />
-                            </div>
-                          </div>
-                          {/* Status Filters */}
-                          <div className="mt-6">
-                            <span className="text-sm font-medium text-gray-700 mr-4">
-                              Status Filters
-                            </span>
-                            <label className="mr-4 text-sm">
-                              <input
-                                type="radio"
-                                name="status"
-                                className="mr-1"
-                                defaultChecked
-                              />{" "}
-                              All
-                            </label>
-                            <label className="mr-4 text-sm">
-                              <input
-                                type="radio"
-                                name="status"
-                                className="mr-1"
-                              />{" "}
-                              Active
-                            </label>
-                            <label className="text-sm">
-                              <input
-                                type="radio"
-                                name="status"
-                                className="mr-1"
-                              />{" "}
-                              Inactive
-                            </label>
-                          </div>
-                        </form>
-                      </div>
-                      {/* Modal Footer (optional) */}
-                      <div className="flex justify-end border-t px-6 py-3 bg-gray-50">
-                        <button
-                          className="bg-blue-600 text-white px-4 py-1.5 rounded hover:bg-blue-700 transition"
-                          onClick={handleCloseCustomerModal}
-                        >
-                          Close
-                        </button>
-                      </div>
+                      <AddCustomer id={latestId} onSave={(formData) => {
+                        setCustomerData([...CustomerData, formData])
+                        setShowCustomerModal(false)
+                      }} onClose={() => setShowCustomerModal(false)}/>
+                    </div>
+                  </div>
+                )}
+
+{selectedCustomerForDelete && (
+  <DeleteConfirmationMessage
+  message={"Are you sure you want to delete the selected 1 OEM(s)?"}
+  onCancel={() => setSelectedCustomerForDelete(undefined)}
+  onConfirm={() => {
+    setCustomerData(CustomerData.filter((data) => data.customerId != selectedCustomerForDelete.customerId));
+                          setSelectedCustomerForDelete(undefined)
+                        }}
+  ></ DeleteConfirmationMessage>
+                )}
+
+{selectedCustomerForEdit && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                    <div
+                      className={`bg-white rounded shadow-lg w-full max-w-2xl mx-2 relative border border-gray-300
+        ${modalVisible ? "modal-fade-in" : "modal-fade-out"}`}
+                    >
+                      <AddCustomer id={selectedCustomerForEdit?.customerId} customerData={selectedCustomerForEdit} onSave={(formData) => {
+                        const currentCustomerData = CustomerData.findIndex((c) => c.customerId == formData.customerId)
+                        if (currentCustomerData > -1){
+                          CustomerData[currentCustomerData] = {...formData}
+                        }
+                        setSelectedCustomerForEdit(undefined)
+                      }} onClose={() => setSelectedCustomerForEdit(undefined)}/>
                     </div>
                   </div>
                 )}
@@ -1966,6 +1910,9 @@ const App = () => {
                                   <button
                                     className="p-1 rounded-full hover:bg-blue-100 transition-colors"
                                     aria-label="Edit"
+                                    onClick={() => {
+                                      setSelectedCustomerForEdit(row)
+                                    }}
                                   >
                                     <svg
                                       xmlns="http://www.w3.org/2000/svg"
@@ -1991,6 +1938,7 @@ const App = () => {
                                   <button
                                     className="p-1 rounded-full hover:bg-red-100 transition-colors"
                                     aria-label="Delete"
+                                   // onClick={() => setSelectedCustomerForDelete(row)}
                                   >
                                     <svg
                                       xmlns="http://www.w3.org/2000/svg"
