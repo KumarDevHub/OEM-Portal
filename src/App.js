@@ -1,5 +1,6 @@
 import logo from "./logo.svg";
 import "./App.css";
+import { Plus, Edit } from 'lucide-react'; // Import Plus and Edit icons
 
 import React, { useState, useMemo, useEffect } from "react"; // Added useEffect import
 
@@ -80,213 +81,179 @@ const mockUOMs = [
   { id: "PKG", name: "Package" },
 ];
 
-// SalesDistributionEntry Component (New Component for the Popup)
-const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
-  const [distributions, setDistributions] = useState([
-    {
-      id: 1,
-      account: "000-1200-00",
-      type: "RECV",
-      debit: 89198.87,
-      credit: 0.0,
-      description: "",
-    },
-    {
-      id: 2,
-      account: "000-4100-01",
-      type: "SALES",
-      debit: 0.0,
-      credit: 5645.47,
-      description: "",
-    },
-    {
-      id: 3,
-      account: "000-4110-01",
-      type: "SALES",
-      debit: 0.0,
-      credit: 78079.4,
-      description: "",
-    },
-    {
-      id: 4,
-      account: "000-2300-00",
-      type: "TAXES",
-      debit: 0.0,
-      credit: 4692.0,
-      description: "",
-    },
-    {
-      id: 5,
-      account: "000-2310-00",
-      type: "TAXES",
-      debit: 0.0,
-      credit: 782.0,
-      description: "",
-    },
-    {
-      id: 6,
-      account: "300-5130-00",
-      type: "COMMEXP",
-      debit: 2511.81,
-      credit: 0.0,
-      description: "",
-    },
-    {
-      id: 7,
-      account: "000-2120-00",
-      type: "COMMPAY",
-      debit: 0.0,
-      credit: 2511.81,
-      description: "",
-    },
-    { id: 8, account: "", type: "", debit: 0.0, credit: 0.0, description: "" }, // Empty row
-    { id: 9, account: "", type: "", debit: 0.0, credit: 0.0, description: "" }, // Empty row
-  ]);
+// EditDistributionModal Component
+const EditDistributionModal = ({ distribution, onSave, onCancel }) => {
+  const [editedDist, setEditedDist] = useState(distribution);
 
-  // Handle changes in distribution fields
-  const handleDistributionChange = (id, field, value) => {
-    setDistributions((prevDistributions) =>
-      prevDistributions.map((dist) =>
-        dist.id === id ? { ...dist, [field]: value } : dist
-      )
-    );
+  const handleChange = (field, value) => {
+    setEditedDist(prev => ({ ...prev, [field]: value }));
   };
 
-  const functionalTotalsDebit = distributions.reduce(
-    (sum, item) => sum + parseFloat(item.debit || 0),
-    0
-  );
-  const functionalTotalsCredit = distributions.reduce(
-    (sum, item) => sum + parseFloat(item.credit || 0),
-    0
-  );
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSave(editedDist);
+  };
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50 font-sans">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-5xl h-[90vh] max-h-full flex flex-col">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg p-6 flex flex-col">
+        <div className="bg-black text-white p-4 -mx-6 -mt-6 rounded-t-lg flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">Edit Distribution</h2>
+          <button onClick={onCancel} className="text-white hover:text-gray-300 transition-colors duration-200">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="edit-account" className="block text-sm font-medium text-gray-700">Account</label>
+            <input
+              type="text"
+              id="edit-account"
+              value={editedDist.account}
+              onChange={(e) => handleChange('account', e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-700 focus:border-red-700 sm:text-sm"
+            />
+          </div>
+          <div>
+            <label htmlFor="edit-type" className="block text-sm font-medium text-gray-700">Type</label>
+            <select
+              id="edit-type"
+              value={editedDist.type}
+              onChange={(e) => handleChange('type', e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-700 focus:border-red-700 sm:text-sm"
+            >
+              <option>RECV</option>
+              <option>SALES</option>
+              <option>TAXES</option>
+              <option>COMMEXP</option>
+              <option>COMMPAY</option>
+            </select>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="edit-debit" className="block text-sm font-medium text-gray-700">Debit</label>
+              <input
+                type="number"
+                id="edit-debit"
+                value={editedDist.debit}
+                onChange={(e) => handleChange('debit', parseFloat(e.target.value) || 0)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-700 focus:border-red-700 sm:text-sm text-right"
+              />
+            </div>
+            <div>
+              <label htmlFor="edit-credit" className="block text-sm font-medium text-gray-700">Credit</label>
+              <input
+                type="number"
+                id="edit-credit"
+                value={editedDist.credit}
+                onChange={(e) => handleChange('credit', parseFloat(e.target.value) || 0)}
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-700 focus:border-red-700 sm:text-sm text-right"
+              />
+            </div>
+          </div>
+          <div>
+            <label htmlFor="edit-description" className="block text-sm font-medium text-gray-700">Description</label>
+            <input
+              type="text"
+              id="edit-description"
+              value={editedDist.description}
+              onChange={(e) => handleChange('description', e.target.value)}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-700 focus:border-red-700 sm:text-sm"
+            />
+          </div>
+          <div className="flex justify-end space-x-4 pt-4 border-t border-gray-200 mt-4">
+            <button
+              type="submit"
+              className="bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              onClick={onCancel}
+              className="bg-gray-300 text-gray-800 rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-400 transition-colors duration-200"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+// SalesDistributionEntry Component (New Component for the Popup)
+const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
+  const [distributions, setDistributions] = useState([
+    { id: 1, account: '000-1200-00', type: 'RECV', debit: 89198.87, credit: 0.00, description: 'Accounts Receivable' },
+    { id: 2, account: '000-4100-01', type: 'SALES', debit: 0.00, credit: 5645.47, description: 'Product Sales A' },
+  ]);
+
+  const [editingDistribution, setEditingDistribution] = useState(null); // State to hold the distribution being edited
+
+  // Handle updates from the edit modal
+  const handleUpdateDistribution = (updatedDist) => {
+    setDistributions(prevDistributions =>
+      prevDistributions.map(dist =>
+        dist.id === updatedDist.id ? updatedDist : dist
+      )
+    );
+    setEditingDistribution(null); // Close the modal
+  };
+
+  const handleEditClick = (dist) => {
+    setEditingDistribution(dist);
+  };
+
+
+  const functionalTotalsDebit = distributions.reduce((sum, item) => sum + parseFloat(item.debit || 0), 0);
+  const functionalTotalsCredit = distributions.reduce((sum, item) => sum + parseFloat(item.credit || 0), 0);
+
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50 font-sans">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-8xl h-[70vh] max-h-full flex flex-col">
         {/* Header */}
         <div className="bg-black text-white p-4 rounded-t-lg flex justify-between items-center">
           <h2 className="text-xl font-bold">Sales Distribution Entry</h2>
-          <button
-            onClick={onClose}
-            className="text-white hover:text-gray-300 transition-colors duration-200"
-          >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M6 18L18 6M6 6l12 12"
-              ></path>
-            </svg>
+          <button onClick={onClose} className="text-white hover:text-gray-300 transition-colors duration-200">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
         </div>
 
         {/* Info Section */}
-        <div className="p-4 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-10 gap-y-3 md:gap-y-4 border-b border-gray-200 text-sm">
+        <div className="px-4 py-4 md:px-6 md:py-6 grid grid-cols-1 md:grid-cols-3 gap-x-6 md:gap-x-10 gap-y-3 md:gap-y-4 border-b border-gray-200 text-sm">
           <div className="flex flex-col space-y-3">
             <div className="flex items-center">
-              <label
-                htmlFor="dist-customer-id"
-                className="w-28 sm:w-36 text-gray-700 font-medium"
-              >
-                Customer ID
-              </label>
-              <input
-                type="text"
-                id="dist-customer-id"
-                defaultValue={invoiceHeaderData?.customerId || ""}
-                readOnly
-                className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm"
-              />
+              <label htmlFor="dist-customer-id" className="w-28 sm:w-36 text-gray-700 font-medium">Customer ID</label>
+              <input type="text" id="dist-customer-id" defaultValue={invoiceHeaderData?.customerId || ''} readOnly className="flex-grow px-2 py-1 border border-gray-300 rounded-md bg-gray-50 text-xs" />
             </div>
             <div className="flex items-center">
-              <label
-                htmlFor="dist-customer-name"
-                className="w-28 sm:w-36 text-gray-700 font-medium"
-              >
-                Name
-              </label>
-              <input
-                type="text"
-                id="dist-customer-name"
-                defaultValue={invoiceHeaderData?.customerName || ""}
-                readOnly
-                className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm"
-              />
+              <label htmlFor="dist-customer-name" className="w-28 sm:w-36 text-gray-700 font-medium">Name</label>
+              <input type="text" id="dist-customer-name" defaultValue={invoiceHeaderData?.customerName || ''} readOnly className="flex-grow px-2 py-1 border border-gray-300 rounded-md bg-gray-50 text-xs" />
             </div>
           </div>
           <div className="flex flex-col space-y-3">
             <div className="flex items-center">
-              <label
-                htmlFor="dist-document-no"
-                className="w-28 sm:w-36 text-gray-700 font-medium"
-              >
-                Document No.
-              </label>
-              <input
-                type="text"
-                id="dist-document-no"
-                defaultValue={invoiceHeaderData?.documentNumber || ""}
-                readOnly
-                className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm"
-              />
+              <label htmlFor="dist-document-no" className="w-28 sm:w-36 text-gray-700 font-medium">Document No.</label>
+              <input type="text" id="dist-document-no" defaultValue={invoiceHeaderData?.documentNumber || ''} readOnly className="flex-grow px-2 py-1 border border-gray-300 rounded-md bg-gray-50 text-xs" />
             </div>
             <div className="flex items-center">
-              <label
-                htmlFor="dist-document-type"
-                className="w-28 sm:w-36 text-gray-700 font-medium"
-              >
-                Document Type
-              </label>
-              <input
-                type="text"
-                id="dist-document-type"
-                defaultValue={invoiceHeaderData?.documentType || ""}
-                readOnly
-                className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm"
-              />
+              <label htmlFor="dist-document-type" className="w-28 sm:w-36 text-gray-700 font-medium">Document Type</label>
+              <input type="text" id="dist-document-type" defaultValue={invoiceHeaderData?.documentType || ''} readOnly className="flex-grow px-2 py-1 border border-gray-300 rounded-md bg-gray-50 text-xs" />
             </div>
+          </div>
+          <div className="flex flex-col space-y-3">
             <div className="flex items-center">
-              <label
-                htmlFor="dist-functional-amount"
-                className="w-28 sm:w-36 text-gray-700 font-medium"
-              >
-                Functional Amount
-              </label>
+              <label htmlFor="dist-functional-amount" className="w-28 sm:w-36 text-gray-700 font-medium">Functional Amount</label>
               <div className="flex-grow flex items-center gap-2">
-                <span className="mr-1 text-gray-600 font-semibold">$</span>
-                <input
-                  type="text"
-                  id="dist-functional-amount"
-                  defaultValue="89,198.87"
-                  readOnly
-                  className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm"
-                />
+                <span className="mr-1 text-gray-600 font-semibold text-xs">$</span>
+                <input type="text" id="dist-functional-amount" defaultValue="89,198.87" readOnly className="flex-grow px-2 py-1 border border-gray-300 rounded-md bg-gray-50 text-right text-xs" />
               </div>
             </div>
             <div className="flex items-center">
-              <label
-                htmlFor="dist-originating-amount"
-                className="w-28 sm:w-36 text-gray-700 font-medium"
-              >
-                Originating Amount
-              </label>
+              <label htmlFor="dist-originating-amount" className="w-28 sm:w-36 text-gray-700 font-medium">Originating Amount</label>
               <div className="flex-grow flex items-center gap-2">
-                <span className="mr-1 text-gray-600 font-semibold">$</span>
-                <input
-                  type="text"
-                  id="dist-originating-amount"
-                  defaultValue="0.00"
-                  readOnly
-                  className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm"
-                />
+                <span className="mr-1 text-gray-600 font-semibold text-xs">$</span>
+                <input type="text" id="dist-originating-amount" defaultValue="0.00" readOnly className="flex-grow px-2 py-1 border border-gray-300 rounded-md bg-gray-50 text-right text-xs" />
               </div>
             </div>
           </div>
@@ -294,129 +261,41 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
 
         {/* Account Distributions Grid */}
         <div className="flex-1 p-4 md:p-6 overflow-y-auto">
-          <h3 className="text-lg font-semibold mb-3 text-gray-800">
-            Account Distributions
-          </h3>
+          <h3 className="text-lg font-semibold mb-3 text-gray-800">Account Distributions</h3>
           <div className="overflow-x-auto mb-4 border border-gray-300 rounded-lg">
             <table className="w-full border-collapse bg-white">
               <thead>
                 <tr>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
-                    Account
-                  </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[10%]">
-                    Type
-                  </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
-                    Debit
-                  </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
-                    Credit
-                  </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[25%]">
-                    Description
-                  </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[10%]">
-                    Originating Debit
-                  </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[10%]">
-                    Originating Credit
-                  </th>
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[40%]">Distribution Reference</th>
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">Type</th>
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">Originating Debit</th>
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">Originating Credit</th>
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[5%]">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {distributions.map((dist) => (
                   <tr key={dist.id}>
-                    <td className="border border-gray-200 p-2">
-                      <input
-                        type="text"
-                        value={dist.account}
-                        onChange={(e) =>
-                          handleDistributionChange(
-                            dist.id,
-                            "account",
-                            e.target.value
-                          )
-                        }
-                        className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-                      />
+                    <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
+                      {`${dist.account} - $${dist.debit.toFixed(2)} - $${dist.credit.toFixed(2)} - ${dist.description}`}
+                    </td>
+                    <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
+                      {dist.type}
                     </td>
                     <td className="border border-gray-200 p-2">
-                      <select
-                        value={dist.type}
-                        onChange={(e) =>
-                          handleDistributionChange(
-                            dist.id,
-                            "type",
-                            e.target.value
-                          )
-                        }
-                        className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
+                      <input type="text" defaultValue={`${dist.debit}`} readOnly className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-right focus:outline-none" />
+                    </td>
+                    <td className="border border-gray-200 p-2">
+                      <input type="text" defaultValue={`${dist.credit}`} readOnly className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-right focus:outline-none" />
+                    </td>
+                    <td className="border border-gray-200 p-2 text-center">
+                      <button
+                        onClick={() => handleEditClick(dist)}
+                        className="text-gray-600 hover:text-gray-800 transition-colors duration-200 p-1"
+                        title="Edit Distribution"
                       >
-                        <option>RECV</option>
-                        <option>SALES</option>
-                        <option>TAXES</option>
-                        <option>COMMEXP</option>
-                        <option>COMMPAY</option>
-                      </select>
-                    </td>
-                    <td className="border border-gray-200 p-2">
-                      <input
-                        type="number"
-                        value={dist.debit}
-                        onChange={(e) =>
-                          handleDistributionChange(
-                            dist.id,
-                            "debit",
-                            parseFloat(e.target.value) || 0
-                          )
-                        }
-                        className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-right focus:outline-none focus:ring-red-700 focus:border-red-700"
-                      />
-                    </td>
-                    <td className="border border-gray-200 p-2">
-                      <input
-                        type="number"
-                        value={dist.credit}
-                        onChange={(e) =>
-                          handleDistributionChange(
-                            dist.id,
-                            "credit",
-                            parseFloat(e.target.value) || 0
-                          )
-                        }
-                        className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-right focus:outline-none focus:ring-red-700 focus:border-red-700"
-                      />
-                    </td>
-                    <td className="border border-gray-200 p-2">
-                      <input
-                        type="text"
-                        value={dist.description}
-                        onChange={(e) =>
-                          handleDistributionChange(
-                            dist.id,
-                            "description",
-                            e.target.value
-                          )
-                        }
-                        className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-                      />
-                    </td>
-                    <td className="border border-gray-200 p-2">
-                      <input
-                        type="text"
-                        defaultValue="0.00"
-                        readOnly
-                        className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-right focus:outline-none"
-                      />
-                    </td>
-                    <td className="border border-gray-200 p-2">
-                      <input
-                        type="text"
-                        defaultValue="0.00"
-                        readOnly
-                        className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-right focus:outline-none"
-                      />
+                        <Edit size={16} />
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -427,45 +306,21 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
           {/* Totals Section */}
           <div className="flex flex-col sm:flex-row justify-end space-y-4 sm:space-y-0 sm:space-x-8 mt-4 text-sm">
             <div className="flex flex-col items-end">
-              <span className="font-semibold text-gray-700 mb-1">
-                Functional Totals
-              </span>
+              <span className="font-semibold text-gray-700 mb-1">Functional Totals</span>
               <div className="flex items-center space-x-2">
                 <span className="text-gray-600 font-semibold">$</span>
-                <input
-                  type="text"
-                  value={functionalTotalsDebit.toFixed(2)}
-                  readOnly
-                  className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-24 sm:w-28 font-bold text-xs sm:text-sm"
-                />
+                <input type="text" value={functionalTotalsDebit.toFixed(2)} readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-24 sm:w-28 font-bold text-xs sm:text-sm" />
                 <span className="text-gray-600 font-semibold">$</span>
-                <input
-                  type="text"
-                  value={functionalTotalsCredit.toFixed(2)}
-                  readOnly
-                  className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-24 sm:w-28 font-bold text-xs sm:text-sm"
-                />
+                <input type="text" value={functionalTotalsCredit.toFixed(2)} readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-24 sm:w-28 font-bold text-xs sm:text-sm" />
               </div>
             </div>
             <div className="flex flex-col items-end">
-              <span className="font-semibold text-gray-700 mb-1">
-                Originating Totals
-              </span>
+              <span className="font-semibold text-gray-700 mb-1">Originating Totals</span>
               <div className="flex items-center space-x-2">
                 <span className="text-gray-600 font-semibold">$</span>
-                <input
-                  type="text"
-                  defaultValue="0.00"
-                  readOnly
-                  className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-24 sm:w-28 text-xs sm:text-sm"
-                />
+                <input type="text" defaultValue="0.00" readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-24 sm:w-28 text-xs sm:text-sm" />
                 <span className="text-gray-600 font-semibold">$</span>
-                <input
-                  type="text"
-                  defaultValue="0.00"
-                  readOnly
-                  className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-24 sm:w-28 text-xs sm:text-sm"
-                />
+                <input type="text" defaultValue="0.00" readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-24 sm:w-28 text-xs sm:text-sm" />
               </div>
             </div>
           </div>
@@ -473,17 +328,16 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
 
         {/* Footer Buttons */}
         <div className="p-4 bg-gray-100 border-t border-gray-200 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4 rounded-b-lg">
-          <button className="bg-black text-white rounded-md px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200">
-            OK
-          </button>
-          <button className="bg-red-700 text-white rounded-md px-4 py-2 text-sm font-medium shadow-sm hover:bg-red-800 transition-colors duration-200">
-            Delete
-          </button>
-          <button className="bg-gray-700 text-white rounded-md px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200">
-            Default
-          </button>
+          <button className="bg-black text-white rounded-md px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200">OK</button>
         </div>
       </div>
+      {editingDistribution && (
+        <EditDistributionModal
+          distribution={editingDistribution}
+          onSave={handleUpdateDistribution}
+          onCancel={() => setEditingDistribution(null)}
+        />
+      )}
     </div>
   );
 };
@@ -583,30 +437,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
   // State for line items (mock data for demonstration of sorting)
   const [lineItems, setLineItems] = useState([
     // Initial data, now referencing mock items
-    {
-      id: 1,
-      itemId: "ITEM-A123",
-      uomId: "EA",
-      qtyOrdered: 10,
-      unitPrice: 15.0,
-      extendedPrice: 0.0,
-    },
-    {
-      id: 2,
-      itemId: "ITEM-B456",
-      uomId: "BOX",
-      qtyOrdered: 5,
-      unitPrice: 25.5,
-      extendedPrice: 0.0,
-    },
-    {
-      id: 3,
-      itemId: "ITEM-C789",
-      uomId: "PC",
-      qtyOrdered: 2,
-      unitPrice: 75.0,
-      extendedPrice: 0.0,
-    },
+    { id: 1, itemId: 'ITEM-A123', uomId: 'EA', qtyOrdered: 10, unitPrice: 15.00, extendedPrice: 0.00 },
   ]);
 
   // Use useEffect to calculate extended price when line items change
@@ -686,6 +517,26 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
         return item;
       })
     );
+  };
+
+  // Function to add a new line item
+  const handleAddItem = () => {
+    setLineItems(prevLineItems => [
+      ...prevLineItems,
+      {
+        id: prevLineItems.length > 0 ? Math.max(...prevLineItems.map(item => item.id)) + 1 : 1,
+        itemId: '',
+        uomId: '',
+        qtyOrdered: 0,
+        unitPrice: 0.00,
+        extendedPrice: 0.00,
+      },
+    ]);
+  };
+
+  // Function to delete a line item
+  const handleDeleteItem = (idToDelete) => {
+    setLineItems(prevLineItems => prevLineItems.filter(item => item.id !== idToDelete));
   };
 
   // State for showing save confirmation
@@ -800,239 +651,429 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
     0
   );
 
-  return (
-    <div className="min-h-screen flex justify-center items-start p-2 sm:p-5 bg-gray-100 font-sans text-gray-800">
-      <div className="form-container bg-white border border-gray-200 rounded-lg shadow-lg w-full max-w-4xl overflow-hidden">
+  // return (
+  //   <div className="p-2 sm:p-5 bg-gray-100 font-sans text-gray-800">
+  //     <div className="form-container bg-white border border-gray-200 rounded-lg shadow-lg w-full overflow-hidden">
+  //       <div className="main-content p-4 sm:p-6 bg-white">
+  //         {/* Changed grid-cols-1 md:grid-cols-2 to md:grid-cols-3 */}
+  //         <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 md:gap-x-10 gap-y-3 md:gap-y-4 mb-6 sm:mb-8 text-sm">
+  //           <div className="flex flex-col space-y-3">
+  //             <div className="flex items-center">
+  //               <label htmlFor="customer-id" className="w-28 sm:w-36 text-gray-700 font-medium">Customer ID</label>
+  //               <div className="flex-grow flex items-center gap-2">
+  //                 <input type="text" id="customer-id" value={customerId} onChange={handleCustomerIdChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+  //               </div>
+  //             </div>
+  //             {/* Removed Type/Type ID field */}
+  //             <div className="flex items-center">
+  //               <label htmlFor="document-no" className="w-28 sm:w-36 text-gray-700 font-medium">Document No .</label>
+  //               <div className="flex-grow flex items-center gap-2">
+  //                 <input type="text" id="document-no" value={documentNumber} onChange={handleDocumentNumberChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+  //               </div>
+  //             </div>
+  //             <div className="flex items-center">
+  //               <label htmlFor="customer-name" className="w-28 sm:w-36 text-gray-700 font-medium">Customer Name</label>
+  //               <div className="flex-grow flex items-center gap-2">
+  //                 <input type="text" id="customer-name" value={customerName} onChange={handleCustomerNameChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+  //               </div>
+  //             </div>
+  //           </div>
+
+  //           <div className="flex flex-col space-y-3">
+  //             <div className="flex items-center">
+  //               {/* Changed label to a button for clickability */}
+  //               <button type="button" onClick={handleShipToAddressClick} className="w-28 sm:w-36 text-red-700 underline cursor-pointer text-sm font-medium text-left">
+  //                 Ship To Address
+  //               </button>
+  //               <div className="flex-grow flex items-center gap-2">
+  //                 <input type="text" id="ship-to-address" value={shipToAddress} onChange={handleShipToAddressChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+  //               </div>
+  //             </div>
+  //             <div className="flex items-center">
+  //               <label htmlFor="date" className="w-28 sm:w-36 text-gray-700 font-medium">Date</label>
+  //               <div className="flex-grow flex items-center gap-2">
+  //                 <input type="date" id="date" value={documentDate} onChange={handleDocumentDateChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+  //               </div>
+  //             </div>
+  //             <div className="flex items-center">
+  //               <label htmlFor="batch-id" className="w-28 sm:w-36 text-gray-700 font-medium">Batch ID</label>
+  //               <div className="flex-grow flex items-center gap-2">
+  //                 <input type="text" defaultValue="BATCH-APR2017" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+  //               </div>
+  //             </div>
+  //           </div>
+
+  //           <div className="flex flex-col space-y-3">
+  //             <div className="flex items-center">
+  //               <label htmlFor="default-site-id" className="w-28 sm:w-36 text-gray-700 font-medium">Default Site ID</label>
+  //               <div className="flex-grow flex items-center gap-2">
+  //                 <input type="text" defaultValue="WAREHOUSE" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+  //               </div>
+  //             </div>
+  //             <div className="flex items-center">
+  //               <label htmlFor="customer-po-number" className="w-28 sm:w-36 text-gray-700 font-medium">Customer PO Number</label>
+  //               <div className="flex-grow flex items-center gap-2">
+  //                 <input type="text" defaultValue="PO-78901" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+  //               </div>
+  //             </div>
+  //             {/* Moved Currency ID here */}
+  //             <div className="flex items-center">
+  //               <label htmlFor="currency-id" className="w-28 sm:w-36 text-gray-700 font-medium">Currency ID</label>
+  //               <div className="flex-grow flex items-center gap-2">
+  //                 <input type="text" defaultValue="USD" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+  //               </div>
+  //             </div>
+  //           </div>
+  //         </div>
+
+  //         <div className="bg-gray-200 text-gray-800 p-2 rounded-md mb-4 font-semibold text-base border border-gray-300">Line Items by Order Entered</div>
+  //         <div className="overflow-x-auto mb-6 sm:mb-8">
+  //           <table className="w-full border-collapse mt-2 bg-white border border-gray-300 rounded-lg">
+  //             <thead>
+  //               <tr>
+  //                 <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/4 cursor-pointer" onClick={() => handleSort('itemId')}>
+  //                   Item Number{' '}
+  //                   {sortColumn === 'itemId' && (
+  //                     sortDirection === 'asc' ? '▲' : '▼'
+  //                   )}
+  //                 </th>
+  //                 <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer" onClick={() => handleSort('uomId')}>
+  //                   U of M{' '}
+  //                   {sortColumn === 'uomId' && (
+  //                     sortDirection === 'asc' ? '▲' : '▼'
+  //                   )}
+  //                 </th>
+  //                 <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer" onClick={() => handleSort('qtyOrdered')}>
+  //                   Qty Ordered{' '}
+  //                   {sortColumn === 'qtyOrdered' && (
+  //                     sortDirection === 'asc' ? '▲' : '▼'
+  //                   )}
+  //                 </th>
+  //                 <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer" onClick={() => handleSort('unitPrice')}>
+  //                   Unit Price{' '}
+  //                   {sortColumn === 'unitPrice' && (
+  //                     sortDirection === 'asc' ? '▲' : '▼'
+  //                   )}
+  //                 </th>
+  //                 <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/4 cursor-pointer" onClick={() => handleSort('extendedPrice')}>
+  //                   Extended Price{' '}
+  //                   {sortColumn === 'extendedPrice' && (
+  //                     sortDirection === 'asc' ? '▲' : '▼'
+  //                   )}
+  //                 </th>
+  //               </tr>
+  //             </thead>
+  //             <tbody>
+  //               {sortedLineItems.map((item) => (
+  //                 <tr key={item.id}>
+  //                   <td className="border border-gray-200 p-2">
+  //                     <select
+  //                       value={item.itemId}
+  //                       onChange={(e) => handleLineItemChange(item.id, 'itemId', e.target.value)}
+  //                       className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
+  //                     >
+  //                       <option value="">Select Item</option>
+  //                       {mockItems.map(mockItem => (
+  //                         <option key={mockItem.id} value={mockItem.id}>
+  //                           {mockItem.id} - {mockItem.name}
+  //                         </option>
+  //                       ))}
+  //                     </select>
+  //                   </td>
+  //                   <td className="border border-gray-200 p-2">
+  //                     <select
+  //                       value={item.uomId}
+  //                       onChange={(e) => handleLineItemChange(item.id, 'uomId', e.target.value)}
+  //                       className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
+  //                     >
+  //                       <option value="">Select UOM</option>
+  //                       {mockUOMs.map(uom => (
+  //                         <option key={uom.id} value={uom.id}>
+  //                           {uom.name}
+  //                         </option>
+  //                       ))}
+  //                     </select>
+  //                   </td>
+  //                   <td className="border border-gray-200 p-2">
+  //                     <input
+  //                       type="number"
+  //                       value={item.qtyOrdered}
+  //                       onChange={(e) => handleLineItemChange(item.id, 'qtyOrdered', parseFloat(e.target.value) || 0)}
+  //                       className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
+  //                     />
+  //                   </td>
+  //                   <td className="border border-gray-200 p-2">
+  //                     <input
+  //                       type="number"
+  //                       value={item.unitPrice.toFixed(2)}
+  //                       onChange={(e) => handleLineItemChange(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
+  //                       className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
+  //                     />
+  //                   </td>
+  //                   <td className="border border-gray-200 p-2">
+  //                     <input type="text" value={item.extendedPrice.toFixed(2)} readOnly className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-right focus:outline-none" />
+  //                   </td>
+  //                 </tr>
+  //               ))}
+  //               {/* Add empty rows to maintain minimum visible rows if needed */}
+  //               {Array(Math.max(0, 3 - sortedLineItems.length)).fill('').map((_, index) => (
+  //                 <tr key={`empty-row-${index + sortedLineItems.length}`}> {/* Unique key */}
+  //                   <td className="border border-gray-200 p-2">
+  //                     <select className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none" disabled>
+  //                       <option value="">Select Item</option>
+  //                     </select>
+  //                   </td>
+  //                   <td className="border border-gray-200 p-2">
+  //                     <select className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none" disabled>
+  //                       <option value="">Select UOM</option>
+  //                     </select>
+  //                   </td>
+  //                   <td className="border border-gray-200 p-2"><input type="text" className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none" defaultValue="" disabled /></td>
+  //                   <td className="border border-gray-200 p-2"><input type="text" className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none" defaultValue="" disabled /></td>
+  //                   <td className="border border-gray-200 p-2"><input type="text" className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-right focus:outline-none" readOnly disabled /></td>
+  //                 </tr>
+  //               ))}
+  //             </tbody>
+  //           </table>
+  //         </div>
+
+  //         <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 md:gap-x-10 gap-y-3 md:gap-y-4 mb-6 sm:mb-8 text-sm">
+  //           <div className="flex flex-col space-y-3">
+  //             <div className="flex items-center">
+  //               <label htmlFor="amount-received" className="w-36 sm:w-44 text-gray-700 font-medium">Amount Received</label>
+  //               <div className="flex-grow flex items-center gap-2">
+  //                 <span className="mr-1 text-gray-600 font-semibold">$</span>
+  //                 <input type="text" id="amount-received" defaultValue="427.50" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
+  //               </div>
+  //             </div>
+  //             <div className="flex items-center">
+  //               <label htmlFor="terms-discount-taken" className="w-36 sm:w-44 text-gray-700 font-medium">Terms Discount Taken</label>
+  //               <div className="flex-grow flex items-center gap-2">
+  //                 <span className="mr-1 text-gray-600 font-semibold">$</span>
+  //                 <input type="text" id="terms-discount-taken" defaultValue="0.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
+  //               </div>
+  //             </div>
+  //             <div className="flex items-center">
+  //               <label htmlFor="on-account" className="w-36 sm:w-44 text-gray-700 font-medium">On Account</label>
+  //               <div className="flex-grow flex items-center gap-2">
+  //                 <span className="mr-1 text-gray-600 font-semibold">$</span>
+  //                 <input type="text" id="on-account" defaultValue="0.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
+  //               </div>
+  //             </div>
+  //           </div>
+
+  //           <div className="flex flex-col space-y-3">
+  //             <div className="flex items-center">
+  //               <label htmlFor="comment-id" className="w-36 sm:w-44 text-gray-700 font-medium">Comment ID</label>
+  //               <div className="flex-grow flex items-center gap-2">
+  //                 <input type="text" id="comment-id" defaultValue="Initial Order" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+  //               </div>
+  //             </div>
+  //             <div className="flex items-center">
+  //               <label htmlFor="subtotal" className="w-28 sm:w-36 text-gray-700 font-medium">Subtotal</label>
+  //               <div className="flex-grow flex items-center gap-2">
+  //                 <span className="mr-1 text-gray-600 font-semibold">$</span>
+  //                 <input type="text" id="subtotal" value={totalExtendedPrice.toFixed(2)} readOnly className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm" />
+  //               </div>
+  //             </div>
+  //             <div className="flex items-center">
+  //               <label htmlFor="trade-discount" className="w-28 sm:w-36 text-gray-700 font-medium">Trade Discount</label>
+  //               <div className="flex-grow flex items-center gap-2">
+  //                 <span className="mr-1 text-gray-600 font-semibold">$</span>
+  //                 <input type="text" id="trade-discount" defaultValue="0.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm" readOnly />
+  //               </div>
+  //             </div>
+  //           </div>
+
+  //           <div className="flex flex-col space-y-3">
+  //             <div className="flex items-center">
+  //               <label htmlFor="freight" className="w-28 sm:w-36 text-gray-700 font-medium">Freight</label>
+  //               <div className="flex-grow flex items-center gap-2">
+  //                 <span className="mr-1 text-gray-600 font-semibold">$</span>
+  //                 <input type="text" id="freight" defaultValue="15.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
+  //               </div>
+  //             </div>
+  //             <div className="flex items-center">
+  //               <label htmlFor="miscellaneous" className="w-28 sm:w-36 text-gray-700 font-medium">Miscellaneous</label>
+  //               <div className="flex-grow flex items-center gap-2">
+  //                 <span className="mr-1 text-gray-600 font-semibold">$</span>
+  //                 <input type="text" id="miscellaneous" defaultValue="0.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
+  //               </div>
+  //             </div>
+  //             <div className="flex items-center">
+  //               <label htmlFor="tax" className="w-28 sm:w-36 text-gray-700 font-medium">Tax</label>
+  //               <div className="flex-grow flex items-center gap-2">
+  //                 <span className="mr-1 text-gray-600 font-semibold">$</span>
+  //                 <input type="text" id="tax" defaultValue="25.65" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm" readOnly />
+  //               </div>
+  //             </div>
+  //           </div>
+  //         </div>
+
+  //         <div className="flex flex-col sm:flex-row justify-between items-center mt-4 sm:mt-6 space-y-4 sm:space-y-0">
+  //           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
+  //             <button
+  //               onClick={handleDistributionsButtonClick}
+  //               className={`rounded-md px-4 py-2.5 text-sm font-medium shadow-sm transition-colors duration-200 w-full sm:w-auto bg-black text-white hover:bg-gray-800`} // Removed disabled prop and conditional classes
+  //             >
+  //               Distributions
+  //             </button>
+  //             <button
+  //               onClick={handleSaveClick}
+  //               className="bg-black text-white hover:bg-gray-800 rounded-md px-4 py-2.5 text-sm font-medium shadow-sm transition-colors duration-200 w-full sm:w-auto"
+  //             >
+  //               Save
+  //             </button>
+  //           </div>
+  //           <div className="flex items-center w-full sm:w-auto justify-end">
+  //             <label className="text-gray-700 text-base font-semibold mr-2">Total</label>
+  //             <div className="flex items-center">
+  //               <span className="mr-1 text-gray-800 text-lg font-bold">$</span>
+  //               <input type="text" value={(totalExtendedPrice + 15.00 + 25.65).toFixed(2)} className="p-2 border border-gray-300 rounded-md bg-gray-50 text-right font-bold text-lg w-28 sm:w-32" readOnly />
+  //             </div>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //     {showSaveConfirmation && (
+  //       <ConfirmationMessage
+  //         message="Are you sure you want to save the current invoice?"
+  //         onConfirm={confirmSave}
+  //         onCancel={cancelSave}
+  //       />
+  //     )}
+  //     {showAddressPopup && (
+  //       <ShipToAddressSelection
+  //         addresses={availableShipToAddresses}
+  //         onSelectAddress={handleAddressSelect}
+  //         onClose={() => setShowAddressPopup(false)}
+  //       />
+  //     )}
+  //   </div>
+  // );
+
+    return (
+     <div className="p-2 sm:p-5 bg-gray-100 font-sans text-gray-800">
+      <div className="form-container bg-white border border-gray-200 rounded-lg shadow-lg w-full overflow-hidden">
         <div className="main-content p-4 sm:p-6 bg-white">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-10 gap-y-3 md:gap-y-4 mb-6 sm:mb-8 text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 md:gap-x-10 gap-y-3 md:gap-y-4 mb-6 sm:mb-8 text-sm">
             <div className="flex flex-col space-y-3">
               <div className="flex items-center">
-                <label
-                  htmlFor="customer-id"
-                  className="w-28 sm:w-36 text-gray-700 font-medium"
-                >
-                  Customer ID
-                </label>
+                <label htmlFor="customer-id" className="w-36 text-gray-700 font-medium">Customer ID</label>
                 <div className="flex-grow flex items-center gap-2">
-                  <input
-                    type="text"
-                    id="customer-id"
-                    value={customerId}
-                    onChange={handleCustomerIdChange}
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
+                  <input type="text" id="customer-id" value={customerId} onChange={handleCustomerIdChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
+              {/* Removed Type/Type ID field */}
               <div className="flex items-center">
-                <label
-                  htmlFor="type-id"
-                  className="w-28 sm:w-36 text-gray-700 font-medium"
-                >
-                  Type/Type ID :
-                </label>
+                <label htmlFor="document-no" className="w-36 text-gray-700 font-medium">Document No .</label>
                 <div className="flex-grow flex items-center gap-2">
-                  <select
-                    id="type-id"
-                    value={documentType}
-                    onChange={handleDocumentTypeChange}
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  >
-                    <option>Order</option>
-                    <option>Invoice</option>
-                  </select>
-                  <input
-                    type="text"
-                    defaultValue="STDORD"
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
+                  <input type="text" id="document-no" value={documentNumber} onChange={handleDocumentNumberChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
+              {/* Moved Currency ID here */}
               <div className="flex items-center">
-                <label
-                  htmlFor="document-no"
-                  className="w-28 sm:w-36 text-gray-700 font-medium"
-                >
-                  Document No .
-                </label>
+                <label htmlFor="currency-id" className="w-36 text-gray-700 font-medium">Currency ID</label>
                 <div className="flex-grow flex items-center gap-2">
-                  <input
-                    type="text"
-                    id="document-no"
-                    value={documentNumber}
-                    onChange={handleDocumentNumberChange}
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
+                  <input type="text" defaultValue="USD" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
+            </div>
 
+            <div className="flex flex-col space-y-3">
               <div className="flex items-center">
-                <label
-                  htmlFor="customer-name"
-                  className="w-28 sm:w-36 text-gray-700 font-medium"
-                >
-                  Customer Name
-                </label>
+                <label htmlFor="customer-name" className="w-36 text-gray-700 font-medium">Customer Name</label>
                 <div className="flex-grow flex items-center gap-2">
-                  <input
-                    type="text"
-                    id="customer-name"
-                    value={customerName}
-                    onChange={handleCustomerNameChange}
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
+                  <input type="text" id="customer-name" value={customerName} onChange={handleCustomerNameChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
+              {/* Swap: Customer PO Number moved here */}
+              <div className="flex items-center">
+                <label htmlFor="customer-po-number" className="w-36 text-gray-700 font-medium">Customer PO Number</label>
+                <div className="flex-grow flex items-center gap-2">
+                  <input type="text" defaultValue="PO-78901" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                </div>
+              </div>
+              <div className="flex items-center">
+                <label htmlFor="date" className="w-36 text-gray-700 font-medium">Date</label>
+                <div className="flex-grow flex items-center gap-2">
+                  <input type="date" id="date" value={documentDate} onChange={handleDocumentDateChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col space-y-3">
+              <div className="flex items-center">
+                <label htmlFor="batch-id" className="w-36 text-gray-700 font-medium">Batch ID</label>
+                <div className="flex-grow flex items-center gap-2">
+                  <input type="text" defaultValue="BATCH-APR2017" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                </div>
+              </div>
+              <div className="flex items-center">
+                <label htmlFor="default-site-id" className="w-36 text-gray-700 font-medium">Default Site ID</label>
+                <div className="flex-grow flex items-center gap-2">
+                  <input type="text" defaultValue="WAREHOUSE" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                </div>
+              </div>
+              {/* Swap: Ship To Address moved here */}
               <div className="flex items-center">
                 {/* Changed label to a button for clickability */}
-                <button
-                  type="button"
-                  onClick={handleShipToAddressClick}
-                  className="w-28 sm:w-36 text-red-700 underline cursor-pointer text-sm font-medium text-left"
-                >
+                <button type="button" onClick={handleShipToAddressClick} className="w-36 text-red-700 underline cursor-pointer text-sm font-medium text-left">
                   Ship To Address
                 </button>
                 <div className="flex-grow flex items-center gap-2">
-                  <input
-                    type="text"
-                    id="ship-to-address"
-                    value={shipToAddress}
-                    onChange={handleShipToAddressChange}
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col space-y-3">
-              <div className="flex items-center">
-                <label
-                  htmlFor="date"
-                  className="w-28 sm:w-36 text-gray-700 font-medium"
-                >
-                  Date
-                </label>
-                <div className="flex-grow flex items-center gap-2">
-                  <input
-                    type="date"
-                    id="date"
-                    value={documentDate}
-                    onChange={handleDocumentDateChange}
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label
-                  htmlFor="batch-id"
-                  className="w-28 sm:w-36 text-gray-700 font-medium"
-                >
-                  Batch ID
-                </label>
-                <div className="flex-grow flex items-center gap-2">
-                  <input
-                    type="text"
-                    defaultValue="BATCH-APR2017"
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label
-                  htmlFor="default-site-id"
-                  className="w-28 sm:w-36 text-gray-700 font-medium"
-                >
-                  Default Site ID
-                </label>
-                <div className="flex-grow flex items-center gap-2">
-                  <input
-                    type="text"
-                    defaultValue="WAREHOUSE"
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label
-                  htmlFor="customer-po-number"
-                  className="w-28 sm:w-36 text-gray-700 font-medium"
-                >
-                  Customer PO Number
-                </label>
-                <div className="flex-grow flex items-center gap-2">
-                  <input
-                    type="text"
-                    defaultValue="PO-78901"
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label
-                  htmlFor="currency-id"
-                  className="w-28 sm:w-36 text-gray-700 font-medium"
-                >
-                  Currency ID
-                </label>
-                <div className="flex-grow flex items-center gap-2">
-                  <input
-                    type="text"
-                    defaultValue="USD"
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
+                  <input type="text" id="ship-to-address" value={shipToAddress} onChange={handleShipToAddressChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="bg-gray-200 text-gray-800 p-2 rounded-md mb-4 font-semibold text-base border border-gray-300">
-            Line Items by Order Entered
+          <div className="flex justify-between items-center bg-gray-200 text-gray-800 p-2 rounded-md mb-0 font-semibold text-base border border-gray-300">
+            <span>Line Items by Order Entered</span>
+            <button
+              onClick={handleAddItem}
+              className="bg-black text-white rounded-full p-1.5 text-xs font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+              title="Add Item"
+            >
+              <Plus size={12} /> {/* Reduced size here */}
+            </button>
           </div>
           <div className="overflow-x-auto mb-6 sm:mb-8">
-            <table className="w-full border-collapse mt-2 bg-white border border-gray-300 rounded-lg">
+            <table className="w-full border-collapse bg-white border border-gray-300 rounded-lg">
               <thead>
                 <tr>
-                  <th
-                    className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/4 cursor-pointer"
-                    onClick={() => handleSort("itemId")}
-                  >
-                    {" "}
-                    {/* Changed sort column to itemId */}
-                    Item Number{" "}
-                    {sortColumn === "itemId" &&
-                      (sortDirection === "asc" ? "▲" : "▼")}
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/4 cursor-pointer" onClick={() => handleSort('itemId')}>
+                    Item Number{' '}
+                    {sortColumn === 'itemId' && (
+                      sortDirection === 'asc' ? '▲' : '▼'
+                    )}
                   </th>
-                  <th
-                    className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer"
-                    onClick={() => handleSort("uomId")}
-                  >
-                    {" "}
-                    {/* Changed sort column to uomId */}U of M{" "}
-                    {sortColumn === "uomId" &&
-                      (sortDirection === "asc" ? "▲" : "▼")}
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer" onClick={() => handleSort('uomId')}>
+                    U of M{' '}
+                    {sortColumn === 'uomId' && (
+                      sortDirection === 'asc' ? '▲' : '▼'
+                    )}
                   </th>
-                  <th
-                    className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer"
-                    onClick={() => handleSort("qtyOrdered")}
-                  >
-                    Qty Ordered{" "}
-                    {sortColumn === "qtyOrdered" &&
-                      (sortDirection === "asc" ? "▲" : "▼")}
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer" onClick={() => handleSort('qtyOrdered')}>
+                    Qty Ordered{' '}
+                    {sortColumn === 'qtyOrdered' && (
+                      sortDirection === 'asc' ? '▲' : '▼'
+                    )}
                   </th>
-                  <th
-                    className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer"
-                    onClick={() => handleSort("unitPrice")}
-                  >
-                    Unit Price{" "}
-                    {sortColumn === "unitPrice" &&
-                      (sortDirection === "asc" ? "▲" : "▼")}
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer" onClick={() => handleSort('unitPrice')}>
+                    Unit Price{' '}
+                    {sortColumn === 'unitPrice' && (
+                      sortDirection === 'asc' ? '▲' : '▼'
+                    )}
                   </th>
-                  <th
-                    className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/4 cursor-pointer"
-                    onClick={() => handleSort("extendedPrice")}
-                  >
-                    Extended Price{" "}
-                    {sortColumn === "extendedPrice" &&
-                      (sortDirection === "asc" ? "▲" : "▼")}
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/4 cursor-pointer" onClick={() => handleSort('extendedPrice')}>
+                    Extended Price{' '}
+                    {sortColumn === 'extendedPrice' && (
+                      sortDirection === 'asc' ? '▲' : '▼'
+                    )}
+                  </th>
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[60px]">
+                    Actions
                   </th>
                 </tr>
               </thead>
@@ -1042,17 +1083,11 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
                     <td className="border border-gray-200 p-2">
                       <select
                         value={item.itemId}
-                        onChange={(e) =>
-                          handleLineItemChange(
-                            item.id,
-                            "itemId",
-                            e.target.value
-                          )
-                        }
+                        onChange={(e) => handleLineItemChange(item.id, 'itemId', e.target.value)}
                         className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
                       >
                         <option value="">Select Item</option>
-                        {mockItems.map((mockItem) => (
+                        {mockItems.map(mockItem => (
                           <option key={mockItem.id} value={mockItem.id}>
                             {mockItem.id} - {mockItem.name}
                           </option>
@@ -1062,13 +1097,11 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
                     <td className="border border-gray-200 p-2">
                       <select
                         value={item.uomId}
-                        onChange={(e) =>
-                          handleLineItemChange(item.id, "uomId", e.target.value)
-                        }
+                        onChange={(e) => handleLineItemChange(item.id, 'uomId', e.target.value)}
                         className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
                       >
                         <option value="">Select UOM</option>
-                        {mockUOMs.map((uom) => (
+                        {mockUOMs.map(uom => (
                           <option key={uom.id} value={uom.id}>
                             {uom.name}
                           </option>
@@ -1079,13 +1112,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
                       <input
                         type="number"
                         value={item.qtyOrdered}
-                        onChange={(e) =>
-                          handleLineItemChange(
-                            item.id,
-                            "qtyOrdered",
-                            parseFloat(e.target.value) || 0
-                          )
-                        }
+                        onChange={(e) => handleLineItemChange(item.id, 'qtyOrdered', parseFloat(e.target.value) || 0)}
                         className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
                       />
                     </td>
@@ -1093,238 +1120,96 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
                       <input
                         type="number"
                         value={item.unitPrice.toFixed(2)}
-                        onChange={(e) =>
-                          handleLineItemChange(
-                            item.id,
-                            "unitPrice",
-                            parseFloat(e.target.value) || 0
-                          )
-                        }
+                        onChange={(e) => handleLineItemChange(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
                         className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
                       />
                     </td>
                     <td className="border border-gray-200 p-2">
-                      <input
-                        type="text"
-                        value={item.extendedPrice.toFixed(2)}
-                        readOnly
-                        className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-right focus:outline-none"
-                      />
+                      <input type="text" value={item.extendedPrice.toFixed(2)} readOnly className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-right focus:outline-none" />
+                    </td>
+                    <td className="border border-gray-200 p-2 text-center">
+                      <button
+                        onClick={() => handleDeleteItem(item.id)}
+                        className="text-red-600 hover:text-red-800 transition-colors duration-200 p-1"
+                        title="Delete Item"
+                      >
+                        <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                      </button>
                     </td>
                   </tr>
                 ))}
-                {/* Add empty rows to maintain minimum visible rows if needed */}
-                {Array(Math.max(0, 3 - sortedLineItems.length))
-                  .fill("")
-                  .map((_, index) => (
-                    <tr key={`empty-row-${index + sortedLineItems.length}`}>
-                      {" "}
-                      {/* Unique key */}
-                      <td className="border border-gray-200 p-2">
-                        <select
-                          className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none"
-                          disabled
-                        >
-                          <option value="">Select Item</option>
-                        </select>
-                      </td>
-                      <td className="border border-gray-200 p-2">
-                        <select
-                          className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none"
-                          disabled
-                        >
-                          <option value="">Select UOM</option>
-                        </select>
-                      </td>
-                      <td className="border border-gray-200 p-2">
-                        <input
-                          type="text"
-                          className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none"
-                          defaultValue=""
-                          disabled
-                        />
-                      </td>
-                      <td className="border border-gray-200 p-2">
-                        <input
-                          type="text"
-                          className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none"
-                          defaultValue=""
-                          disabled
-                        />
-                      </td>
-                      <td className="border border-gray-200 p-2">
-                        <input
-                          type="text"
-                          className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none"
-                          defaultValue=""
-                          readOnly
-                          disabled
-                        />
-                      </td>
-                    </tr>
-                  ))}
               </tbody>
             </table>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-10 gap-y-3 md:gap-y-4 mb-6 sm:mb-8 text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 md:gap-x-10 gap-y-3 md:gap-y-4 mb-6 sm:mb-8 text-sm">
             <div className="flex flex-col space-y-3">
               <div className="flex items-center">
-                <label
-                  htmlFor="amount-received"
-                  className="w-36 sm:w-44 text-gray-700 font-medium"
-                >
-                  Amount Received
-                </label>
+                <label htmlFor="amount-received" className="w-36 sm:w-44 text-gray-700 font-medium">Amount Received</label>
                 <div className="flex-grow flex items-center gap-2">
                   <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input
-                    type="text"
-                    id="amount-received"
-                    defaultValue="427.50"
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700"
-                  />
+                  <input type="text" id="amount-received" defaultValue="427.50" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
               <div className="flex items-center">
-                <label
-                  htmlFor="terms-discount-taken"
-                  className="w-36 sm:w-44 text-gray-700 font-medium"
-                >
-                  Terms Discount Taken
-                </label>
+                <label htmlFor="terms-discount-taken" className="w-36 sm:w-44 text-gray-700 font-medium">Terms Discount Taken</label>
                 <div className="flex-grow flex items-center gap-2">
                   <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input
-                    type="text"
-                    id="terms-discount-taken"
-                    defaultValue="0.00"
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700"
-                  />
+                  <input type="text" id="terms-discount-taken" defaultValue="0.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
               <div className="flex items-center">
-                <label
-                  htmlFor="on-account"
-                  className="w-36 sm:w-44 text-gray-700 font-medium"
-                >
-                  On Account
-                </label>
+                <label htmlFor="on-account" className="w-36 sm:w-44 text-gray-700 font-medium">On Account</label>
                 <div className="flex-grow flex items-center gap-2">
                   <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input
-                    type="text"
-                    id="on-account"
-                    defaultValue="0.00"
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label
-                  htmlFor="comment-id"
-                  className="w-36 sm:w-44 text-gray-700 font-medium"
-                >
-                  Comment ID
-                </label>
-                <div className="flex-grow flex items-center gap-2">
-                  <input
-                    type="text"
-                    id="comment-id"
-                    defaultValue="Initial Order"
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
+                  <input type="text" id="on-account" defaultValue="0.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
             </div>
 
             <div className="flex flex-col space-y-3">
               <div className="flex items-center">
-                <label
-                  htmlFor="subtotal"
-                  className="w-28 sm:w-36 text-gray-700 font-medium"
-                >
-                  Subtotal
-                </label>
+                <label htmlFor="comment-id" className="w-36 sm:w-40 text-gray-700 font-medium">Comment ID</label>
                 <div className="flex-grow flex items-center gap-2">
-                  <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input
-                    type="text"
-                    id="subtotal"
-                    value={totalExtendedPrice.toFixed(2)}
-                    readOnly
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm"
-                  />
+                  <input type="text" id="comment-id" defaultValue="Initial Order" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
               <div className="flex items-center">
-                <label
-                  htmlFor="trade-discount"
-                  className="w-28 sm:w-36 text-gray-700 font-medium"
-                >
-                  Trade Discount
-                </label>
+                <label htmlFor="subtotal" className="w-28 sm:w-36 text-gray-700 font-medium">Subtotal</label>
                 <div className="flex-grow flex items-center gap-2">
                   <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input
-                    type="text"
-                    id="trade-discount"
-                    defaultValue="0.00"
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm"
-                    readOnly
-                  />
+                  <input type="text" id="subtotal" value={totalExtendedPrice.toFixed(2)} readOnly className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm" />
                 </div>
               </div>
               <div className="flex items-center">
-                <label
-                  htmlFor="freight"
-                  className="w-28 sm:w-36 text-gray-700 font-medium"
-                >
-                  Freight
-                </label>
+                <label htmlFor="trade-discount" className="w-28 sm:w-36 text-gray-700 font-medium">Trade Discount</label>
                 <div className="flex-grow flex items-center gap-2">
                   <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input
-                    type="text"
-                    id="freight"
-                    defaultValue="15.00"
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700"
-                  />
+                  <input type="text" id="trade-discount" defaultValue="0.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm" readOnly />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col space-y-3">
+              <div className="flex items-center">
+                <label htmlFor="freight" className="w-28 sm:w-36 text-gray-700 font-medium">Freight</label>
+                <div className="flex-grow flex items-center gap-2">
+                  <span className="mr-1 text-gray-600 font-semibold">$</span>
+                  <input type="text" id="freight" defaultValue="15.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
               <div className="flex items-center">
-                <label
-                  htmlFor="miscellaneous"
-                  className="w-28 sm:w-36 text-gray-700 font-medium"
-                >
-                  Miscellaneous
-                </label>
+                <label htmlFor="miscellaneous" className="w-28 sm:w-36 text-gray-700 font-medium">Miscellaneous</label>
                 <div className="flex-grow flex items-center gap-2">
                   <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input
-                    type="text"
-                    id="miscellaneous"
-                    defaultValue="0.00"
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700"
-                  />
+                  <input type="text" id="miscellaneous" defaultValue="0.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
               <div className="flex items-center">
-                <label
-                  htmlFor="tax"
-                  className="w-28 sm:w-36 text-gray-700 font-medium"
-                >
-                  Tax
-                </label>
+                <label htmlFor="tax" className="w-28 sm:w-36 text-gray-700 font-medium">Tax</label>
                 <div className="flex-grow flex items-center gap-2">
                   <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input
-                    type="text"
-                    id="tax"
-                    defaultValue="25.65"
-                    className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm"
-                    readOnly
-                  />
+                  <input type="text" id="tax" defaultValue="25.65" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm" readOnly />
                 </div>
               </div>
             </div>
@@ -1334,35 +1219,22 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
               <button
                 onClick={handleDistributionsButtonClick}
-                className={`rounded-md px-4 py-2.5 text-sm font-medium shadow-sm transition-colors duration-200 w-full sm:w-auto ${
-                  documentType === "Invoice"
-                    ? "bg-black text-white hover:bg-gray-800"
-                    : "bg-gray-300 text-gray-600 cursor-not-allowed"
-                }`}
-                disabled={documentType !== "Invoice"}
+                className={`rounded-md px-4 py-2.5 text-sm font-medium shadow-sm transition-colors duration-200 w-full sm:w-auto bg-black text-white hover:bg-gray-800`} // Removed disabled prop and conditional classes
               >
                 Distributions
               </button>
               <button
-                onClick={handleSaveClick}
+                onClick={handleDistributionsButtonClick}
                 className="bg-black text-white hover:bg-gray-800 rounded-md px-4 py-2.5 text-sm font-medium shadow-sm transition-colors duration-200 w-full sm:w-auto"
               >
-                Save
+                Next
               </button>
             </div>
             <div className="flex items-center w-full sm:w-auto justify-end">
-              <label className="text-gray-700 text-base font-semibold mr-2">
-                Total
-              </label>
+              <label className="text-gray-700 text-base font-semibold mr-2">Total</label>
               <div className="flex items-center">
                 <span className="mr-1 text-gray-800 text-lg font-bold">$</span>
-                <input
-                  type="text"
-                  value={(totalExtendedPrice + 15.0 + 25.65).toFixed(2)}
-                  className="p-2 border border-gray-300 rounded-md bg-gray-50 text-right font-bold text-lg w-28 sm:w-32"
-                  readOnly
-                />{" "}
-                {/* Adjusted total calculation */}
+                <input type="text" value={(totalExtendedPrice + 15.00 + 25.65).toFixed(2)} className="p-2 border border-gray-300 rounded-md bg-gray-50 text-right font-bold text-lg w-28 sm:w-32" readOnly />
               </div>
             </div>
           </div>
