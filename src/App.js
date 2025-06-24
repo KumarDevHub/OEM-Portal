@@ -1448,78 +1448,7 @@ const App = () => {
       case "customer":
         return (
           <div id="CustomerInfoSection">
-            <div className="flex items-center justify-end mb-3">
-              {/* <h2 className="text-xl font-bold">Non-Retail Customer List</h2> */}
-              <div className="flex items-center space-x-4">
-                <div className="relative group ml-auto flex justify-end">
-                  <button
-                    id="addNewCustomerBtn"
-                    className="p-2 rounded-full bg-[#1d1f1f] hover:bg-[#2c2c2e] shadow text-white px-3 py-1.5 flex items-center justify-center transition-colors"
-                    aria-label="Add New Customer"
-                    onClick={handleOpenCustomerModal}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 4v16m8-8H4"
-                      />
-                    </svg>
-                  </button>
-                  <span className="absolute left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-                    New Customer
-                  </span>
-                </div>
-                {showCustomerModal && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                    <div
-                      className={`bg-white rounded shadow-lg w-full max-w-2xl mx-2 relative border border-gray-300
-        ${modalVisible ? "modal-fade-in" : "modal-fade-out"}`}
-                    >
-                      <AddCustomer id={latestId} onSave={(formData) => {
-                        setCustomerData([...CustomerData, formData])
-                        setShowCustomerModal(false)
-                      }} onClose={() => setShowCustomerModal(false)}/>
-                    </div>
-                  </div>
-                )}
-
-{selectedCustomerForDelete && (
-  <DeleteConfirmationMessage
-  message={"Are you sure you want to delete the selected 1 OEM(s)?"}
-  onCancel={() => setSelectedCustomerForDelete(undefined)}
-  onConfirm={() => {
-    setCustomerData(CustomerData.filter((data) => data.customerId != selectedCustomerForDelete.customerId));
-                          setSelectedCustomerForDelete(undefined)
-                        }}
-  ></ DeleteConfirmationMessage>
-                )}
-
-{selectedCustomerForEdit && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                    <div
-                      className={`bg-white rounded shadow-lg w-full max-w-2xl mx-2 relative border border-gray-300
-        ${modalVisible ? "modal-fade-in" : "modal-fade-out"}`}
-                    >
-                      <AddCustomer id={selectedCustomerForEdit?.customerId} customerData={selectedCustomerForEdit} onSave={(formData) => {
-                        const currentCustomerData = CustomerData.findIndex((c) => c.customerId == formData.customerId)
-                        if (currentCustomerData > -1){
-                          CustomerData[currentCustomerData] = {...formData}
-                        }
-                        setSelectedCustomerForEdit(undefined)
-                      }} onClose={() => setSelectedCustomerForEdit(undefined)}/>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+            
             <div className="bg-white rounded-lg shadow-md p-4">
               <div className="flex items-center justify-between mb-2">
                 <form
@@ -1581,6 +1510,76 @@ const App = () => {
                       />
                     </svg>
                   </button>
+              {/* <h2 className="text-xl font-bold">Non-Retail Customer List</h2> */}
+              <div className="flex items-center space-x-4">
+                <div className="relative group ml-auto flex justify-end">
+                  <button
+                    id="addNewCustomerBtn"
+                    className="w-8 h-8 rounded-full bg-[#1d1f1f] hover:bg-[#2c2c2e] shadow text-white flex items-center justify-center transition-colors"
+                    aria-label="Add New Customer"
+                    onClick={handleOpenCustomerModal}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                  </button>
+                  <span className="absolute left-1/2 -translate-x-1/2 mt-10 px-2 py-1 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                    New Customer
+                  </span>
+                </div>
+                {showCustomerModal && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                    <div
+                      className={`bg-white rounded shadow-lg w-full max-w-2xl mx-2 relative border border-gray-300
+        ${modalVisible ? "modal-fade-in" : "modal-fade-out"}`}
+                    >
+                      <AddCustomer id={latestId} onSave={(formData) => {
+                        setCustomerData([...CustomerData, formData])
+                        setShowCustomerModal(false)
+                      }} onClose={() => setShowCustomerModal(false)}/>
+                    </div>
+                  </div>
+                )}
+
+{selectedCustomerForDelete && (
+  <DeleteConfirmationMessage
+  message={"Are you sure you want to delete the selected 1 OEM(s)?"}
+  onCancel={() => setSelectedCustomerForDelete(undefined)}
+  onConfirm={() => {
+    setCustomerData(CustomerData.filter((data) => data.customerId != selectedCustomerForDelete.customerId));
+                          setSelectedCustomerForDelete(undefined)
+                        }}
+  ></ DeleteConfirmationMessage>
+                )}
+
+{selectedCustomerForEdit && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                    <div
+                      className={`bg-white rounded shadow-lg w-full max-w-2xl mx-2 relative border border-gray-300
+        ${modalVisible ? "modal-fade-in" : "modal-fade-out"}`}
+                    >
+                      <AddCustomer id={selectedCustomerForEdit?.customerId} customerData={selectedCustomerForEdit} onSave={(formData) => {
+                        const currentCustomerData = CustomerData.findIndex((c) => c.customerId == formData.customerId)
+                        if (currentCustomerData > -1){
+                          CustomerData[currentCustomerData] = {...formData}
+                        }
+                        setSelectedCustomerForEdit(undefined)
+                      }} onClose={() => setSelectedCustomerForEdit(undefined)}/>
+                    </div>
+                  </div>
+                )}
+              </div>
                 </form>
               </div>
               <div className="overflow-x-auto">
@@ -1595,7 +1594,7 @@ const App = () => {
                     >
                       <thead className="bg-gray-50">
                         <tr className="border-b-2 border-black">
-                          <th className="px-2 py-2 w-6 text-center align-middle">
+                          {/* <th className="px-2 py-2 w-6 text-center align-middle">
                             <input
                               type="checkbox"
                               className="w-3 h-3 accent-black border-gray-400 rounded-sm"
@@ -1637,7 +1636,7 @@ const App = () => {
                                 }
                               }}
                             />
-                          </th>
+                          </th> */}
                           <th className="px-2 py-1 text-[13px] text-left cursor-pointer hover:text-blue-600">
                             Customer ID
                           </th>
@@ -1670,7 +1669,7 @@ const App = () => {
                             idx + (currentPageNumber - 1) * recordsPerPage;
                           return (
                             <tr key={globalIdx} className="hover:bg-gray-50">
-                              <td className="px-2 py-2 w-6 text-center align-middle">
+                              {/* <td className="px-2 py-2 w-6 text-center align-middle">
                                 <input
                                   type="checkbox"
                                   className="w-3 h-3 accent-black border-gray-400 rounded-sm"
@@ -1690,8 +1689,8 @@ const App = () => {
                                     }
                                   }}
                                 />
-                              </td>
-                              <td className="px-2 py-1 text-[13px] font-mono text-blue-700">
+                              </td> */}
+                              <td className="px-2 py-1 text-[13px]">
                                 {row.customerId ||
                                   `CB0001${String(globalIdx + 1).padStart(
                                     4,
@@ -1816,7 +1815,7 @@ const App = () => {
                             key={i}
                             className={`px-2 py-1 rounded text-sm ${
                               currentPageNumber === i + 1
-                                ? "bg-blue-600 text-white"
+                                ? "bg-black text-white"
                                 : "bg-gray-100 hover:bg-gray-200"
                             }`}
                             onClick={() => setCurrentPageNumber(i + 1)}
@@ -2128,7 +2127,7 @@ const App = () => {
             onClick={() => handleTopNavClick("customer", "customer")}
             className={`py-2 px-3 rounded-sm hover:bg-gray-100 transition-colors duration-200 focus:outline-none font-bold text-sm ${
               topNavActiveItem === "customer"
-                ? "text-red-700 border-b-2 border-red-700"
+                ? "text-black-700 border-b-2 border-red-700"
                 : "text-gray-700"
             }`}
           >
@@ -2140,7 +2139,7 @@ const App = () => {
             }
             className={`py-2 px-3 rounded-sm hover:bg-gray-100 transition-colors duration-200 focus:outline-none font-bold text-sm ${
               topNavActiveItem === "sales"
-                ? "text-red-700 border-b-2 border-red-700"
+                ? "text-black-700 border-b-2 border-red-700"
                 : "text-gray-700"
             }`}
           >
@@ -2150,7 +2149,7 @@ const App = () => {
             onClick={() => handleTopNavClick("profile", "my-profile")}
             className={`py-2 px-3 rounded-sm  hover:bg-gray-100 transition-colors duration-200 focus:outline-none font-bold text-sm ${
               topNavActiveItem === "profile"
-                ? "text-red-700 border-b-2 border-red-700"
+                ? "text-black-700 border-b-2 border-red-700"
                 : "text-gray-700"
             }`}
           >
