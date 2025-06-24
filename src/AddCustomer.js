@@ -1,66 +1,66 @@
 import React, { useState } from "react";
 
-const AddCustomer = ({onClose, onSave, customerData, id}) => {
-    // State to hold all form data
-    const [formData, setFormData] = useState(customerData || {
-        customerId: id,
-        contact: "", // to be removed once table updated
-        email1: "",
-        email2:"" ,// to be removed once table updated
-        paymentTerms: "",
-        Customer: "",
-        phone1: "",
-        company: "",
-        phone2: "",
-        shortName: "",
-        shippingMethod: "",
-        statementName: "",
-        territoryID: "",
-        classID: "",
-        streetAddress1: "",
-        state: "",
-        streetAddress2: "",
-        country: "",
-        streetAddress3: "",
-        zip: "",
-        city: "",
-        Contact:"",
-        status: "Active", // Default status
-    });
+const AddCustomer = ({ onClose, onSave, customerData, id }) => {
+  // State to hold all form data
+  const [formData, setFormData] = useState(
+    customerData || {
+      customerId: id,
+      contact: "", // to be removed once table updated
+      email1: "",
+      email2: "", // to be removed once table updated
+      paymentTerms: "",
+      Customer: "",
+      phone1: "",
+      company: "",
+      phone2: "",
+      shortName: "",
+      shippingMethod: "",
+      statementName: "",
+      territoryID: "",
+      classID: "",
+      streetAddress1: "",
+      state: "",
+      streetAddress2: "",
+      country: "",
+      streetAddress3: "",
+      zip: "",
+      city: "",
+      status: "Active", // Default status
+    }
+  );
 
-    // Handle input changes for text fields
-    const handleInputChange = (e) => {
-        const { id, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [id]: value,
-        }));
-    };
+  // Handle input changes for text fields
+  const handleInputChange = (e) => {
+    const { id, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [id]: value,
+    }));
+  };
 
-    // Handle radio button changes
-    const handleRadioChange = (e) => {
-        const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-    };
+  // Handle radio button changes
+  const handleRadioChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
-    return (
-        <>
-            <style>
-                {`
+  return (
+    <>
+      <style>
+        {`
                 body {
                   font-family: Arial, sans-serif;
                   margin: 0;
-                  padding: 20px;
                   background-color: #f4f4f4;
                 }
                 .radio-group .radio-item label {
                     margin-left: 5px
                 }
                 .radio-item input[type="radio"]:checked {
-                    accent-color: blue; /* Blue color for the selected radio button */
+                    accent-color: black; /* Blue color for the selected radio button */
                 }
 
                 .modal-overlay {
@@ -78,7 +78,6 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
 
                 .modal-content {
                   background-color: #fefefe;
-                  padding: 20px;
                   border-radius: 8px;
                   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
                   width: 90%;
@@ -124,7 +123,7 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                   display: flex;
                   flex-direction: column;
                   overflow-y: auto; /* Allow scroll for the main content area if it overflows */
-                  padding-right: 10px; /* Space for scrollbar */
+                  padding: 10px; /* Space for scrollbar */
                 }
 
                 .section {
@@ -141,6 +140,7 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                   margin-bottom: 10px;
                   color: #000;
                   font-size: 18px;
+                  font-weight: bold;
                 }
 
                 .form-row {
@@ -170,6 +170,8 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
 
                 .form-item input[type="text"] {
                   flex-grow: 1; /* Input fills remaining space */
+                  border-radius: 0 !important; /* Square edges */
+                  border-width: 1px !important; /* Thicker border */
                   padding: 6px 10px;
                   border: 1px solid #ccc;
                   border-radius: 4px;
@@ -227,7 +229,7 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                 .modal-footer {
                   display: flex;
                   justify-content: flex-end;
-                  padding-top: 15px;
+                  padding: 15px;
                   border-top: 1px solid #eee;
                   margin-top: 15px;
                   gap: 8px;
@@ -322,264 +324,277 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                   }
                 }
                 `}
-            </style>
-            <div className="modal-overlay">
-                <div className="modal-content">
-                    <div className="modal-header">
-                        {customerData? <h2>Edit Customer</h2> : (<h2>Add New Customer</h2>)}
-                        <button className="close-button" onClick={onClose}>&times;</button>
-                    </div>
+      </style>
+      <div className="modal-overlay">
+        <div className="modal-content">
+          <div className="bg-black text-white p-4 rounded-t-lg flex justify-between items-center font-medium">
+          {customerData ? <h2>Edit Customer</h2> : <h2>Add New Customer</h2>}
+          <button onClick={onClose} className="text-white hover:text-gray-300 transition-colors duration-200">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+          {/* <div className="modal-header">
+            {customerData ? <h2>Edit Customer</h2> : <h2>Add New Customer</h2>}
+            <button className="close-button" onClick={onClose}>
+              &times;
+            </button>
+          </div> */}
 
-                    <div className="modal-body">
-                        <div className="section">
-                            <h1 className="section-header">Customer Info</h1>
-                            <div className="form-row">
-                                <div className="form-item">
-                                    <label htmlFor="customerId">Customer ID</label>
-                                    <input
-                                        type="text"
-                                        id="customerId"
-                                        value={formData.customerId}
-                                        readOnly
-                                        style={{ pointerEvents: "none" }}
-                                    />
-                                </div>
-                                <div className="form-item">
-                                <label htmlFor="phone 1">Phone 1</label>
-                                    <input
-                                        type="text"
-                                        id="phone 1"
-                                        value={formData.phone}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-row">
-                                <div className="form-item">
-                                    <label htmlFor="Customer">Customer Name *</label>
-                                    <input
-                                        type="text"
-                                        id="Customer"
-                                        value={formData.Customer}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className="form-item">
-                                    <label htmlFor="phone">Phone 2</label>
-                                    <input
-                                        type="text"
-                                        id="phone 2"
-                                        value={formData.phone2}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-row">
-                                <div className="form-item">
-                                <label htmlFor="shortName">Short Name</label>
-                                    <input
-                                        type="text"
-                                        id="shortName"
-                                        value={formData.shortName}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className="form-item">
-                                <label htmlFor="email 1">Email 1</label>
-                                    <input
-                                        type="text"
-                                        id="email 1"
-                                        value={formData.email}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-row">
-                                <div className="form-item">
-                                <label htmlFor="statementName">Statement Name</label>
-                                    <input
-                                        type="text"
-                                        id="statementName"
-                                        value={formData.statementName}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className="form-item">
-                                <label htmlFor="email 2">Email 2</label>
-                                    <input
-                                        type="text"
-                                        id="email 2"F
-                                        value={formData.email2}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-row">
-                                <div className="form-item">
-                                <label htmlFor="classID">Class ID</label>
-                                    <input
-                                        type="text"
-                                        id="classID"
-                                        value={formData.classID}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className="form-item">
-                                <label htmlFor="shippingMethod">Shipping Method</label>
-                                    <input
-                                        type="text"
-                                        id="shippingMethod"
-                                        value={formData.shippingMethod}
-                                        onChange={handleInputChange}
-                                    />
-                                   
-                                </div>
-                                
-                            </div>
-                            <div className="form-row">
-                                <div className="form-item">
-                                <label htmlFor="paymentTerms">Payment Terms</label>
-                                    <input
-                                        type="text"
-                                        id="paymentTerms"
-                                        value={formData.paymentTerms}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className="form-item">
-                                <label htmlFor="territoryID">Territory ID</label>
-                                    <input
-                                        type="text"
-                                        id="territoryID"
-                                        value={formData.territoryID}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                            </div>
-                            <h1 className="section-header">Address & Contact</h1>
-                            <div className="form-row">
-                                <div className="form-item">
-                                    <label htmlFor="streetAddress1">Street Address 1 *</label>
-                                    <input
-                                        type="text"
-                                        id="streetAddress1"
-                                        value={formData.streetAddress1}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className="form-item">
-                                    <label htmlFor="state">State *</label>
-                                    <input
-                                        type="text"
-                                        id="state"
-                                        value={formData.state}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-row">
-                                <div className="form-item">
-                                    <label htmlFor="streetAddress2">Street Address 2</label>
-                                    <input
-                                        type="text"
-                                        id="streetAddress2"
-                                        value={formData.streetAddress2}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className="form-item">
-                                    <label htmlFor="country">Country *</label>
-                                    <input
-                                        type="text"
-                                        id="country"
-                                        value={formData.country}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-row">
-                                <div className="form-item">
-                                <label htmlFor="city">City *</label>
-                                    <input
-                                        type="text"
-                                        id="city"
-                                        value={formData.city}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className="form-item">
-                                    <label htmlFor="zip">ZIP *</label>
-                                    <input
-                                        type="text"
-                                        id="zip"
-                                        value={formData.zip}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-row">  
-                            <div className="form-item">
-                                    <label htmlFor="contact">Contact</label>
-                                    <input
-                                        type="text"
-                                        id="contact"
-                                        value={formData.contact}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>                              
-                                <div className="form-item">
-                                    <label>Status</label>
-                                    <div className="radio-group" style={{display: "contents"}} id="status">
-                                        <div className="radio-item">
-                                            <input
-                                                type="radio"
-                                                id="statusHold"
-                                                name="status"
-                                                value="Hold"
-                                                checked={formData.status === "Hold"}
-                                                onChange={handleRadioChange}
-                                            />
-                                            <label htmlFor="statusHold">Hold</label>
-                                        </div>
-                                        <div className="radio-item">
-                                            <input
-                                                type="radio"
-                                                id="statusActive"
-                                                name="status"
-                                                value="Active"
-                                                checked={formData.status === "Active"}
-                                                onChange={handleRadioChange}
-                                            />
-                                            <label htmlFor="statusActive">Active</label>
-                                        </div>
-                                        <div className="radio-item">
-                                            <input
-                                                type="radio"
-                                                id="statusInactive"
-                                                name="status"
-                                                value="Inactive"
-                                                checked={formData.status === "Inactive"}
-                                                onChange={handleRadioChange}
-                                            />
-                                            <label htmlFor="statusInactive">Inactive</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="form-item">
-                                    
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="modal-footer">
-                        <button style={{borderRadius: "40px"}} className="cancel-button" onClick={onClose}>Cancel</button>
-                        <button className="save-button" style={{borderRadius: "40px", backgroundColor: "black"}} onClick={() => onSave(formData)}>{customerData? "Update": "Save"}</button>
-                    </div>
+          <div className="modal-body">
+            <div className="section">
+              <h1 className="section-header">Customer Info</h1>
+              <div className="form-row">
+                <div className="form-item">
+                  <label htmlFor="customerId">Customer ID</label>
+                  <input
+                    type="text"
+                    id="customerId"
+                    value={formData.customerId}
+                    readOnly
+                    style={{ pointerEvents: "none" }}
+                  />
                 </div>
+                <div className="form-item">
+                  <label htmlFor="phone 1">Phone 1</label>
+                  <input
+                    type="text"
+                    id="phone 1"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-item">
+                  <label htmlFor="Customer">Customer Name *</label>
+                  <input
+                    type="text"
+                    id="Customer"
+                    value={formData.Customer}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="form-item">
+                  <label htmlFor="phone">Phone 2</label>
+                  <input
+                    type="text"
+                    id="phone 2"
+                    value={formData.phone2}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-item">
+                  <label htmlFor="shortName">Short Name</label>
+                  <input
+                    type="text"
+                    id="shortName"
+                    value={formData.shortName}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="form-item">
+                  <label htmlFor="email 1">Email 1</label>
+                  <input
+                    type="text"
+                    id="email 1"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-item">
+                  <label htmlFor="statementName">Statement Name</label>
+                  <input
+                    type="text"
+                    id="statementName"
+                    value={formData.statementName}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="form-item">
+                  <label htmlFor="email 2">Email 2</label>
+                  <input
+                    type="text"
+                    id="email 2"
+                    F
+                    value={formData.email2}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-item">
+                  <label htmlFor="classID">Class ID</label>
+                  <input
+                    type="text"
+                    id="classID"
+                    value={formData.classID}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="form-item">
+                  <label htmlFor="shippingMethod">Shipping Method</label>
+                  <input
+                    type="text"
+                    id="shippingMethod"
+                    value={formData.shippingMethod}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-item">
+                  <label htmlFor="paymentTerms">Payment Terms</label>
+                  <input
+                    type="text"
+                    id="paymentTerms"
+                    value={formData.paymentTerms}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="form-item">
+                  <label htmlFor="territoryID">Territory ID</label>
+                  <input
+                    type="text"
+                    id="territoryID"
+                    value={formData.territoryID}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+              <h1 className="section-header">Address Info</h1>
+              <div className="form-row">
+                <div className="form-item">
+                  <label htmlFor="streetAddress1">Street Address 1 *</label>
+                  <input
+                    type="text"
+                    id="streetAddress1"
+                    value={formData.streetAddress1}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="form-item">
+                  <label htmlFor="state">State *</label>
+                  <input
+                    type="text"
+                    id="state"
+                    value={formData.state}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-item">
+                  <label htmlFor="streetAddress2">Street Address 2</label>
+                  <input
+                    type="text"
+                    id="streetAddress2"
+                    value={formData.streetAddress2}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="form-item">
+                  <label htmlFor="country">Country *</label>
+                  <input
+                    type="text"
+                    id="country"
+                    value={formData.country}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-item">
+                  <label htmlFor="city">City *</label>
+                  <input
+                    type="text"
+                    id="city"
+                    value={formData.city}
+                    onChange={handleInputChange}
+                  />
+                </div>
+                <div className="form-item">
+                  <label htmlFor="zip">ZIP *</label>
+                  <input
+                    type="text"
+                    id="zip"
+                    value={formData.zip}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-item">
+                  <label>Status</label>
+                  <div
+                    className="radio-group"
+                    style={{ display: "contents" }}
+                    id="status"
+                  >
+                    <div className="radio-item">
+                      <input
+                        type="radio"
+                        id="statusHold"
+                        name="status"
+                        value="Hold"
+                        checked={formData.status === "Hold"}
+                        onChange={handleRadioChange}
+                      />
+                      <label htmlFor="statusHold">Hold</label>
+                    </div>
+                    <div className="radio-item">
+                      <input
+                        type="radio"
+                        id="statusActive"
+                        name="status"
+                        value="Active"
+                        checked={formData.status === "Active"}
+                        onChange={handleRadioChange}
+                      />
+                      <label htmlFor="statusActive">Active</label>
+                    </div>
+                    <div className="radio-item">
+                      <input
+                        type="radio"
+                        id="statusInactive"
+                        name="status"
+                        value="Inactive"
+                        checked={formData.status === "Inactive"}
+                        onChange={handleRadioChange}
+                      />
+                      <label htmlFor="statusInactive">Inactive</label>
+                    </div>
+                  </div>
+                </div>
+                <div className="form-item"></div>
+              </div>
             </div>
-        </>
-    );
+          </div>
+
+          <div className="modal-footer">
+            <button
+              // style={{ borderRadius: "40px" }}
+              className="bg-gray-300 text-gray-800 rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-400 transition-colors duration-200"
+              onClick={onClose}
+            >
+              Cancel
+            </button>
+            <button
+              
+              className="bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+              // style={{ borderRadius: "40px", backgroundColor: "black" }}
+              onClick={() => onSave(formData)}
+            >
+              {customerData ? "Update" : "Save"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
 };
 
 export default AddCustomer;

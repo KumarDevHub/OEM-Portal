@@ -1,7 +1,8 @@
-import logo from "./logo.svg";
+import logo from "./logo.png";
 import "./App.css";
-import { Plus, Edit } from 'lucide-react'; // Import Plus and Edit icons
+import { Plus, Edit, Trash2 } from 'lucide-react'; // Import Plus, Edit, and Trash2 icons
 import AddCustomer from "./AddCustomer"
+import InvoiceProgressBar from './components/InvoiceProgressBar';
 import "./cust.css"
 
 import React, { useState, useMemo, useEffect } from "react"; // Added useEffect import
@@ -82,6 +83,48 @@ const mockUOMs = [
   { id: "SET", name: "Set" },
   { id: "PKG", name: "Package" },
 ];
+
+// New popup component for displaying the progress bar
+const ProgressBarPopup = ({ onClose }) => {
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState("Pending"); // Initial status changed to "Pending"
+  const stages = ["Start", "Validation", "Approval", "Posting", "Complete"];
+
+  useEffect(() => {
+    // Set initial progress and status
+    setProgress(0);
+    setStatus("Pending");
+
+    // Clear any existing intervals to prevent multiple running instances
+    // No further progress updates, as per requirement to only show "Pending"
+    return () => {}; // Return an empty cleanup function as no interval is started
+  }, []); // Run only once on mount
+
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50 font-sans">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-xl p-6 flex flex-col">
+        <div className="bg-black text-white p-4 -mx-6 -mt-6 rounded-t-lg flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">Invoice Processing Progress</h2>
+          <button onClick={onClose} className="text-white hover:text-gray-300 transition-colors duration-200">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+        <div className="p-4">
+          {/* Always pass 0 progress for the "Pending" only state */}
+          <InvoiceProgressBar progress={0} status={status} stages={stages} />
+        </div>
+        <div className="flex justify-end pt-4 border-t border-gray-200 mt-4">
+          <button
+            // onClick={onClose}
+            className="bg-gray-300 text-gray-800 rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-400 transition-colors duration-200"
+          >
+            Download
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // EditDistributionModal Component
 const EditDistributionModal = ({ distribution, onSave, onCancel }) => {
@@ -183,36 +226,60 @@ const EditDistributionModal = ({ distribution, onSave, onCancel }) => {
     </div>
   );
 };
+
 // SalesDistributionEntry Component (New Component for the Popup)
 const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
   const [distributions, setDistributions] = useState([
     { id: 1, account: '000-1200-00', type: 'RECV', debit: 89198.87, credit: 0.00, description: 'Accounts Receivable' },
-    { id: 2, account: '000-4100-01', type: 'SALES', debit: 0.00, credit: 5645.47, description: 'Product Sales A' },
+    { id: 2, account: '000-4100-01', type: 'SALES', debit: 0.00, credit: 89198.87, description: 'Product Sales A' },
   ]);
 
-  const [editingDistribution, setEditingDistribution] = useState(null); // State to hold the distribution being edited
+  const [editingDistribution, setEditingDistribution] = useState(null); // State for the distribution being edited
+  const [showProgressBarPopup, setShowProgressBarPopup] = useState(false); // New state for progress bar popup
 
-  // Handle updates from the edit modal
+  // Handle radio button change for distribution selection
+  const handleDistributionSelect = (id) => {
+    setSelectedDistributionId(id);
+  };
+
+  const functionalTotalsDebit = distributions.reduce((sum, item) => sum + parseFloat(item.debit || 0), 0);
+  const functionalTotalsCredit = distributions.reduce((sum, item) => sum + parseFloat(item.credit || 0), 0);
+
+  // State for selected distribution ID (single selection for radio buttons)
+  const [selectedDistributionId, setSelectedDistributionId] = useState(null);
+
+  // Handle edit click
+  const handleEditClick = () => {
+    if (selectedDistributionId) {
+      const distToEdit = distributions.find(dist => dist.id === selectedDistributionId);
+      setEditingDistribution(distToEdit);
+    }
+  };
+
+  // Handle update from modal
   const handleUpdateDistribution = (updatedDist) => {
     setDistributions(prevDistributions =>
       prevDistributions.map(dist =>
         dist.id === updatedDist.id ? updatedDist : dist
       )
     );
-    setEditingDistribution(null); // Close the modal
+    setEditingDistribution(null); // Close modal
   };
 
-  const handleEditClick = (dist) => {
-    setEditingDistribution(dist);
+  // Handle cancel from modal
+  const handleCancelEdit = () => {
+    setEditingDistribution(null); // Close modal
   };
 
+    // Handle "OK" button click to open progress bar popup
+  const handleOkClick = () => {
+    setShowProgressBarPopup(true);
+  };
 
-  const functionalTotalsDebit = distributions.reduce((sum, item) => sum + parseFloat(item.debit || 0), 0);
-  const functionalTotalsCredit = distributions.reduce((sum, item) => sum + parseFloat(item.credit || 0), 0);
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50 font-sans">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-8xl h-[70vh] max-h-full flex flex-col">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-7xl h-[62vh] max-h-full flex flex-col">
         {/* Header */}
         <div className="bg-black text-white p-4 rounded-t-lg flex justify-between items-center">
           <h2 className="text-xl font-bold">Sales Distribution Entry</h2>
@@ -248,98 +315,115 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
               <label htmlFor="dist-functional-amount" className="w-28 sm:w-36 text-gray-700 font-medium">Functional Amount</label>
               <div className="flex-grow flex items-center gap-2">
                 <span className="mr-1 text-gray-600 font-semibold text-xs">$</span>
-                <input type="text" id="dist-functional-amount" defaultValue="89,198.87" readOnly className="flex-grow px-2 py-1 border border-gray-300 rounded-md bg-gray-50 text-right text-xs" />
+                <input type="text" id="dist-functional-amount" defaultValue="89,198.87" readOnly className="flex-grow px-2 py-1 border border-gray-300 rounded-md bg-gray-50 text-left text-xs" />
               </div>
             </div>
             <div className="flex items-center">
               <label htmlFor="dist-originating-amount" className="w-28 sm:w-36 text-gray-700 font-medium">Originating Amount</label>
               <div className="flex-grow flex items-center gap-2">
-                <span className="mr-1 text-gray-600 font-semibold text-xs">$</span>
-                <input type="text" id="dist-originating-amount" defaultValue="0.00" readOnly className="flex-grow px-2 py-1 border border-gray-300 rounded-md bg-gray-50 text-right text-xs" />
+                  <span className="mr-1 text-gray-600 font-semibold text-xs">$</span>
+                  <input type="text" id="dist-originating-amount" defaultValue="0.00" readOnly className="flex-grow px-2 py-1 border border-gray-300 rounded-md bg-gray-50 text-left text-xs" />
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Account Distributions Grid */}
-        <div className="flex-1 p-4 md:p-6 overflow-y-auto">
-          <h3 className="text-lg font-semibold mb-3 text-gray-800">Account Distributions</h3>
-          <div className="overflow-x-auto mb-4 border border-gray-300 rounded-lg">
-            <table className="w-full border-collapse bg-white">
-              <thead>
-                <tr>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[40%]">Distribution Reference</th>
+          {/* Account Distributions Grid */}
+          <div className="flex-1 p-4 md:p-6 overflow-y-auto">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-lg font-semibold text-gray-800">Account Distributions</h3>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={handleEditClick}
+                  className={`rounded-full p-1.5 text-xs font-medium shadow-sm transition-colors duration-200 ${
+                    selectedDistributionId
+                      ? 'bg-black text-white hover:bg-gray-800'
+                      : 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                  }`}
+                  title="Edit Selected Distribution"
+                  disabled={!selectedDistributionId}
+                >
+                  <Edit size={16} />
+                </button>
+              </div>
+            </div>
+            <div className="overflow-x-auto mb-4 border border-gray-300 rounded-lg">
+              <table className="w-full border-collapse bg-white">
+                <thead><tr>
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[20px]"></th> {/* Adjusted width for first column */}
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[35%]">Distribution Reference</th>
                   <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">Type</th>
                   <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">Originating Debit</th>
                   <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">Originating Credit</th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[5%]">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {distributions.map((dist) => (
-                  <tr key={dist.id}>
-                    <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
-                      {`${dist.account} - $${dist.debit.toFixed(2)} - $${dist.credit.toFixed(2)} - ${dist.description}`}
-                    </td>
-                    <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
-                      {dist.type}
-                    </td>
-                    <td className="border border-gray-200 p-2">
-                      <input type="text" defaultValue={`${dist.debit}`} readOnly className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-right focus:outline-none" />
-                    </td>
-                    <td className="border border-gray-200 p-2">
-                      <input type="text" defaultValue={`${dist.credit}`} readOnly className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-right focus:outline-none" />
-                    </td>
-                    <td className="border border-gray-200 p-2 text-center">
-                      <button
-                        onClick={() => handleEditClick(dist)}
-                        className="text-gray-600 hover:text-gray-800 transition-colors duration-200 p-1"
-                        title="Edit Distribution"
-                      >
-                        <Edit size={16} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </tr></thead><tbody>{distributions.map((dist) => (
+                    <tr
+                      key={dist.id}
+                      onClick={() => handleDistributionSelect(dist.id)} // Select row on click
+                      className={`cursor-pointer ${selectedDistributionId === dist.id ? 'bg-blue-100' : 'hover:bg-gray-50'}`}
+                    >
+                      <td className="border border-gray-200 p-2 text-center w-[20px]" style={{width:"3%"}}> {/* Adjusted width for first column */}
+                        <input
+                          type="radio"
+                          name="distributionSelection"
+                          checked={selectedDistributionId === dist.id}
+                          onChange={() => handleDistributionSelect(dist.id)} // Update state on radio click
+                          className="accent-black"
+                        />
+                      </td>
+                      <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
+                        {`${dist.account} - $${dist.debit.toFixed(2)} - $${dist.credit.toFixed(2)} - ${dist.description}`}
+                      </td>
+                      <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
+                        {dist.type}
+                      </td>
+                      <td className="border border-gray-200 p-2">
+                        <input type="text" value={`${dist.debit}`} readOnly className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-left focus:outline-none" />
+                      </td>
+                      <td className="border border-gray-200 p-2">
+                        <input type="text" value={`${dist.credit}`} readOnly className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-left focus:outline-none" />
+                      </td>
+                    </tr>
+                  ))}</tbody>
+              </table>
+            </div>
 
-          {/* Totals Section */}
-          <div className="flex flex-col sm:flex-row justify-end space-y-4 sm:space-y-0 sm:space-x-8 mt-4 text-sm">
-            <div className="flex flex-col items-end">
-              <span className="font-semibold text-gray-700 mb-1">Functional Totals</span>
-              <div className="flex items-center space-x-2">
+            {/* Totals Section */}
+            <div className="grid grid-cols-[50%_12%_12%_23%_5%] gap-3 mt-4 text-sm"> {/* Mimic table column widths roughly */}
+              {/* Functional Totals Row */}
+              <div className="col-span-2 text-right font-semibold text-gray-700 pr-4">Functional Totals</div> {/* Label spanning first two conceptual columns */}
+              <div className="flex items-center justify-end col-span-2 space-x-2"> {/* Debit and Credit inputs */}
                 <span className="text-gray-600 font-semibold">$</span>
-                <input type="text" value={functionalTotalsDebit.toFixed(2)} readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-24 sm:w-28 font-bold text-xs sm:text-sm" />
+                <input type="text" value={functionalTotalsDebit.toFixed(2)} readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-52 sm:w-52 font-bold text-xs sm:text-sm" />
                 <span className="text-gray-600 font-semibold">$</span>
-                <input type="text" value={functionalTotalsCredit.toFixed(2)} readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-24 sm:w-28 font-bold text-xs sm:text-sm" />
+                <input type="text" value={functionalTotalsCredit.toFixed(2)} readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-52 sm:w-52 font-bold text-xs sm:text-sm" />
+              </div>
+
+              {/* Originating Totals Row */}
+              <div className="col-span-2 text-right font-semibold text-gray-700 pr-4">Originating Totals</div> {/* Label spanning first two conceptual columns */}
+              <div className="flex items-center justify-end col-span-2 space-x-2"> {/* Debit and Credit inputs */}
+                <span className="text-gray-600 font-semibold">$</span>
+                <input type="text" defaultValue="0.00" readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-52 sm:w-52 text-xs sm:text-sm" />
+                <span className="text-gray-600 font-semibold">$</span>
+                <input type="text" defaultValue="0.00" readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-52 sm:w-52 text-xs sm:text-sm" />
               </div>
             </div>
-            <div className="flex flex-col items-end">
-              <span className="font-semibold text-gray-700 mb-1">Originating Totals</span>
-              <div className="flex items-center space-x-2">
-                <span className="text-gray-600 font-semibold">$</span>
-                <input type="text" defaultValue="0.00" readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-24 sm:w-28 text-xs sm:text-sm" />
-                <span className="text-gray-600 font-semibold">$</span>
-                <input type="text" defaultValue="0.00" readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-24 sm:w-28 text-xs sm:text-sm" />
-              </div>
-            </div>
+          </div>
+
+          {/* Footer Buttons */}
+          <div className="p-4 bg-gray-100 border-t border-gray-200 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4 rounded-b-lg">
+            <button  onClick={handleOkClick} className="bg-black text-white rounded-md px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200">Generate Invoice</button>
           </div>
         </div>
-
-        {/* Footer Buttons */}
-        <div className="p-4 bg-gray-100 border-t border-gray-200 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4 rounded-b-lg">
-          <button className="bg-black text-white rounded-md px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200">OK</button>
-        </div>
-      </div>
-      {editingDistribution && (
-        <EditDistributionModal
-          distribution={editingDistribution}
-          onSave={handleUpdateDistribution}
-          onCancel={() => setEditingDistribution(null)}
-        />
-      )}
+        {editingDistribution && (
+          <EditDistributionModal
+            distribution={editingDistribution}
+            onSave={handleUpdateDistribution}
+            onCancel={handleCancelEdit}
+          />
+        )}
+        {showProgressBarPopup && (
+          <ProgressBarPopup onClose={() => setShowProgressBarPopup(false)} />
+        )}
     </div>
   );
 };
@@ -391,8 +475,8 @@ const DeleteConfirmationMessage = ({ message, onConfirm, onCancel }) => {
 
           <button
             onClick={onConfirm}
-            style={{backgroundColor: "red"}}
-            className=" text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+            style={{backgroundColor: "black"}}
+            className=" text-white rounded-md px-5 py-2.5 text-xs font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
           >
             Yes
           </button>
@@ -469,81 +553,82 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
   // State for line items (mock data for demonstration of sorting)
   const [lineItems, setLineItems] = useState([
     // Initial data, now referencing mock items
-    { id: 1, itemId: 'ITEM-A123', uomId: 'EA', qtyOrdered: 10, unitPrice: 15.00, extendedPrice: 0.00 },
+    { id: 1, itemId: 'ITEM-A123', comments: 'Initial comment for Alpha', qtyOrdered: 10, unitPrice: 15.00, extendedPrice: 0.00 },
   ]);
 
-  // Use useEffect to calculate extended price when line items change
+  // UseEffec to calculate extended price when line items change
   useEffect(() => {
-    setLineItems((prevLineItems) =>
-      prevLineItems.map((item) => ({
+    setLineItems(prevLineItems =>
+      prevLineItems.map(item => ({
         ...item,
         extendedPrice: (item.qtyOrdered || 0) * (item.unitPrice || 0),
       }))
     );
-  }, [
-    lineItems.map((item) => `${item.qtyOrdered}-${item.unitPrice}`).join("-"),
-  ]); // Dependency array to re-calculate when qty or unitPrice changes
+  }, [lineItems.map(item => `${item.qtyOrdered}-${item.unitPrice}`).join('-')]); // Dependency array to re-calculate when qty or unitPrice changes
+
 
   // State for sorting
   const [sortColumn, setSortColumn] = useState(null);
-  const [sortDirection, setSortDirection] = useState("asc"); // 'asc' or 'desc'
+  const [sortDirection, setSortDirection] = useState('asc'); // 'asc' or 'desc'
+
+  // State for selected line item ID (single selection for radio buttons)
+  const [selectedLineItemId, setSelectedLineItemId] = useState(null);
+  // State for showing delete confirmation
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
 
   // State for the selected Type/Type ID, initially 'Order'
-  const [documentType, setDocumentType] = useState("Order");
+  const [documentType, setDocumentType] = useState('Order');
   // States for customer and document information, now initialized dynamically or with default
-  const [customerId, setCustomerId] = useState("");
-  const [customerName, setCustomerName] = useState("");
-  const [shipToAddress, setShipToAddress] = useState(""); // New state for ship-to address
-  const [documentNumber, setDocumentNumber] = useState("ORD-001234");
-  const [documentDate, setDocumentDate] = useState("2017-04-12");
+  const [customerId, setCustomerId] = useState('');
+  const [customerName, setCustomerName] = useState('');
+  const [shipToAddress, setShipToAddress] = useState(''); // New state for ship-to address
+  const [documentNumber, setDocumentNumber] = useState('ORD-001234');
+  const [documentDate, setDocumentDate] = useState('2017-04-12');
 
   // State for Ship To Address popup
   const [showAddressPopup, setShowAddressPopup] = useState(false);
   const [availableShipToAddresses, setAvailableShipToAddresses] = useState([]);
 
+
   // Effect to set initial values or clear if customer ID is empty
   useEffect(() => {
-    // Changed React.useEffect to useEffect
     // Set initial customer data if a default ID is desired or if it's dynamic
-    const initialCustomerId = "CUST-0056"; // Example default
+    const initialCustomerId = 'CUST-0056'; // Example default
     const initialCustomerInfo = customerData[initialCustomerId];
     if (initialCustomerInfo) {
       setCustomerId(initialCustomerId);
       setCustomerName(initialCustomerInfo.customerName);
-      setShipToAddress(initialCustomerInfo.shipToAddresses[0] || ""); // Set first address as default
+      setShipToAddress(initialCustomerInfo.shipToAddresses[0] || ''); // Set first address as default
       setAvailableShipToAddresses(initialCustomerInfo.shipToAddresses);
     } else {
-      setCustomerId("");
-      setCustomerName("");
-      setShipToAddress("");
+      setCustomerId('');
+      setCustomerName('');
+      setShipToAddress('');
       setAvailableShipToAddresses([]);
     }
   }, []); // Run once on component mount
 
+
   // Handle changes in line item fields
   const handleLineItemChange = (id, field, value) => {
-    setLineItems((prevLineItems) =>
-      prevLineItems.map((item) => {
+    setLineItems(prevLineItems =>
+      prevLineItems.map(item => {
         if (item.id === id) {
           let updatedItem = { ...item, [field]: value };
 
-          // If item number changes, update default UOM and Unit Price
-          if (field === "itemId") {
-            const selectedItem = mockItems.find(
-              (mockItem) => mockItem.id === value
-            );
+          // If item number changes, update default Unit Price (UOM is now comments, not dependent)
+          if (field === 'itemId') {
+            const selectedItem = mockItems.find(mockItem => mockItem.id === value);
             if (selectedItem) {
-              updatedItem.uomId = selectedItem.defaultUomId;
               updatedItem.unitPrice = selectedItem.defaultUnitPrice;
             } else {
-              updatedItem.uomId = "";
               updatedItem.unitPrice = 0;
             }
           }
 
           // Recalculate extended price immediately
-          updatedItem.extendedPrice =
-            (updatedItem.qtyOrdered || 0) * (updatedItem.unitPrice || 0);
+          updatedItem.extendedPrice = (updatedItem.qtyOrdered || 0) * (updatedItem.unitPrice || 0);
           return updatedItem;
         }
         return item;
@@ -558,7 +643,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
       {
         id: prevLineItems.length > 0 ? Math.max(...prevLineItems.map(item => item.id)) + 1 : 1,
         itemId: '',
-        uomId: '',
+        comments: '', // Initialize comments for new item
         qtyOrdered: 0,
         unitPrice: 0.00,
         extendedPrice: 0.00,
@@ -566,10 +651,25 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
     ]);
   };
 
-  // Function to delete a line item
-  const handleDeleteItem = (idToDelete) => {
-    setLineItems(prevLineItems => prevLineItems.filter(item => item.id !== idToDelete));
+  // Function to delete the selected line item
+  const handleDeleteSelected = () => {
+    if (selectedLineItemId) {
+      setShowDeleteConfirmation(true); // Show confirmation dialog
+    }
   };
+
+  // Confirm deletion
+  const confirmDelete = () => {
+    setLineItems(prevLineItems => prevLineItems.filter(item => item.id !== selectedLineItemId));
+    setSelectedLineItemId(null); // Deselect the item after deletion
+    setShowDeleteConfirmation(false); // Close confirmation dialog
+  };
+
+  // Cancel deletion
+  const cancelDelete = () => {
+    setShowDeleteConfirmation(false); // Close confirmation dialog
+  };
+
 
   // State for showing save confirmation
   const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
@@ -577,11 +677,22 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
   // Handle sorting logic
   const handleSort = (column) => {
     if (sortColumn === column) {
-      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortColumn(column);
-      setSortDirection("asc"); // Default to ascending when changing column
+      setSortDirection('asc'); // Default to ascending when changing column
     }
+  };
+
+  // Handle radio button change
+  const handleRadioButtonChange = (id, event) => {
+    event.stopPropagation(); // Prevent row click from firing
+    setSelectedLineItemId(id);
+  };
+
+  // Handle row click for selection
+  const handleRowClick = (itemId) => {
+    setSelectedLineItemId(itemId); // Set the clicked row as selected
   };
 
   // Handle change for the Type/Type ID dropdown
@@ -596,12 +707,12 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
     const customerInfo = customerData[id];
     if (customerInfo) {
       setCustomerName(customerInfo.customerName);
-      setShipToAddress(customerInfo.shipToAddresses[0] || ""); // Set first address as default
+      setShipToAddress(customerInfo.shipToAddresses[0] || ''); // Set first address as default
       setAvailableShipToAddresses(customerInfo.shipToAddresses);
     } else {
       // Clear fields if customer ID not found
-      setCustomerName("");
-      setShipToAddress("");
+      setCustomerName('');
+      setShipToAddress('');
       setAvailableShipToAddresses([]);
     }
   };
@@ -635,12 +746,10 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
       const aValue = a[sortColumn];
       const bValue = b[sortColumn];
 
-      if (typeof aValue === "string" && typeof bValue === "string") {
-        return sortDirection === "asc"
-          ? aValue.localeCompare(bValue)
-          : bValue.localeCompare(aValue);
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        return sortDirection === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
       } else {
-        return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
+        return sortDirection === 'asc' ? aValue - bValue : bValue - aValue;
       }
     });
     return sortableItems;
@@ -678,336 +787,33 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
   };
 
   // Calculate total extended price for the form summary
-  const totalExtendedPrice = lineItems.reduce(
-    (sum, item) => sum + item.extendedPrice,
-    0
-  );
+  const totalExtendedPrice = lineItems.reduce((sum, item) => sum + item.extendedPrice, 0);
 
-  // return (
-  //   <div className="p-2 sm:p-5 bg-gray-100 font-sans text-gray-800">
-  //     <div className="form-container bg-white border border-gray-200 rounded-lg shadow-lg w-full overflow-hidden">
-  //       <div className="main-content p-4 sm:p-6 bg-white">
-  //         {/* Changed grid-cols-1 md:grid-cols-2 to md:grid-cols-3 */}
-  //         <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 md:gap-x-10 gap-y-3 md:gap-y-4 mb-6 sm:mb-8 text-sm">
-  //           <div className="flex flex-col space-y-3">
-  //             <div className="flex items-center">
-  //               <label htmlFor="customer-id" className="w-28 sm:w-36 text-gray-700 font-medium">Customer ID</label>
-  //               <div className="flex-grow flex items-center gap-2">
-  //                 <input type="text" id="customer-id" value={customerId} onChange={handleCustomerIdChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-  //               </div>
-  //             </div>
-  //             {/* Removed Type/Type ID field */}
-  //             <div className="flex items-center">
-  //               <label htmlFor="document-no" className="w-28 sm:w-36 text-gray-700 font-medium">Document No .</label>
-  //               <div className="flex-grow flex items-center gap-2">
-  //                 <input type="text" id="document-no" value={documentNumber} onChange={handleDocumentNumberChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-  //               </div>
-  //             </div>
-  //             <div className="flex items-center">
-  //               <label htmlFor="customer-name" className="w-28 sm:w-36 text-gray-700 font-medium">Customer Name</label>
-  //               <div className="flex-grow flex items-center gap-2">
-  //                 <input type="text" id="customer-name" value={customerName} onChange={handleCustomerNameChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-  //               </div>
-  //             </div>
-  //           </div>
 
-  //           <div className="flex flex-col space-y-3">
-  //             <div className="flex items-center">
-  //               {/* Changed label to a button for clickability */}
-  //               <button type="button" onClick={handleShipToAddressClick} className="w-28 sm:w-36 text-red-700 underline cursor-pointer text-sm font-medium text-left">
-  //                 Ship To Address
-  //               </button>
-  //               <div className="flex-grow flex items-center gap-2">
-  //                 <input type="text" id="ship-to-address" value={shipToAddress} onChange={handleShipToAddressChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-  //               </div>
-  //             </div>
-  //             <div className="flex items-center">
-  //               <label htmlFor="date" className="w-28 sm:w-36 text-gray-700 font-medium">Date</label>
-  //               <div className="flex-grow flex items-center gap-2">
-  //                 <input type="date" id="date" value={documentDate} onChange={handleDocumentDateChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-  //               </div>
-  //             </div>
-  //             <div className="flex items-center">
-  //               <label htmlFor="batch-id" className="w-28 sm:w-36 text-gray-700 font-medium">Batch ID</label>
-  //               <div className="flex-grow flex items-center gap-2">
-  //                 <input type="text" defaultValue="BATCH-APR2017" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-  //               </div>
-  //             </div>
-  //           </div>
-
-  //           <div className="flex flex-col space-y-3">
-  //             <div className="flex items-center">
-  //               <label htmlFor="default-site-id" className="w-28 sm:w-36 text-gray-700 font-medium">Default Site ID</label>
-  //               <div className="flex-grow flex items-center gap-2">
-  //                 <input type="text" defaultValue="WAREHOUSE" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-  //               </div>
-  //             </div>
-  //             <div className="flex items-center">
-  //               <label htmlFor="customer-po-number" className="w-28 sm:w-36 text-gray-700 font-medium">Customer PO Number</label>
-  //               <div className="flex-grow flex items-center gap-2">
-  //                 <input type="text" defaultValue="PO-78901" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-  //               </div>
-  //             </div>
-  //             {/* Moved Currency ID here */}
-  //             <div className="flex items-center">
-  //               <label htmlFor="currency-id" className="w-28 sm:w-36 text-gray-700 font-medium">Currency ID</label>
-  //               <div className="flex-grow flex items-center gap-2">
-  //                 <input type="text" defaultValue="USD" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-  //               </div>
-  //             </div>
-  //           </div>
-  //         </div>
-
-  //         <div className="bg-gray-200 text-gray-800 p-2 rounded-md mb-4 font-semibold text-base border border-gray-300">Line Items by Order Entered</div>
-  //         <div className="overflow-x-auto mb-6 sm:mb-8">
-  //           <table className="w-full border-collapse mt-2 bg-white border border-gray-300 rounded-lg">
-  //             <thead>
-  //               <tr>
-  //                 <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/4 cursor-pointer" onClick={() => handleSort('itemId')}>
-  //                   Item Number{' '}
-  //                   {sortColumn === 'itemId' && (
-  //                     sortDirection === 'asc' ? '▲' : '▼'
-  //                   )}
-  //                 </th>
-  //                 <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer" onClick={() => handleSort('uomId')}>
-  //                   U of M{' '}
-  //                   {sortColumn === 'uomId' && (
-  //                     sortDirection === 'asc' ? '▲' : '▼'
-  //                   )}
-  //                 </th>
-  //                 <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer" onClick={() => handleSort('qtyOrdered')}>
-  //                   Qty Ordered{' '}
-  //                   {sortColumn === 'qtyOrdered' && (
-  //                     sortDirection === 'asc' ? '▲' : '▼'
-  //                   )}
-  //                 </th>
-  //                 <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer" onClick={() => handleSort('unitPrice')}>
-  //                   Unit Price{' '}
-  //                   {sortColumn === 'unitPrice' && (
-  //                     sortDirection === 'asc' ? '▲' : '▼'
-  //                   )}
-  //                 </th>
-  //                 <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/4 cursor-pointer" onClick={() => handleSort('extendedPrice')}>
-  //                   Extended Price{' '}
-  //                   {sortColumn === 'extendedPrice' && (
-  //                     sortDirection === 'asc' ? '▲' : '▼'
-  //                   )}
-  //                 </th>
-  //               </tr>
-  //             </thead>
-  //             <tbody>
-  //               {sortedLineItems.map((item) => (
-  //                 <tr key={item.id}>
-  //                   <td className="border border-gray-200 p-2">
-  //                     <select
-  //                       value={item.itemId}
-  //                       onChange={(e) => handleLineItemChange(item.id, 'itemId', e.target.value)}
-  //                       className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-  //                     >
-  //                       <option value="">Select Item</option>
-  //                       {mockItems.map(mockItem => (
-  //                         <option key={mockItem.id} value={mockItem.id}>
-  //                           {mockItem.id} - {mockItem.name}
-  //                         </option>
-  //                       ))}
-  //                     </select>
-  //                   </td>
-  //                   <td className="border border-gray-200 p-2">
-  //                     <select
-  //                       value={item.uomId}
-  //                       onChange={(e) => handleLineItemChange(item.id, 'uomId', e.target.value)}
-  //                       className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-  //                     >
-  //                       <option value="">Select UOM</option>
-  //                       {mockUOMs.map(uom => (
-  //                         <option key={uom.id} value={uom.id}>
-  //                           {uom.name}
-  //                         </option>
-  //                       ))}
-  //                     </select>
-  //                   </td>
-  //                   <td className="border border-gray-200 p-2">
-  //                     <input
-  //                       type="number"
-  //                       value={item.qtyOrdered}
-  //                       onChange={(e) => handleLineItemChange(item.id, 'qtyOrdered', parseFloat(e.target.value) || 0)}
-  //                       className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-  //                     />
-  //                   </td>
-  //                   <td className="border border-gray-200 p-2">
-  //                     <input
-  //                       type="number"
-  //                       value={item.unitPrice.toFixed(2)}
-  //                       onChange={(e) => handleLineItemChange(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
-  //                       className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-  //                     />
-  //                   </td>
-  //                   <td className="border border-gray-200 p-2">
-  //                     <input type="text" value={item.extendedPrice.toFixed(2)} readOnly className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-right focus:outline-none" />
-  //                   </td>
-  //                 </tr>
-  //               ))}
-  //               {/* Add empty rows to maintain minimum visible rows if needed */}
-  //               {Array(Math.max(0, 3 - sortedLineItems.length)).fill('').map((_, index) => (
-  //                 <tr key={`empty-row-${index + sortedLineItems.length}`}> {/* Unique key */}
-  //                   <td className="border border-gray-200 p-2">
-  //                     <select className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none" disabled>
-  //                       <option value="">Select Item</option>
-  //                     </select>
-  //                   </td>
-  //                   <td className="border border-gray-200 p-2">
-  //                     <select className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none" disabled>
-  //                       <option value="">Select UOM</option>
-  //                     </select>
-  //                   </td>
-  //                   <td className="border border-gray-200 p-2"><input type="text" className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none" defaultValue="" disabled /></td>
-  //                   <td className="border border-gray-200 p-2"><input type="text" className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none" defaultValue="" disabled /></td>
-  //                   <td className="border border-gray-200 p-2"><input type="text" className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-right focus:outline-none" readOnly disabled /></td>
-  //                 </tr>
-  //               ))}
-  //             </tbody>
-  //           </table>
-  //         </div>
-
-  //         <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 md:gap-x-10 gap-y-3 md:gap-y-4 mb-6 sm:mb-8 text-sm">
-  //           <div className="flex flex-col space-y-3">
-  //             <div className="flex items-center">
-  //               <label htmlFor="amount-received" className="w-36 sm:w-44 text-gray-700 font-medium">Amount Received</label>
-  //               <div className="flex-grow flex items-center gap-2">
-  //                 <span className="mr-1 text-gray-600 font-semibold">$</span>
-  //                 <input type="text" id="amount-received" defaultValue="427.50" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
-  //               </div>
-  //             </div>
-  //             <div className="flex items-center">
-  //               <label htmlFor="terms-discount-taken" className="w-36 sm:w-44 text-gray-700 font-medium">Terms Discount Taken</label>
-  //               <div className="flex-grow flex items-center gap-2">
-  //                 <span className="mr-1 text-gray-600 font-semibold">$</span>
-  //                 <input type="text" id="terms-discount-taken" defaultValue="0.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
-  //               </div>
-  //             </div>
-  //             <div className="flex items-center">
-  //               <label htmlFor="on-account" className="w-36 sm:w-44 text-gray-700 font-medium">On Account</label>
-  //               <div className="flex-grow flex items-center gap-2">
-  //                 <span className="mr-1 text-gray-600 font-semibold">$</span>
-  //                 <input type="text" id="on-account" defaultValue="0.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
-  //               </div>
-  //             </div>
-  //           </div>
-
-  //           <div className="flex flex-col space-y-3">
-  //             <div className="flex items-center">
-  //               <label htmlFor="comment-id" className="w-36 sm:w-44 text-gray-700 font-medium">Comment ID</label>
-  //               <div className="flex-grow flex items-center gap-2">
-  //                 <input type="text" id="comment-id" defaultValue="Initial Order" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-  //               </div>
-  //             </div>
-  //             <div className="flex items-center">
-  //               <label htmlFor="subtotal" className="w-28 sm:w-36 text-gray-700 font-medium">Subtotal</label>
-  //               <div className="flex-grow flex items-center gap-2">
-  //                 <span className="mr-1 text-gray-600 font-semibold">$</span>
-  //                 <input type="text" id="subtotal" value={totalExtendedPrice.toFixed(2)} readOnly className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm" />
-  //               </div>
-  //             </div>
-  //             <div className="flex items-center">
-  //               <label htmlFor="trade-discount" className="w-28 sm:w-36 text-gray-700 font-medium">Trade Discount</label>
-  //               <div className="flex-grow flex items-center gap-2">
-  //                 <span className="mr-1 text-gray-600 font-semibold">$</span>
-  //                 <input type="text" id="trade-discount" defaultValue="0.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm" readOnly />
-  //               </div>
-  //             </div>
-  //           </div>
-
-  //           <div className="flex flex-col space-y-3">
-  //             <div className="flex items-center">
-  //               <label htmlFor="freight" className="w-28 sm:w-36 text-gray-700 font-medium">Freight</label>
-  //               <div className="flex-grow flex items-center gap-2">
-  //                 <span className="mr-1 text-gray-600 font-semibold">$</span>
-  //                 <input type="text" id="freight" defaultValue="15.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
-  //               </div>
-  //             </div>
-  //             <div className="flex items-center">
-  //               <label htmlFor="miscellaneous" className="w-28 sm:w-36 text-gray-700 font-medium">Miscellaneous</label>
-  //               <div className="flex-grow flex items-center gap-2">
-  //                 <span className="mr-1 text-gray-600 font-semibold">$</span>
-  //                 <input type="text" id="miscellaneous" defaultValue="0.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
-  //               </div>
-  //             </div>
-  //             <div className="flex items-center">
-  //               <label htmlFor="tax" className="w-28 sm:w-36 text-gray-700 font-medium">Tax</label>
-  //               <div className="flex-grow flex items-center gap-2">
-  //                 <span className="mr-1 text-gray-600 font-semibold">$</span>
-  //                 <input type="text" id="tax" defaultValue="25.65" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm" readOnly />
-  //               </div>
-  //             </div>
-  //           </div>
-  //         </div>
-
-  //         <div className="flex flex-col sm:flex-row justify-between items-center mt-4 sm:mt-6 space-y-4 sm:space-y-0">
-  //           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
-  //             <button
-  //               onClick={handleDistributionsButtonClick}
-  //               className={`rounded-md px-4 py-2.5 text-sm font-medium shadow-sm transition-colors duration-200 w-full sm:w-auto bg-black text-white hover:bg-gray-800`} // Removed disabled prop and conditional classes
-  //             >
-  //               Distributions
-  //             </button>
-  //             <button
-  //               onClick={handleSaveClick}
-  //               className="bg-black text-white hover:bg-gray-800 rounded-md px-4 py-2.5 text-sm font-medium shadow-sm transition-colors duration-200 w-full sm:w-auto"
-  //             >
-  //               Save
-  //             </button>
-  //           </div>
-  //           <div className="flex items-center w-full sm:w-auto justify-end">
-  //             <label className="text-gray-700 text-base font-semibold mr-2">Total</label>
-  //             <div className="flex items-center">
-  //               <span className="mr-1 text-gray-800 text-lg font-bold">$</span>
-  //               <input type="text" value={(totalExtendedPrice + 15.00 + 25.65).toFixed(2)} className="p-2 border border-gray-300 rounded-md bg-gray-50 text-right font-bold text-lg w-28 sm:w-32" readOnly />
-  //             </div>
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //     {showSaveConfirmation && (
-  //       <ConfirmationMessage
-  //         message="Are you sure you want to save the current invoice?"
-  //         onConfirm={confirmSave}
-  //         onCancel={cancelSave}
-  //       />
-  //     )}
-  //     {showAddressPopup && (
-  //       <ShipToAddressSelection
-  //         addresses={availableShipToAddresses}
-  //         onSelectAddress={handleAddressSelect}
-  //         onClose={() => setShowAddressPopup(false)}
-  //       />
-  //     )}
-  //   </div>
-  // );
-
-    return (
-     <div className="p-2 sm:p-5 bg-gray-100 font-sans text-gray-800">
-      <div className="form-container bg-white border border-gray-200 rounded-lg shadow-lg w-full overflow-hidden">
+  return (
+    <div className="flex bg-gray-100 font-sans text-gray-800">
+      <div className="form-container bg-white border border-gray-200 rounded-lg shadow-lg w-full">
         <div className="main-content p-4 sm:p-6 bg-white">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 md:gap-x-10 gap-y-3 md:gap-y-4 mb-6 sm:mb-8 text-sm">
             <div className="flex flex-col space-y-3">
               <div className="flex items-center">
                 <label htmlFor="customer-id" className="w-36 text-gray-700 font-medium">Customer ID</label>
                 <div className="flex-grow flex items-center gap-2">
-                  <input type="text" id="customer-id" value={customerId} onChange={handleCustomerIdChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="text" id="customer-id" value={customerId} onChange={handleCustomerIdChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
               {/* Removed Type/Type ID field */}
               <div className="flex items-center">
-                <label htmlFor="document-no" className="w-36 text-gray-700 font-medium">Document No .</label>
+                <label htmlFor="document-no" className="w-36 text-gray-700 font-medium">Document No</label>
                 <div className="flex-grow flex items-center gap-2">
-                  <input type="text" id="document-no" value={documentNumber} onChange={handleDocumentNumberChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="text" id="document-no" value={documentNumber} onChange={handleDocumentNumberChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
               {/* Moved Currency ID here */}
               <div className="flex items-center">
                 <label htmlFor="currency-id" className="w-36 text-gray-700 font-medium">Currency ID</label>
                 <div className="flex-grow flex items-center gap-2">
-                  <input type="text" defaultValue="USD" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="text" defaultValue="USD" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
             </div>
@@ -1016,73 +822,92 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
               <div className="flex items-center">
                 <label htmlFor="customer-name" className="w-36 text-gray-700 font-medium">Customer Name</label>
                 <div className="flex-grow flex items-center gap-2">
-                  <input type="text" id="customer-name" value={customerName} onChange={handleCustomerNameChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="text" id="customer-name" value={customerName} onChange={handleCustomerNameChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
               {/* Swap: Customer PO Number moved here */}
               <div className="flex items-center">
                 <label htmlFor="customer-po-number" className="w-36 text-gray-700 font-medium">Customer PO Number</label>
                 <div className="flex-grow flex items-center gap-2">
-                  <input type="text" defaultValue="PO-78901" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="text" defaultValue="PO-78901" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
-              <div className="flex items-center">
-                <label htmlFor="date" className="w-36 text-gray-700 font-medium">Date</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <input type="date" id="date" value={documentDate} onChange={handleDocumentDateChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col space-y-3">
-              <div className="flex items-center">
-                <label htmlFor="batch-id" className="w-36 text-gray-700 font-medium">Batch ID</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <input type="text" defaultValue="BATCH-APR2017" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label htmlFor="default-site-id" className="w-36 text-gray-700 font-medium">Default Site ID</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <input type="text" defaultValue="WAREHOUSE" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-              {/* Swap: Ship To Address moved here */}
+              {/* NEW POSITION FOR SHIP TO ADDRESS */}
               <div className="flex items-center">
                 {/* Changed label to a button for clickability */}
                 <button type="button" onClick={handleShipToAddressClick} className="w-36 text-red-700 underline cursor-pointer text-sm font-medium text-left">
                   Ship To Address
                 </button>
                 <div className="flex-grow flex items-center gap-2">
-                  <input type="text" id="ship-to-address" value={shipToAddress} onChange={handleShipToAddressChange} className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="text" id="ship-to-address" value={shipToAddress} onChange={handleShipToAddressChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col space-y-3">
+              {/* NEW POSITION FOR DATE */}
+              <div className="flex items-center">
+                <label htmlFor="date" className="w-36 text-gray-700 font-medium">Date</label>
+                <div className="flex-grow flex items-center gap-2">
+                  <input type="date" id="date" value={documentDate} onChange={handleDocumentDateChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                </div>
+              </div>
+              <div className="flex items-center">
+                <label htmlFor="default-site-id" className="w-36 text-gray-700 font-medium">Default Site ID</label>
+                <div className="flex-grow flex items-center gap-2">
+                  <input type="text" defaultValue="WAREHOUSE" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                </div>
+              </div>
+              {/* Moved Comment ID here previously */}
+              <div className="flex items-center">
+                <label htmlFor="comment-id" className="w-36 text-gray-700 font-medium">Comment ID</label>
+                <div className="flex-grow flex items-center gap-2">
+                  <input type="text" id="comment-id" defaultValue="Initial Order" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="flex justify-between items-center bg-gray-200 text-gray-800 p-2 rounded-md mb-0 font-semibold text-base border border-gray-300">
+          <div className="flex justify-between items-center bg-gray-200 text-gray-800 p-2 mb-0 font-semibold text-base border border-gray-300">
             <span>Line Items by Order Entered</span>
-            <button
-              onClick={handleAddItem}
-              className="bg-black text-white rounded-full p-1.5 text-xs font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
-              title="Add Item"
-            >
-              <Plus size={12} /> {/* Reduced size here */}
-            </button>
+            <div className="flex items-center space-x-2"> {/* Container for add and delete buttons */}
+              <button
+                onClick={handleAddItem}
+                className="bg-black text-white rounded-full p-1.5 text-xs font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+                title="Add New Line Item" // Improved clarity
+              >
+                <Plus size={16} /> {/* Increased size for better clarity */}
+              </button>
+              <button
+                onClick={handleDeleteSelected}
+                className={`rounded-full p-1.5 text-xs font-medium shadow-sm transition-colors duration-200 ${
+                  selectedLineItemId
+                    ? 'bg-red-700 text-white hover:bg-red-800'
+                    : 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                }`}
+                title="Delete Selected Line Item" // Improved clarity
+                disabled={!selectedLineItemId} // Disable if no item is selected
+              >
+                <Trash2 size={16} /> {/* Increased size for better clarity */}
+              </button>
+            </div>
           </div>
           <div className="overflow-x-auto mb-6 sm:mb-8">
             <table className="w-full border-collapse bg-white border border-gray-300 rounded-lg">
               <thead>
                 <tr>
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[40px]">
+                    {/* Empty header for radio button column */}
+                  </th>
                   <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/4 cursor-pointer" onClick={() => handleSort('itemId')}>
                     Item Number{' '}
                     {sortColumn === 'itemId' && (
                       sortDirection === 'asc' ? '▲' : '▼'
                     )}
                   </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer" onClick={() => handleSort('uomId')}>
-                    U of M{' '}
-                    {sortColumn === 'uomId' && (
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer" onClick={() => handleSort('comments')}>
+                    Comments{' '} {/* Changed label to Comments */}
+                    {sortColumn === 'comments' && (
                       sortDirection === 'asc' ? '▲' : '▼'
                     )}
                   </th>
@@ -1104,41 +929,41 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
                       sortDirection === 'asc' ? '▲' : '▼'
                     )}
                   </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[60px]">
-                    Actions
-                  </th>
                 </tr>
               </thead>
               <tbody>
                 {sortedLineItems.map((item) => (
-                  <tr key={item.id}>
-                    <td className="border border-gray-200 p-2">
-                      <select
-                        value={item.itemId}
-                        onChange={(e) => handleLineItemChange(item.id, 'itemId', e.target.value)}
-                        className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-                      >
-                        <option value="">Select Item</option>
-                        {mockItems.map(mockItem => (
-                          <option key={mockItem.id} value={mockItem.id}>
-                            {mockItem.id} - {mockItem.name}
-                          </option>
-                        ))}
-                      </select>
+                  <tr
+                    key={item.id}
+                    onClick={() => handleRowClick(item.id)}
+                    className={`cursor-pointer ${selectedLineItemId === item.id ? 'bg-blue-100' : 'hover:bg-gray-50'}`}
+                  >
+                    <td className="border border-gray-200 p-2 text-center">
+                      <input
+                        type="radio"
+                        name="lineItemSelection" // Name attribute for radio buttons ensures only one can be selected
+                        checked={selectedLineItemId === item.id}
+                        onChange={(e) => handleRadioButtonChange(item.id, e)}
+                        className="accent-black"
+                      />
                     </td>
                     <td className="border border-gray-200 p-2">
-                      <select
-                        value={item.uomId}
-                        onChange={(e) => handleLineItemChange(item.id, 'uomId', e.target.value)}
+                      <input // Changed to text input
+                        type="text"
+                        value={item.itemId} // Use itemId field
+                        onChange={(e) => handleLineItemChange(item.id, 'itemId', e.target.value)} // Update itemId field
+                        placeholder="Enter Item ID" // Placeholder for Item Number
                         className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-                      >
-                        <option value="">Select UOM</option>
-                        {mockUOMs.map(uom => (
-                          <option key={uom.id} value={uom.id}>
-                            {uom.name}
-                          </option>
-                        ))}
-                      </select>
+                      />
+                    </td>
+                    <td className="border border-gray-200 p-2">
+                      <input // Changed to text input
+                        type="text"
+                        value={item.comments} // Use comments field
+                        onChange={(e) => handleLineItemChange(item.id, 'comments', e.target.value)} // Update comments field
+                        placeholder="Add comments here" // Placeholder for Comments
+                        className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
+                      />
                     </td>
                     <td className="border border-gray-200 p-2">
                       <input
@@ -1157,16 +982,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
                       />
                     </td>
                     <td className="border border-gray-200 p-2">
-                      <input type="text" value={item.extendedPrice.toFixed(2)} readOnly className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-right focus:outline-none" />
-                    </td>
-                    <td className="border border-gray-200 p-2 text-center">
-                      <button
-                        onClick={() => handleDeleteItem(item.id)}
-                        className="text-red-600 hover:text-red-800 transition-colors duration-200 p-1"
-                        title="Delete Item"
-                      >
-                        <svg className="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                      </button>
+                      <input type="text" value={item.extendedPrice.toFixed(2)} readOnly className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-left focus:outline-none" />
                     </td>
                   </tr>
                 ))}
@@ -1174,78 +990,70 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
             </table>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 md:gap-x-10 gap-y-3 md:gap-y-4 mb-6 sm:mb-8 text-sm">
-            <div className="flex flex-col space-y-3">
-              <div className="flex items-center">
-                <label htmlFor="amount-received" className="w-36 sm:w-44 text-gray-700 font-medium">Amount Received</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="amount-received" defaultValue="427.50" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label htmlFor="terms-discount-taken" className="w-36 sm:w-44 text-gray-700 font-medium">Terms Discount Taken</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="terms-discount-taken" defaultValue="0.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label htmlFor="on-account" className="w-36 sm:w-44 text-gray-700 font-medium">On Account</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="on-account" defaultValue="0.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-            </div>
+          {/* Combined summary section into a 2-column layout */}
+          <div className="px-2 py-3 md:px-4 md:py-4 grid grid-cols-1 md:grid-cols-3 gap-x-4 md:gap-x-6 gap-y-2 md:gap-y-3 border-b border-gray-200 text-sm">
+  {/* Left column: Amount Received, Terms Discount Taken, On Account */}
+  {/* Middle column: Empty */}
+  <div></div>
+  <div className="flex flex-col space-y-2">
+    <div className="flex items-center">
+      <label htmlFor="amount-received" className="w-28 sm:w-32 text-gray-700 font-medium">Amount Received</label>
+      <div className="flex-grow flex items-center gap-1">
+        <span className="mr-1 text-gray-600 font-semibold">$</span>
+        <input type="text" id="amount-received" defaultValue="427.50" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"/>
+      </div>
+    </div>
+    <div className="flex items-center">
+      <label htmlFor="terms-discount-taken" className="w-28 sm:w-32 text-gray-700 font-medium">Terms Discount Taken</label>
+      <div className="flex-grow flex items-center gap-1">
+        <span className="mr-1 text-gray-600 font-semibold">$</span>
+        <input type="text" id="terms-discount-taken" defaultValue="0.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+      </div>
+    </div>
+    <div className="flex items-center">
+      <label htmlFor="on-account" className="w-28 sm:w-32 text-gray-700 font-medium">On Account</label>
+      <div className="flex-grow flex items-center gap-1">
+        <span className="mr-1 text-gray-600 font-semibold">$</span>
+        <input type="text" id="on-account" defaultValue="0.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+      </div>
+    </div>
+    <div className="h-6"></div>
+  </div>
 
-            <div className="flex flex-col space-y-3">
-              <div className="flex items-center">
-                <label htmlFor="comment-id" className="w-36 sm:w-40 text-gray-700 font-medium">Comment ID</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <input type="text" id="comment-id" defaultValue="Initial Order" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label htmlFor="subtotal" className="w-28 sm:w-36 text-gray-700 font-medium">Subtotal</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="subtotal" value={totalExtendedPrice.toFixed(2)} readOnly className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm" />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label htmlFor="trade-discount" className="w-28 sm:w-36 text-gray-700 font-medium">Trade Discount</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="trade-discount" defaultValue="0.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm" readOnly />
-                </div>
-              </div>
-            </div>
+  
 
-            <div className="flex flex-col space-y-3">
-              <div className="flex items-center">
-                <label htmlFor="freight" className="w-28 sm:w-36 text-gray-700 font-medium">Freight</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="freight" defaultValue="15.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label htmlFor="miscellaneous" className="w-28 sm:w-36 text-gray-700 font-medium">Miscellaneous</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="miscellaneous" defaultValue="0.00" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label htmlFor="tax" className="w-28 sm:w-36 text-gray-700 font-medium">Tax</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="tax" defaultValue="25.65" className="flex-grow p-2 border border-gray-300 rounded-md bg-gray-50 text-right text-sm" readOnly />
-                </div>
-              </div>
-            </div>
-          </div>
+  {/* Right column: Freight, Miscellaneous, Tax, Subtotal */}
+  <div className="flex flex-col space-y-2">
+    <div className="flex items-center">
+      <label htmlFor="freight" className="w-24 sm:w-28 text-gray-700 font-medium">Freight</label>
+      <div className="flex-grow flex items-center gap-1">
+        <span className="mr-1 text-gray-600 font-semibold">$</span>
+        <input type="text" id="freight" defaultValue="15.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+      </div>
+    </div>
+    <div className="flex items-center">
+      <label htmlFor="miscellaneous" className="w-24 sm:w-28 text-gray-700 font-medium">Miscellaneous</label>
+      <div className="flex-grow flex items-center gap-1">
+        <span className="mr-1 text-gray-600 font-semibold">$</span>
+        <input type="text" id="miscellaneous" defaultValue="0.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+      </div>
+    </div>
+    <div className="flex items-center">
+      <label htmlFor="tax" className="w-24 sm:w-28 text-gray-700 font-medium">Tax</label>
+      <div className="flex-grow flex items-center gap-1">
+        <span className="mr-1 text-gray-600 font-semibold">$</span>
+        <input type="text" id="tax" defaultValue="25.65" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" readOnly />
+      </div>
+    </div>
+    <div className="flex items-center">
+      <label htmlFor="subtotal" className="w-24 sm:w-28 text-gray-700 font-medium">Subtotal</label>
+      <div className="flex-grow flex items-center gap-1">
+        <span className="mr-1 text-gray-600 font-semibold">$</span>
+        <input type="text" id="subtotal" value={totalExtendedPrice.toFixed(2)} readOnly className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+      </div>
+    </div>
+  </div>
+</div>
 
           <div className="flex flex-col sm:flex-row justify-between items-center mt-4 sm:mt-6 space-y-4 sm:space-y-0">
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
@@ -1265,8 +1073,8 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
             <div className="flex items-center w-full sm:w-auto justify-end">
               <label className="text-gray-700 text-base font-semibold mr-2">Total</label>
               <div className="flex items-center">
-                <span className="mr-1 text-gray-800 text-lg font-bold">$</span>
-                <input type="text" value={(totalExtendedPrice + 15.00 + 25.65).toFixed(2)} className="p-2 border border-gray-300 rounded-md bg-gray-50 text-right font-bold text-lg w-28 sm:w-32" readOnly />
+                <span className="mr-1 text-gray-800 text-md font-bold">$</span>
+                <input type="text" value={(totalExtendedPrice + 15.00 + 25.65).toFixed(2)} className="p-2 border border-gray-300 bg-gray-50 text-left font-bold text-lg w-28 sm:w-32" readOnly />
               </div>
             </div>
           </div>
@@ -1277,6 +1085,13 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
           message="Are you sure you want to save the current invoice?"
           onConfirm={confirmSave}
           onCancel={cancelSave}
+        />
+      )}
+      {showDeleteConfirmation && (
+        <ConfirmationMessage
+          message="Are you sure you want to delete the selected line item?"
+          onConfirm={confirmDelete}
+          onCancel={cancelDelete}
         />
       )}
       {showAddressPopup && (
@@ -1546,6 +1361,8 @@ const App = () => {
       row.customerId.toLowerCase().includes(searchValue.toLowerCase())
   );
 
+  const [showLogout, setShowLogout] = useState(false);
+
   // State for pagination
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
   const recordsPerPage = 10;
@@ -1636,78 +1453,7 @@ const App = () => {
       case "customer":
         return (
           <div id="CustomerInfoSection">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold">Non-Retail Customer List</h2>
-              <div className="flex items-center space-x-4">
-                <div className="relative group">
-                  <button
-                    id="addNewCustomerBtn"
-                    className="p-2 rounded-full bg-[#1d1f1f] hover:bg-[#2c2c2e] shadow text-white px-3 py-1.5 flex items-center justify-center transition-colors"
-                    aria-label="Add New Customer"
-                    onClick={handleOpenCustomerModal}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M12 4v16m8-8H4"
-                      />
-                    </svg>
-                  </button>
-                  <span className="absolute left-1/2 -translate-x-1/2 mt-2 px-2 py-1 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-                    New Customer
-                  </span>
-                </div>
-                {showCustomerModal && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                    <div
-                      className={`bg-white rounded shadow-lg w-full max-w-2xl mx-2 relative border border-gray-300
-        ${modalVisible ? "modal-fade-in" : "modal-fade-out"}`}
-                    >
-                      <AddCustomer id={latestId} onSave={(formData) => {
-                        setCustomerData([...CustomerData, formData])
-                        setShowCustomerModal(false)
-                      }} onClose={() => setShowCustomerModal(false)}/>
-                    </div>
-                  </div>
-                )}
-
-{selectedCustomerForDelete && (
-  <DeleteConfirmationMessage
-  message={"Are you sure you want to delete the selected 1 OEM(s)?"}
-  onCancel={() => setSelectedCustomerForDelete(undefined)}
-  onConfirm={() => {
-    setCustomerData(CustomerData.filter((data) => data.customerId != selectedCustomerForDelete.customerId));
-                          setSelectedCustomerForDelete(undefined)
-                        }}
-  ></ DeleteConfirmationMessage>
-                )}
-
-{selectedCustomerForEdit && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                    <div
-                      className={`bg-white rounded shadow-lg w-full max-w-2xl mx-2 relative border border-gray-300
-        ${modalVisible ? "modal-fade-in" : "modal-fade-out"}`}
-                    >
-                      <AddCustomer id={selectedCustomerForEdit?.customerId} customerData={selectedCustomerForEdit} onSave={(formData) => {
-                        const currentCustomerData = CustomerData.findIndex((c) => c.customerId == formData.customerId)
-                        if (currentCustomerData > -1){
-                          CustomerData[currentCustomerData] = {...formData}
-                        }
-                        setSelectedCustomerForEdit(undefined)
-                      }} onClose={() => setSelectedCustomerForEdit(undefined)}/>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
+            
             <div className="bg-white rounded-lg shadow-md p-4">
               <div className="flex items-center justify-between mb-2">
                 <form
@@ -1769,6 +1515,76 @@ const App = () => {
                       />
                     </svg>
                   </button>
+              {/* <h2 className="text-xl font-bold">Non-Retail Customer List</h2> */}
+              <div className="flex items-center space-x-4">
+                <div className="relative group ml-auto flex justify-end">
+                  <button
+                    id="addNewCustomerBtn"
+                    className="w-8 h-8 rounded-full bg-[#1d1f1f] hover:bg-[#2c2c2e] shadow text-white flex items-center justify-center transition-colors"
+                    aria-label="Add New Customer"
+                    onClick={handleOpenCustomerModal}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                  </button>
+                  <span className="absolute left-1/2 -translate-x-1/2 mt-10 px-2 py-1 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                    New Customer
+                  </span>
+                </div>
+                {showCustomerModal && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                    <div
+                      className={`bg-white rounded shadow-lg w-full max-w-2xl mx-2 relative border border-gray-300
+        ${modalVisible ? "modal-fade-in" : "modal-fade-out"}`}
+                    >
+                      <AddCustomer id={latestId} onSave={(formData) => {
+                        setCustomerData([...CustomerData, formData])
+                        setShowCustomerModal(false)
+                      }} onClose={() => setShowCustomerModal(false)}/>
+                    </div>
+                  </div>
+                )}
+
+{selectedCustomerForDelete && (
+  <DeleteConfirmationMessage
+  message={"Are you sure you want to delete the selected customer?"}
+  onCancel={() => setSelectedCustomerForDelete(undefined)}
+  onConfirm={() => {
+    setCustomerData(CustomerData.filter((data) => data.customerId != selectedCustomerForDelete.customerId));
+                          setSelectedCustomerForDelete(undefined)
+                        }}
+  ></ DeleteConfirmationMessage>
+                )}
+
+{selectedCustomerForEdit && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                    <div
+                      className={`bg-white rounded shadow-lg w-full max-w-2xl mx-2 relative border border-gray-300
+        ${modalVisible ? "modal-fade-in" : "modal-fade-out"}`}
+                    >
+                      <AddCustomer id={selectedCustomerForEdit?.customerId} customerData={selectedCustomerForEdit} onSave={(formData) => {
+                        const currentCustomerData = CustomerData.findIndex((c) => c.customerId == formData.customerId)
+                        if (currentCustomerData > -1){
+                          CustomerData[currentCustomerData] = {...formData}
+                        }
+                        setSelectedCustomerForEdit(undefined)
+                      }} onClose={() => setSelectedCustomerForEdit(undefined)}/>
+                    </div>
+                  </div>
+                )}
+              </div>
                 </form>
               </div>
               <div className="overflow-x-auto">
@@ -1783,7 +1599,7 @@ const App = () => {
                     >
                       <thead className="bg-gray-50">
                         <tr className="border-b-2 border-black">
-                          <th className="px-2 py-2 w-6 text-center align-middle">
+                          {/* <th className="px-2 py-2 w-6 text-center align-middle">
                             <input
                               type="checkbox"
                               className="w-3 h-3 accent-black border-gray-400 rounded-sm"
@@ -1825,7 +1641,7 @@ const App = () => {
                                 }
                               }}
                             />
-                          </th>
+                          </th> */}
                           <th className="px-2 py-1 text-[13px] text-left cursor-pointer hover:text-blue-600">
                             Customer ID
                           </th>
@@ -1858,7 +1674,7 @@ const App = () => {
                             idx + (currentPageNumber - 1) * recordsPerPage;
                           return (
                             <tr key={globalIdx} className="hover:bg-gray-50">
-                              <td className="px-2 py-2 w-6 text-center align-middle">
+                              {/* <td className="px-2 py-2 w-6 text-center align-middle">
                                 <input
                                   type="checkbox"
                                   className="w-3 h-3 accent-black border-gray-400 rounded-sm"
@@ -1878,8 +1694,8 @@ const App = () => {
                                     }
                                   }}
                                 />
-                              </td>
-                              <td className="px-2 py-1 text-[13px] font-mono text-blue-700">
+                              </td> */}
+                              <td className="px-2 py-1 text-[13px]">
                                 {row.customerId ||
                                   `CB0001${String(globalIdx + 1).padStart(
                                     4,
@@ -2004,7 +1820,7 @@ const App = () => {
                             key={i}
                             className={`px-2 py-1 rounded text-sm ${
                               currentPageNumber === i + 1
-                                ? "bg-blue-600 text-white"
+                                ? "bg-black text-white"
                                 : "bg-gray-100 hover:bg-gray-200"
                             }`}
                             onClick={() => setCurrentPageNumber(i + 1)}
@@ -2262,52 +2078,74 @@ const App = () => {
   // };
 
   return (
-    <div className="min-h-screen bg-gray-100 font-sans text-gray-800 flex flex-col">
+    <div className="bg-gray-100 font-sans text-gray-800 flex flex-col">
       {/* New Top Bar for Application Title/Branding */}
       <div className="bg-black p-3 sm:p-4 flex items-center justify-between border-b border-gray-800 shadow-sm">
-        <div className="flex items-center space-x-1 sm:space-x-2">
-          {/* Verizon Logo */}
-          <span className="text-red-700 text-2xl sm:text-3xl font-bold">
-            verizon
-          </span>
-          <span className="text-sm sm:text-xl font-bold text-white hidden sm:block pt-1">
-            | Vision 2.0
-          </span>
-        </div>
-        <div className="flex items-center space-x-2 sm:space-x-4 text-white text-xs sm:text-sm">
-          <span className="hidden md:block">Portal Updates</span>
-          <svg
-            className="w-4 h-4 sm:w-5 sm:h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M15 17h5l-1.405-1.405A2.002 2.002 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-            ></path>
-          </svg>
-          <span className="hidden md:block">Notifications</span>
-          <svg
-            className="w-4 h-4 sm:w-5 sm:h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M3 10v11h18V10M3 10a2 2 0 002-2h14a2 2 0 012 2v-1a2 2 0 00-2-2H5a2 2 0 00-2 2v1"
-            ></path>
-          </svg>
-          <span className="hidden md:block">Dashboard Team</span>
-        </div>
+  <div className="flex items-center space-x-1 sm:space-x-2">
+    {/* Verizon Logo */}
+    <img
+  src={logo}
+  alt="Verizon Logo"
+  className="h-6 sm:h-6 w-auto mr-2 inline-block align-middle"
+/>
+    <span className="text-sm sm:text-xl font-bold text-white hidden sm:block">
+      | Vision 2.0
+    </span>
+  </div>
+  <div
+    className={`flex items-center space-x-2 mr-6 sm:space-x-4 text-white text-xs sm:text-sm relative transition-shadow duration-300
+      ${showLogout ? "z-30" : ""}
+    `}
+  >
+    {/* Cylinder shadow background */}
+    <div
+      className={`
+        absolute -top-2 left-0 right-0 h-[56px] sm:h-[56px] rounded-full
+        transition-all duration-300 pointer-events-none
+        ${showLogout ? "shadow-[0_8px_32px_0_rgba(30,41,59,0.45)] bg-[#23272e]" : ""}
+      `}
+      style={{
+        zIndex: 1,
+        // The shadow ends just before the logout button
+        width: "100%",
+      }}
+    ></div>
+    {/* User Avatar */}
+    <img
+      src="https://ui-avatars.com/api/?name=John+Doe&background=1d1f1f&color=fff"
+      alt="User Avatar"
+      className="w-8 h-8 rounded-full border-2 border-gray-700 relative z-10"
+      onClick={() => setShowLogout((prev) => !prev)}
+      style={{ cursor: "pointer" }}
+    />
+    {/* Username (clickable) */}
+    <button
+      className="font-semibold hidden sm:block bg-transparent border-none outline-none cursor-pointer relative z-10 px-2 py-1"
+      onClick={() => setShowLogout((prev) => !prev)}
+      style={{
+        borderRadius: "9999px",
+        background: showLogout ? "#23272e" : "transparent",
+        boxShadow: showLogout
+          ? "0 8px 32px 0 rgba(30,41,59,0.45)"
+          : "none",
+        transition: "background 0.3s, box-shadow 0.3s",
+      }}
+    >
+      John Doe
+    </button>
+    {/* Logout Dropdown */}
+    {showLogout && (
+      <div className="absolute right-2 top-full mt-5 w-32 bg-white rounded-b shadow-lg z-20">
+        <button
+          className="block w-full rounded-md text-center text-left px-4 py-2 text-sm text-white bg-black hover:bg-black hover:text-white"
+          // onClick={handleLogout}
+        >
+          Logout
+        </button>
       </div>
+    )}
+  </div>
+</div>
 
       {/* Main Top Navigation Bar (with main links) */}
       <header className="bg-white text-gray-900 p-3 sm:p-4 flex items-center justify-start border-b border-gray-200 overflow-x-auto whitespace-nowrap">
@@ -2316,7 +2154,7 @@ const App = () => {
             onClick={() => handleTopNavClick("customer", "customer")}
             className={`py-2 px-3 rounded-sm hover:bg-gray-100 transition-colors duration-200 focus:outline-none font-bold text-sm ${
               topNavActiveItem === "customer"
-                ? "text-red-700 border-b-2 border-red-700"
+                ? "text-black-700 border-b-2 border-red-700"
                 : "text-gray-700"
             }`}
           >
@@ -2328,7 +2166,7 @@ const App = () => {
             }
             className={`py-2 px-3 rounded-sm hover:bg-gray-100 transition-colors duration-200 focus:outline-none font-bold text-sm ${
               topNavActiveItem === "sales"
-                ? "text-red-700 border-b-2 border-red-700"
+                ? "text-black-700 border-b-2 border-red-700"
                 : "text-gray-700"
             }`}
           >
@@ -2338,7 +2176,7 @@ const App = () => {
             onClick={() => handleTopNavClick("profile", "my-profile")}
             className={`py-2 px-3 rounded-sm  hover:bg-gray-100 transition-colors duration-200 focus:outline-none font-bold text-sm ${
               topNavActiveItem === "profile"
-                ? "text-red-700 border-b-2 border-red-700"
+                ? "text-black-700 border-b-2 border-red-700"
                 : "text-gray-700"
             }`}
           >
@@ -2348,7 +2186,7 @@ const App = () => {
       </header>
 
       {/* Main Content Area */}
-      <div className="flex flex-1 flex-col md:flex-row overflow-hidden">
+     <div className="flex flex-1 overflow-hidden">
         {/* <aside
           className={`bg-white text-gray-800 flex-shrink-0 transition-all duration-300 ease-in-out w-full md:w-64 lg:w-72 border-r border-gray-200`}
         >
@@ -2357,26 +2195,10 @@ const App = () => {
           </nav>
         </aside> */}
 
-        <main className="flex-1 p-4 sm:p-8 overflow-y-auto bg-gray-50">
+       <main className="flex-1 px-4 sm:px-8 py-4 sm:py-8 overflow-y-auto bg-gray-50">
           {renderContent()}
         </main>
       </div>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white p-3 sm:p-4 text-center text-xs sm:text-sm border-t border-gray-700 mt-auto">
-        <p>© {new Date().getFullYear()} My Awesome App. All Rights Reserved.</p>
-        <div className="flex flex-col sm:flex-row justify-center space-y-1 sm:space-y-0 sm:space-x-4 mt-2">
-          <a href="#" className="hover:underline text-gray-300">
-            Privacy Policy
-          </a>
-          <a href="#" className="hover:underline text-gray-300">
-            Terms & Conditions
-          </a>
-          <a href="#" className="hover:underline text-gray-300">
-            Verizon Business
-          </a>
-        </div>
-      </footer>
 
       {/* Render the SalesDistributionEntry popup if showDistributionPopup is true */}
       {showDistributionPopup && (
