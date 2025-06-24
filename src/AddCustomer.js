@@ -327,7 +327,7 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
       </style>
       <div className="modal-overlay">
         <div className="modal-content">
-          <div className="bg-black text-white p-4 rounded-t-lg flex justify-between items-center">
+          <div className="bg-black text-white p-4 rounded-t-lg flex justify-between items-center font-medium">
           {customerData ? <h2>Edit Customer</h2> : <h2>Add New Customer</h2>}
           <button onClick={onClose} className="text-white hover:text-gray-300 transition-colors duration-200">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
