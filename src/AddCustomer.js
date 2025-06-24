@@ -579,7 +579,6 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                     </div>
                   </div>
                 </div>
-                <div className="form-item"></div>
               </div>
             </div>
           </div>
