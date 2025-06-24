@@ -1365,10 +1365,10 @@ const App = () => {
       case "customer":
         return (
           <div id="CustomerInfoSection">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold">Non-Retail Customer List</h2>
+            <div className="flex items-center justify-end mb-3">
+              {/* <h2 className="text-xl font-bold">Non-Retail Customer List</h2> */}
               <div className="flex items-center space-x-4">
-                <div className="relative group">
+                <div className="relative group ml-auto flex justify-end">
                   <button
                     id="addNewCustomerBtn"
                     className="p-2 rounded-full bg-[#1d1f1f] hover:bg-[#2c2c2e] shadow text-white px-3 py-1.5 flex items-center justify-center transition-colors"
