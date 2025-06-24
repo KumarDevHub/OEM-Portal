@@ -25,6 +25,7 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
       streetAddress3: "",
       zip: "",
       city: "",
+      Contact: "",
       status: "Active", // Default status
     }
   );
@@ -527,6 +528,15 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                 </div>
               </div>
               <div className="form-row">
+              <div className="form-item">
+                  <label htmlFor="cotact">Contact</label>
+                  <input
+                    type="text"
+                    id="contact"
+                    value={formData.contact}
+                    onChange={handleInputChange}
+                  />
+                </div>
                 <div className="form-item">
                   <label>Status</label>
                   <div
@@ -569,7 +579,6 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                     </div>
                   </div>
                 </div>
-                <div className="form-item"></div>
               </div>
             </div>
           </div>
