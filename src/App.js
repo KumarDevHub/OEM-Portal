@@ -344,18 +344,18 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
               <div className="col-span-2 text-right font-semibold text-gray-700 pr-4">Functional Totals</div> {/* Label spanning first two conceptual columns */}
               <div className="flex items-center justify-end col-span-2 space-x-2"> {/* Debit and Credit inputs */}
                 <span className="text-gray-600 font-semibold">$</span>
-                <input type="text" value={functionalTotalsDebit.toFixed(2)} readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-52 sm:w-52 font-bold text-xs sm:text-sm" />
+                <input type="text" value={functionalTotalsDebit.toFixed(2)} readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-52 sm:w-52 font-bold text-xs sm:text-sm" />
                 <span className="text-gray-600 font-semibold">$</span>
-                <input type="text" value={functionalTotalsCredit.toFixed(2)} readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-52 sm:w-52 font-bold text-xs sm:text-sm" />
+                <input type="text" value={functionalTotalsCredit.toFixed(2)} readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-52 sm:w-52 font-bold text-xs sm:text-sm" />
               </div>
 
               {/* Originating Totals Row */}
               <div className="col-span-2 text-right font-semibold text-gray-700 pr-4">Originating Totals</div> {/* Label spanning first two conceptual columns */}
               <div className="flex items-center justify-end col-span-2 space-x-2"> {/* Debit and Credit inputs */}
                 <span className="text-gray-600 font-semibold">$</span>
-                <input type="text" defaultValue="0.00" readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-52 sm:w-52 text-xs sm:text-sm" />
+                <input type="text" defaultValue="0.00" readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-52 sm:w-52 text-xs sm:text-sm" />
                 <span className="text-gray-600 font-semibold">$</span>
-                <input type="text" defaultValue="0.00" readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-52 sm:w-52 text-xs sm:text-sm" />
+                <input type="text" defaultValue="0.00" readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-52 sm:w-52 text-xs sm:text-sm" />
               </div>
             </div>
           </div>
