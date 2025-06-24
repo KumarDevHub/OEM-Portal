@@ -39,7 +39,7 @@ const customerData = {
 // Mock data for items and units of measure
 const mockItems = [
   {
-    id: "ITEM-A123",
+    id: "MSC",
     name: "Product Alpha",
     defaultUomId: "EA",
     defaultUnitPrice: 15.0,
@@ -235,7 +235,6 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
   ]);
 
   const [editingDistribution, setEditingDistribution] = useState(null); // State for the distribution being edited
-  const [showProgressBarPopup, setShowProgressBarPopup] = useState(false); // New state for progress bar popup
 
   // Handle radio button change for distribution selection
   const handleDistributionSelect = (id) => {
@@ -273,7 +272,6 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
 
     // Handle "OK" button click to open progress bar popup
   const handleOkClick = () => {
-    setShowProgressBarPopup(true);
   };
 
 
@@ -411,7 +409,7 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
 
           {/* Footer Buttons */}
           <div className="p-4 bg-gray-100 border-t border-gray-200 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4 rounded-b-lg">
-            <button  onClick={handleOkClick} className="bg-black text-white rounded-md px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200">Generate Invoice</button>
+            <button  onClick={handleOkClick} className="bg-black text-white rounded-md px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200">Apply</button>
           </div>
         </div>
         {editingDistribution && (
@@ -420,9 +418,6 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
             onSave={handleUpdateDistribution}
             onCancel={handleCancelEdit}
           />
-        )}
-        {showProgressBarPopup && (
-          <ProgressBarPopup onClose={() => setShowProgressBarPopup(false)} />
         )}
     </div>
   );
@@ -553,7 +548,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
   // State for line items (mock data for demonstration of sorting)
   const [lineItems, setLineItems] = useState([
     // Initial data, now referencing mock items
-    { id: 1, itemId: 'ITEM-A123', comments: 'Initial comment for Alpha', qtyOrdered: 10, unitPrice: 15.00, extendedPrice: 0.00 },
+    { id: 1, itemId: 'MSC', comments: 'Program 1 250 130.00 32,500.00', qtyOrdered: 10, unitPrice: 15.00, extendedPrice: 0.00 },
   ]);
 
   // UseEffec to calculate extended price when line items change
@@ -589,6 +584,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
   // State for Ship To Address popup
   const [showAddressPopup, setShowAddressPopup] = useState(false);
   const [availableShipToAddresses, setAvailableShipToAddresses] = useState([]);
+  const [showProgressBarPopup, setShowProgressBarPopup] = useState(false); // New state for progress bar popup
 
 
   // Effect to set initial values or clear if customer ID is empty
@@ -786,6 +782,11 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
     onDistributionsClick(dataToPass);
   };
 
+        // Handle "Generate Invoice" button click to open progress bar popup
+  const handleGenerateInvoiceClick = () => {
+    setShowProgressBarPopup(true);
+  };
+
   // Calculate total extended price for the form summary
   const totalExtendedPrice = lineItems.reduce((sum, item) => sum + item.extendedPrice, 0);
 
@@ -802,20 +803,27 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
                   <input type="text" id="customer-id" value={customerId} onChange={handleCustomerIdChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
-              {/* Removed Type/Type ID field */}
+              {/* NEW POSITION FOR DATE */}
               <div className="flex items-center">
+                <label htmlFor="date" className="w-36 text-gray-700 font-medium">Date</label>
+                <div className="flex-grow flex items-center gap-2">
+                  <input type="date" id="date" value={documentDate} onChange={handleDocumentDateChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                </div>
+              </div>
+              {/* Removed Type/Type ID field */}
+              {/* <div className="flex items-center">
                 <label htmlFor="document-no" className="w-36 text-gray-700 font-medium">Document No</label>
                 <div className="flex-grow flex items-center gap-2">
                   <input type="text" id="document-no" value={documentNumber} onChange={handleDocumentNumberChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
-              </div>
+              </div> */}
               {/* Moved Currency ID here */}
-              <div className="flex items-center">
+              {/* <div className="flex items-center">
                 <label htmlFor="currency-id" className="w-36 text-gray-700 font-medium">Currency ID</label>
                 <div className="flex-grow flex items-center gap-2">
                   <input type="text" defaultValue="USD" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
-              </div>
+              </div> */}
             </div>
 
             <div className="flex flex-col space-y-3">
@@ -832,6 +840,10 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
                   <input type="text" defaultValue="PO-78901" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
+
+            </div>
+
+            <div className="flex flex-col space-y-3">
               {/* NEW POSITION FOR SHIP TO ADDRESS */}
               <div className="flex items-center">
                 {/* Changed label to a button for clickability */}
@@ -842,27 +854,10 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
                   <input type="text" id="ship-to-address" value={shipToAddress} onChange={handleShipToAddressChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
-            </div>
-
-            <div className="flex flex-col space-y-3">
-              {/* NEW POSITION FOR DATE */}
-              <div className="flex items-center">
-                <label htmlFor="date" className="w-36 text-gray-700 font-medium">Date</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <input type="date" id="date" value={documentDate} onChange={handleDocumentDateChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
               <div className="flex items-center">
                 <label htmlFor="default-site-id" className="w-36 text-gray-700 font-medium">Default Site ID</label>
                 <div className="flex-grow flex items-center gap-2">
                   <input type="text" defaultValue="WAREHOUSE" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-              {/* Moved Comment ID here previously */}
-              <div className="flex items-center">
-                <label htmlFor="comment-id" className="w-36 text-gray-700 font-medium">Comment ID</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <input type="text" id="comment-id" defaultValue="Initial Order" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
             </div>
@@ -993,14 +988,12 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
           {/* Combined summary section into a 2-column layout */}
           <div className="px-2 py-3 md:px-4 md:py-4 grid grid-cols-1 md:grid-cols-3 gap-x-4 md:gap-x-6 gap-y-2 md:gap-y-3 border-b border-gray-200 text-sm">
   {/* Left column: Amount Received, Terms Discount Taken, On Account */}
-  {/* Middle column: Empty */}
-  <div></div>
   <div className="flex flex-col space-y-2">
     <div className="flex items-center">
       <label htmlFor="amount-received" className="w-28 sm:w-32 text-gray-700 font-medium">Amount Received</label>
       <div className="flex-grow flex items-center gap-1">
         <span className="mr-1 text-gray-600 font-semibold">$</span>
-        <input type="text" id="amount-received" defaultValue="427.50" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"/>
+        <input type="text" id="amount-received" defaultValue="00.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"/>
       </div>
     </div>
     <div className="flex items-center">
@@ -1017,18 +1010,40 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
         <input type="text" id="on-account" defaultValue="0.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
       </div>
     </div>
+    {/* Moved Comment ID here previously */}
+     <div className="flex items-center">
+      <label htmlFor="comment-id" className="w-36 text-gray-700 font-medium">Requestor Name</label>
+      <div className="flex-grow flex items-center gap-2">
+        <input type="text" id="comment-id" defaultValue="DEREK SYBERT" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+      </div>
+     </div>
     <div className="h-6"></div>
   </div>
 
-  
+    {/* Middle column: Empty */}
+  <div></div>
 
   {/* Right column: Freight, Miscellaneous, Tax, Subtotal */}
   <div className="flex flex-col space-y-2">
     <div className="flex items-center">
+      <label htmlFor="subtotal" className="w-24 sm:w-28 text-gray-700 font-medium">Subtotal</label>
+      <div className="flex-grow flex items-center gap-1">
+        <span className="mr-1 text-gray-600 font-semibold">$</span>
+        <input type="text" id="subtotal" value={totalExtendedPrice.toFixed(2)} readOnly className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+      </div>
+    </div>
+    <div className="flex items-center">
+      <label htmlFor="tax" className="w-24 sm:w-28 text-gray-700 font-medium">Tax</label>
+      <div className="flex-grow flex items-center gap-1">
+        <span className="mr-1 text-gray-600 font-semibold">$</span>
+        <input type="text" id="tax" defaultValue="00.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" readOnly />
+      </div>
+    </div>
+    <div className="flex items-center">
       <label htmlFor="freight" className="w-24 sm:w-28 text-gray-700 font-medium">Freight</label>
       <div className="flex-grow flex items-center gap-1">
         <span className="mr-1 text-gray-600 font-semibold">$</span>
-        <input type="text" id="freight" defaultValue="15.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+        <input type="text" id="freight" defaultValue="00.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
       </div>
     </div>
     <div className="flex items-center">
@@ -1036,20 +1051,6 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
       <div className="flex-grow flex items-center gap-1">
         <span className="mr-1 text-gray-600 font-semibold">$</span>
         <input type="text" id="miscellaneous" defaultValue="0.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-      </div>
-    </div>
-    <div className="flex items-center">
-      <label htmlFor="tax" className="w-24 sm:w-28 text-gray-700 font-medium">Tax</label>
-      <div className="flex-grow flex items-center gap-1">
-        <span className="mr-1 text-gray-600 font-semibold">$</span>
-        <input type="text" id="tax" defaultValue="25.65" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" readOnly />
-      </div>
-    </div>
-    <div className="flex items-center">
-      <label htmlFor="subtotal" className="w-24 sm:w-28 text-gray-700 font-medium">Subtotal</label>
-      <div className="flex-grow flex items-center gap-1">
-        <span className="mr-1 text-gray-600 font-semibold">$</span>
-        <input type="text" id="subtotal" value={totalExtendedPrice.toFixed(2)} readOnly className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
       </div>
     </div>
   </div>
@@ -1064,17 +1065,17 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
                 Distributions
               </button>
               <button
-                onClick={handleDistributionsButtonClick}
+                onClick={handleGenerateInvoiceClick}
                 className="bg-black text-white hover:bg-gray-800 rounded-md px-4 py-2.5 text-sm font-medium shadow-sm transition-colors duration-200 w-full sm:w-auto"
               >
-                Next
+                Generate Invoice
               </button>
             </div>
             <div className="flex items-center w-full sm:w-auto justify-end">
               <label className="text-gray-700 text-base font-semibold mr-2">Total</label>
               <div className="flex items-center">
                 <span className="mr-1 text-gray-800 text-md font-bold">$</span>
-                <input type="text" value={(totalExtendedPrice + 15.00 + 25.65).toFixed(2)} className="p-2 border border-gray-300 bg-gray-50 text-left font-bold text-lg w-28 sm:w-32" readOnly />
+                <input type="text" value={(totalExtendedPrice).toFixed(2)} className="p-2 border border-gray-300 bg-gray-50 text-left font-bold text-lg w-28 sm:w-32" readOnly />
               </div>
             </div>
           </div>
@@ -1101,6 +1102,9 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
           onClose={() => setShowAddressPopup(false)}
         />
       )}
+      {showProgressBarPopup && (
+          <ProgressBarPopup onClose={() => setShowProgressBarPopup(false)} />
+        )}
     </div>
   );
 };
