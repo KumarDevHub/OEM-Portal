@@ -2,6 +2,7 @@ import logo from "./logo.svg";
 import "./App.css";
 import { Plus, Edit, Trash2 } from 'lucide-react'; // Import Plus, Edit, and Trash2 icons
 import AddCustomer from "./AddCustomer"
+import InvoiceProgressBar from './components/InvoiceProgressBar';
 import "./cust.css"
 
 import React, { useState, useMemo, useEffect } from "react"; // Added useEffect import
@@ -82,6 +83,48 @@ const mockUOMs = [
   { id: "SET", name: "Set" },
   { id: "PKG", name: "Package" },
 ];
+
+// New popup component for displaying the progress bar
+const ProgressBarPopup = ({ onClose }) => {
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState("Pending"); // Initial status changed to "Pending"
+  const stages = ["Start", "Validation", "Approval", "Posting", "Complete"];
+
+  useEffect(() => {
+    // Set initial progress and status
+    setProgress(0);
+    setStatus("Pending");
+
+    // Clear any existing intervals to prevent multiple running instances
+    // No further progress updates, as per requirement to only show "Pending"
+    return () => {}; // Return an empty cleanup function as no interval is started
+  }, []); // Run only once on mount
+
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50 font-sans">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-xl p-6 flex flex-col">
+        <div className="bg-black text-white p-4 -mx-6 -mt-6 rounded-t-lg flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">Invoice Processing Progress</h2>
+          <button onClick={onClose} className="text-white hover:text-gray-300 transition-colors duration-200">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+        <div className="p-4">
+          {/* Always pass 0 progress for the "Pending" only state */}
+          <InvoiceProgressBar progress={0} status={status} stages={stages} />
+        </div>
+        <div className="flex justify-end pt-4 border-t border-gray-200 mt-4">
+          <button
+            // onClick={onClose}
+            className="bg-gray-300 text-gray-800 rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-400 transition-colors duration-200"
+          >
+            Download
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // EditDistributionModal Component
 const EditDistributionModal = ({ distribution, onSave, onCancel }) => {
@@ -192,6 +235,7 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
   ]);
 
   const [editingDistribution, setEditingDistribution] = useState(null); // State for the distribution being edited
+  const [showProgressBarPopup, setShowProgressBarPopup] = useState(false); // New state for progress bar popup
 
   // Handle radio button change for distribution selection
   const handleDistributionSelect = (id) => {
@@ -225,6 +269,11 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
   // Handle cancel from modal
   const handleCancelEdit = () => {
     setEditingDistribution(null); // Close modal
+  };
+
+    // Handle "OK" button click to open progress bar popup
+  const handleOkClick = () => {
+    setShowProgressBarPopup(true);
   };
 
 
@@ -362,7 +411,7 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
 
           {/* Footer Buttons */}
           <div className="p-4 bg-gray-100 border-t border-gray-200 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4 rounded-b-lg">
-            <button className="bg-black text-white rounded-md px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200">Generate Invoice</button>
+            <button  onClick={handleOkClick} className="bg-black text-white rounded-md px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200">Generate Invoice</button>
           </div>
         </div>
         {editingDistribution && (
@@ -371,6 +420,9 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
             onSave={handleUpdateDistribution}
             onCancel={handleCancelEdit}
           />
+        )}
+        {showProgressBarPopup && (
+          <ProgressBarPopup onClose={() => setShowProgressBarPopup(false)} />
         )}
     </div>
   );
