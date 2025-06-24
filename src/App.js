@@ -475,8 +475,8 @@ const DeleteConfirmationMessage = ({ message, onConfirm, onCancel }) => {
 
           <button
             onClick={onConfirm}
-            style={{backgroundColor: "red"}}
-            className=" text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+            style={{backgroundColor: "black"}}
+            className=" text-white rounded-md px-5 py-2.5 text-xs font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
           >
             Yes
           </button>
@@ -799,21 +799,21 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
               <div className="flex items-center">
                 <label htmlFor="customer-id" className="w-36 text-gray-700 font-medium">Customer ID</label>
                 <div className="flex-grow flex items-center gap-2">
-                  <input type="text" id="customer-id" value={customerId} onChange={handleCustomerIdChange} className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="text" id="customer-id" value={customerId} onChange={handleCustomerIdChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
               {/* Removed Type/Type ID field */}
               <div className="flex items-center">
                 <label htmlFor="document-no" className="w-36 text-gray-700 font-medium">Document No</label>
                 <div className="flex-grow flex items-center gap-2">
-                  <input type="text" id="document-no" value={documentNumber} onChange={handleDocumentNumberChange} className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="text" id="document-no" value={documentNumber} onChange={handleDocumentNumberChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
               {/* Moved Currency ID here */}
               <div className="flex items-center">
                 <label htmlFor="currency-id" className="w-36 text-gray-700 font-medium">Currency ID</label>
                 <div className="flex-grow flex items-center gap-2">
-                  <input type="text" defaultValue="USD" className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="text" defaultValue="USD" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
             </div>
@@ -822,14 +822,14 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
               <div className="flex items-center">
                 <label htmlFor="customer-name" className="w-36 text-gray-700 font-medium">Customer Name</label>
                 <div className="flex-grow flex items-center gap-2">
-                  <input type="text" id="customer-name" value={customerName} onChange={handleCustomerNameChange} className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="text" id="customer-name" value={customerName} onChange={handleCustomerNameChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
               {/* Swap: Customer PO Number moved here */}
               <div className="flex items-center">
                 <label htmlFor="customer-po-number" className="w-36 text-gray-700 font-medium">Customer PO Number</label>
                 <div className="flex-grow flex items-center gap-2">
-                  <input type="text" defaultValue="PO-78901" className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="text" defaultValue="PO-78901" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
               {/* NEW POSITION FOR SHIP TO ADDRESS */}
@@ -839,7 +839,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
                   Ship To Address
                 </button>
                 <div className="flex-grow flex items-center gap-2">
-                  <input type="text" id="ship-to-address" value={shipToAddress} onChange={handleShipToAddressChange} className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="text" id="ship-to-address" value={shipToAddress} onChange={handleShipToAddressChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
             </div>
@@ -849,26 +849,26 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
               <div className="flex items-center">
                 <label htmlFor="date" className="w-36 text-gray-700 font-medium">Date</label>
                 <div className="flex-grow flex items-center gap-2">
-                  <input type="date" id="date" value={documentDate} onChange={handleDocumentDateChange} className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="date" id="date" value={documentDate} onChange={handleDocumentDateChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
               <div className="flex items-center">
                 <label htmlFor="default-site-id" className="w-36 text-gray-700 font-medium">Default Site ID</label>
                 <div className="flex-grow flex items-center gap-2">
-                  <input type="text" defaultValue="WAREHOUSE" className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="text" defaultValue="WAREHOUSE" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
               {/* Moved Comment ID here previously */}
               <div className="flex items-center">
                 <label htmlFor="comment-id" className="w-36 text-gray-700 font-medium">Comment ID</label>
                 <div className="flex-grow flex items-center gap-2">
-                  <input type="text" id="comment-id" defaultValue="Initial Order" className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="text" id="comment-id" defaultValue="Initial Order" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="flex justify-between items-center bg-gray-200 text-gray-800 p-2 rounded-md mb-0 font-semibold text-base border border-gray-300">
+          <div className="flex justify-between items-center bg-gray-200 text-gray-800 p-2 mb-0 font-semibold text-base border border-gray-300">
             <span>Line Items by Order Entered</span>
             <div className="flex items-center space-x-2"> {/* Container for add and delete buttons */}
               <button
@@ -998,21 +998,21 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
                 <label htmlFor="amount-received" className="w-36 sm:w-44 text-gray-700 font-medium">Amount Received</label>
                 <div className="flex-grow flex items-center gap-2">
                   <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="amount-received" defaultValue="427.50" className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-left text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="text" id="amount-received" defaultValue="427.50" className="w-full p-2 border border-gray-300 bg-gray-50 text-left text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
               <div className="flex items-center">
                 <label htmlFor="terms-discount-taken" className="w-36 sm:w-44 text-gray-700 font-medium">Terms Discount Taken</label>
                 <div className="flex-grow flex items-center gap-2">
                   <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="terms-discount-taken" defaultValue="0.00" className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-left text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="text" id="terms-discount-taken" defaultValue="0.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-left text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
               <div className="flex items-center">
                 <label htmlFor="on-account" className="w-36 sm:w-44 text-gray-700 font-medium">On Account</label>
                 <div className="flex-grow flex items-center gap-2">
                   <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="on-account" defaultValue="0.00" className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-left text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="text" id="on-account" defaultValue="0.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-left text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
               {/* Added a placeholder div to align with the subtotal field if needed */}
@@ -1025,28 +1025,28 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
                 <label htmlFor="freight" className="w-28 sm:w-36 text-gray-700 font-medium">Freight</label>
                 <div className="flex-grow flex items-center gap-2">
                   <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="freight" defaultValue="15.00" className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-left text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="text" id="freight" defaultValue="15.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-left text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
               <div className="flex items-center">
                 <label htmlFor="miscellaneous" className="w-28 sm:w-36 text-gray-700 font-medium">Miscellaneous</label>
                 <div className="flex-grow flex items-center gap-2">
                   <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="miscellaneous" defaultValue="0.00" className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-left text-sm focus:ring-red-700 focus:border-red-700" />
+                  <input type="text" id="miscellaneous" defaultValue="0.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-left text-sm focus:ring-red-700 focus:border-red-700" />
                 </div>
               </div>
               <div className="flex items-center">
                 <label htmlFor="tax" className="w-28 sm:w-36 text-gray-700 font-medium">Tax</label>
                 <div className="flex-grow flex items-center gap-2">
                   <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="tax" defaultValue="25.65" className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-left text-sm" readOnly />
+                  <input type="text" id="tax" defaultValue="25.65" className="w-full p-2 border border-gray-300 bg-gray-50 text-left text-sm" readOnly />
                 </div>
               </div>
               <div className="flex items-center">
                 <label htmlFor="subtotal" className="w-28 sm:w-36 text-gray-700 font-medium">Subtotal</label>
                 <div className="flex-grow flex items-center gap-2">
                   <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="subtotal" value={totalExtendedPrice.toFixed(2)} readOnly className="w-full p-2 border border-gray-300 rounded-md bg-gray-50 text-left text-sm" />
+                  <input type="text" id="subtotal" value={totalExtendedPrice.toFixed(2)} readOnly className="w-full p-2 border border-gray-300 bg-gray-50 text-left text-sm" />
                 </div>
               </div>
             </div>
@@ -1070,8 +1070,8 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
             <div className="flex items-center w-full sm:w-auto justify-end">
               <label className="text-gray-700 text-base font-semibold mr-2">Total</label>
               <div className="flex items-center">
-                <span className="mr-1 text-gray-800 text-lg font-bold">$</span>
-                <input type="text" value={(totalExtendedPrice + 15.00 + 25.65).toFixed(2)} className="p-2 border border-gray-300 rounded-md bg-gray-50 text-left font-bold text-lg w-28 sm:w-32" readOnly />
+                <span className="mr-1 text-gray-800 text-md font-bold">$</span>
+                <input type="text" value={(totalExtendedPrice + 15.00 + 25.65).toFixed(2)} className="p-2 border border-gray-300 bg-gray-50 text-left font-bold text-lg w-28 sm:w-32" readOnly />
               </div>
             </div>
           </div>
@@ -1556,7 +1556,7 @@ const App = () => {
 
 {selectedCustomerForDelete && (
   <DeleteConfirmationMessage
-  message={"Are you sure you want to delete the selected 1 OEM(s)?"}
+  message={"Are you sure you want to delete the selected customer?"}
   onCancel={() => setSelectedCustomerForDelete(undefined)}
   onConfirm={() => {
     setCustomerData(CustomerData.filter((data) => data.customerId != selectedCustomerForDelete.customerId));

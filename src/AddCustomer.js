@@ -171,7 +171,7 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                 .form-item input[type="text"] {
                   flex-grow: 1; /* Input fills remaining space */
                   border-radius: 0 !important; /* Square edges */
-                  border-width: 2px !important; /* Thicker border */
+                  border-width: 1px !important; /* Thicker border */
                   padding: 6px 10px;
                   border: 1px solid #ccc;
                   border-radius: 4px;
