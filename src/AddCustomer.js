@@ -465,7 +465,7 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                   />
                 </div>
               </div>
-              <h1 className="section-header">Address & Contact</h1>
+              <h1 className="section-header">Address Info</h1>
               <div className="form-row">
                 <div className="form-item">
                   <label htmlFor="streetAddress1">Street Address 1 *</label>

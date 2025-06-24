@@ -367,7 +367,7 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
                           name="distributionSelection"
                           checked={selectedDistributionId === dist.id}
                           onChange={() => handleDistributionSelect(dist.id)} // Update state on radio click
-                          className="accent-red-700"
+                          className="accent-black"
                         />
                       </td>
                       <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
@@ -944,7 +944,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
                         name="lineItemSelection" // Name attribute for radio buttons ensures only one can be selected
                         checked={selectedLineItemId === item.id}
                         onChange={(e) => handleRadioButtonChange(item.id, e)}
-                        className="accent-red-700"
+                        className="accent-black"
                       />
                     </td>
                     <td className="border border-gray-200 p-2">
@@ -991,66 +991,69 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
           </div>
 
           {/* Combined summary section into a 2-column layout */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-10 gap-y-3 md:gap-y-4 mb-6 sm:mb-8 text-sm">
-            {/* Left column: Amount Received, Terms Discount Taken, On Account */}
-            <div className="flex flex-col space-y-3">
-              <div className="flex items-center">
-                <label htmlFor="amount-received" className="w-36 sm:w-44 text-gray-700 font-medium">Amount Received</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="amount-received" defaultValue="427.50" className="w-full p-2 border border-gray-300 bg-gray-50 text-left text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label htmlFor="terms-discount-taken" className="w-36 sm:w-44 text-gray-700 font-medium">Terms Discount Taken</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="terms-discount-taken" defaultValue="0.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-left text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label htmlFor="on-account" className="w-36 sm:w-44 text-gray-700 font-medium">On Account</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="on-account" defaultValue="0.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-left text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-              {/* Added a placeholder div to align with the subtotal field if needed */}
-              <div className="h-12"></div>
-            </div>
+          <div className="px-2 py-3 md:px-4 md:py-4 grid grid-cols-1 md:grid-cols-3 gap-x-4 md:gap-x-6 gap-y-2 md:gap-y-3 border-b border-gray-200 text-sm">
+  {/* Left column: Amount Received, Terms Discount Taken, On Account */}
+  {/* Middle column: Empty */}
+  <div></div>
+  <div className="flex flex-col space-y-2">
+    <div className="flex items-center">
+      <label htmlFor="amount-received" className="w-28 sm:w-32 text-gray-700 font-medium">Amount Received</label>
+      <div className="flex-grow flex items-center gap-1">
+        <span className="mr-1 text-gray-600 font-semibold">$</span>
+        <input type="text" id="amount-received" defaultValue="427.50" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"/>
+      </div>
+    </div>
+    <div className="flex items-center">
+      <label htmlFor="terms-discount-taken" className="w-28 sm:w-32 text-gray-700 font-medium">Terms Discount Taken</label>
+      <div className="flex-grow flex items-center gap-1">
+        <span className="mr-1 text-gray-600 font-semibold">$</span>
+        <input type="text" id="terms-discount-taken" defaultValue="0.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+      </div>
+    </div>
+    <div className="flex items-center">
+      <label htmlFor="on-account" className="w-28 sm:w-32 text-gray-700 font-medium">On Account</label>
+      <div className="flex-grow flex items-center gap-1">
+        <span className="mr-1 text-gray-600 font-semibold">$</span>
+        <input type="text" id="on-account" defaultValue="0.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+      </div>
+    </div>
+    <div className="h-6"></div>
+  </div>
 
-            {/* Right column: Freight, Miscellaneous, Tax, Subtotal */}
-            <div className="flex flex-col space-y-3">
-              <div className="flex items-center">
-                <label htmlFor="freight" className="w-28 sm:w-36 text-gray-700 font-medium">Freight</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="freight" defaultValue="15.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-left text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label htmlFor="miscellaneous" className="w-28 sm:w-36 text-gray-700 font-medium">Miscellaneous</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="miscellaneous" defaultValue="0.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-left text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label htmlFor="tax" className="w-28 sm:w-36 text-gray-700 font-medium">Tax</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="tax" defaultValue="25.65" className="w-full p-2 border border-gray-300 bg-gray-50 text-left text-sm" readOnly />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label htmlFor="subtotal" className="w-28 sm:w-36 text-gray-700 font-medium">Subtotal</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <span className="mr-1 text-gray-600 font-semibold">$</span>
-                  <input type="text" id="subtotal" value={totalExtendedPrice.toFixed(2)} readOnly className="w-full p-2 border border-gray-300 bg-gray-50 text-left text-sm" />
-                </div>
-              </div>
-            </div>
-          </div>
+  
+
+  {/* Right column: Freight, Miscellaneous, Tax, Subtotal */}
+  <div className="flex flex-col space-y-2">
+    <div className="flex items-center">
+      <label htmlFor="freight" className="w-24 sm:w-28 text-gray-700 font-medium">Freight</label>
+      <div className="flex-grow flex items-center gap-1">
+        <span className="mr-1 text-gray-600 font-semibold">$</span>
+        <input type="text" id="freight" defaultValue="15.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+      </div>
+    </div>
+    <div className="flex items-center">
+      <label htmlFor="miscellaneous" className="w-24 sm:w-28 text-gray-700 font-medium">Miscellaneous</label>
+      <div className="flex-grow flex items-center gap-1">
+        <span className="mr-1 text-gray-600 font-semibold">$</span>
+        <input type="text" id="miscellaneous" defaultValue="0.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+      </div>
+    </div>
+    <div className="flex items-center">
+      <label htmlFor="tax" className="w-24 sm:w-28 text-gray-700 font-medium">Tax</label>
+      <div className="flex-grow flex items-center gap-1">
+        <span className="mr-1 text-gray-600 font-semibold">$</span>
+        <input type="text" id="tax" defaultValue="25.65" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" readOnly />
+      </div>
+    </div>
+    <div className="flex items-center">
+      <label htmlFor="subtotal" className="w-24 sm:w-28 text-gray-700 font-medium">Subtotal</label>
+      <div className="flex-grow flex items-center gap-1">
+        <span className="mr-1 text-gray-600 font-semibold">$</span>
+        <input type="text" id="subtotal" value={totalExtendedPrice.toFixed(2)} readOnly className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+      </div>
+    </div>
+  </div>
+</div>
 
           <div className="flex flex-col sm:flex-row justify-between items-center mt-4 sm:mt-6 space-y-4 sm:space-y-0">
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
