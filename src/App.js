@@ -1587,7 +1587,7 @@ const App = () => {
               </div>
                 </form>
               </div>
-              <div className="overflow-x-auto">
+              <div >
                 {showTable && (
                   <div
                     className={animate ? "animate-fadeIn" : ""}

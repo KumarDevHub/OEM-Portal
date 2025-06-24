@@ -162,7 +162,7 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
 
                 .form-item label {
                   flex-shrink: 0;
-                  min-width: 20%; /* Consistent width for labels */
+                  min-width: 25%; /* Consistent width for labels */
                   text-align: left; /* Align text to the right */
                   font-weight: bold;
                   color: #666;
