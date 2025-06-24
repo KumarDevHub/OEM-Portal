@@ -5,10 +5,11 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
     const [formData, setFormData] = useState(customerData || {
         customerId: id,
         contact: "", // to be removed once table updated
-        email: "", // to be removed once table updated
+        email1: "",
+        email2:"" ,// to be removed once table updated
         paymentTerms: "",
         Customer: "",
-        phone: "",
+        phone1: "",
         company: "",
         phone2: "",
         shortName: "",
@@ -343,10 +344,10 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                                     />
                                 </div>
                                 <div className="form-item">
-                                <label htmlFor="phone">Phone 1</label>
+                                <label htmlFor="phone 1">Phone 1</label>
                                     <input
                                         type="text"
-                                        id="phone"
+                                        id="phone 1"
                                         value={formData.phone}
                                         onChange={handleInputChange}
                                     />
@@ -366,8 +367,8 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                                     <label htmlFor="phone">Phone 2</label>
                                     <input
                                         type="text"
-                                        id="phone"
-                                        value={formData.phone}
+                                        id="phone 2"
+                                        value={formData.phone2}
                                         onChange={handleInputChange}
                                     />
                                 </div>
@@ -383,10 +384,10 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                                     />
                                 </div>
                                 <div className="form-item">
-                                <label htmlFor="email">Email 1</label>
+                                <label htmlFor="email 1">Email 1</label>
                                     <input
                                         type="text"
-                                        id="email"
+                                        id="email 1"
                                         value={formData.email}
                                         onChange={handleInputChange}
                                     />
@@ -403,11 +404,11 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                                     />
                                 </div>
                                 <div className="form-item">
-                                <label htmlFor="email">Email 1</label>
+                                <label htmlFor="email 2">Email 2</label>
                                     <input
                                         type="text"
-                                        id="email"
-                                        value={formData.email}
+                                        id="email 2"F
+                                        value={formData.email2}
                                         onChange={handleInputChange}
                                     />
                                 </div>
