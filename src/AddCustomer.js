@@ -24,6 +24,7 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
         streetAddress3: "",
         zip: "",
         city: "",
+        Contact:"",
         status: "Active", // Default status
     });
 
@@ -516,7 +517,16 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                                     />
                                 </div>
                             </div>
-                            <div className="form-row">                                
+                            <div className="form-row">  
+                            <div className="form-item">
+                                    <label htmlFor="contact">Contact</label>
+                                    <input
+                                        type="text"
+                                        id="contact"
+                                        value={formData.contact}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>                              
                                 <div className="form-item">
                                     <label>Status</label>
                                     <div className="radio-group" style={{display: "contents"}} id="status">
