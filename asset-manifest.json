@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/OEM-Portal/static/css/main.0ac54f90.css",
-    "main.js": "/OEM-Portal/static/js/main.ec1a7de9.js",
+    "main.js": "/OEM-Portal/static/js/main.fca888e5.js",
     "static/js/453.324e9ea6.chunk.js": "/OEM-Portal/static/js/453.324e9ea6.chunk.js",
     "static/media/logo.png": "/OEM-Portal/static/media/logo.167a4e985c474ea6e96d.png",
     "index.html": "/OEM-Portal/index.html",
     "main.0ac54f90.css.map": "/OEM-Portal/static/css/main.0ac54f90.css.map",
-    "main.ec1a7de9.js.map": "/OEM-Portal/static/js/main.ec1a7de9.js.map",
+    "main.fca888e5.js.map": "/OEM-Portal/static/js/main.fca888e5.js.map",
     "453.324e9ea6.chunk.js.map": "/OEM-Portal/static/js/453.324e9ea6.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.0ac54f90.css",
-    "static/js/main.ec1a7de9.js"
+    "static/js/main.fca888e5.js"
   ]
 }
