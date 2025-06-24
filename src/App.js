@@ -1,4 +1,4 @@
-import logo from "./logo.svg";
+import logo from "./logo.png";
 import "./App.css";
 import { Plus, Edit, Trash2 } from 'lucide-react'; // Import Plus, Edit, and Trash2 icons
 import AddCustomer from "./AddCustomer"
@@ -1358,6 +1358,8 @@ const App = () => {
       row.customerId.toLowerCase().includes(searchValue.toLowerCase())
   );
 
+  const [showLogout, setShowLogout] = useState(false);
+
   // State for pagination
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
   const recordsPerPage = 10;
@@ -2076,49 +2078,71 @@ const App = () => {
     <div className="bg-gray-100 font-sans text-gray-800 flex flex-col">
       {/* New Top Bar for Application Title/Branding */}
       <div className="bg-black p-3 sm:p-4 flex items-center justify-between border-b border-gray-800 shadow-sm">
-        <div className="flex items-center space-x-1 sm:space-x-2">
-          {/* Verizon Logo */}
-          <span className="text-red-700 text-2xl sm:text-3xl font-bold">
-            verizon
-          </span>
-          <span className="text-sm sm:text-xl font-bold text-white hidden sm:block pt-1">
-            | Vision 2.0
-          </span>
-        </div>
-        <div className="flex items-center space-x-2 sm:space-x-4 text-white text-xs sm:text-sm">
-          <span className="hidden md:block">Portal Updates</span>
-          <svg
-            className="w-4 h-4 sm:w-5 sm:h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M15 17h5l-1.405-1.405A2.002 2.002 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-            ></path>
-          </svg>
-          <span className="hidden md:block">Notifications</span>
-          <svg
-            className="w-4 h-4 sm:w-5 sm:h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M3 10v11h18V10M3 10a2 2 0 002-2h14a2 2 0 012 2v-1a2 2 0 00-2-2H5a2 2 0 00-2 2v1"
-            ></path>
-          </svg>
-          <span className="hidden md:block">Dashboard Team</span>
-        </div>
+  <div className="flex items-center space-x-1 sm:space-x-2">
+    {/* Verizon Logo */}
+    <img
+  src={logo}
+  alt="Verizon Logo"
+  className="h-6 sm:h-6 w-auto mr-2 inline-block align-middle"
+/>
+    <span className="text-sm sm:text-xl font-bold text-white hidden sm:block">
+      | Vision 2.0
+    </span>
+  </div>
+  <div
+    className={`flex items-center space-x-2 mr-6 sm:space-x-4 text-white text-xs sm:text-sm relative transition-shadow duration-300
+      ${showLogout ? "z-30" : ""}
+    `}
+  >
+    {/* Cylinder shadow background */}
+    <div
+      className={`
+        absolute -top-2 left-0 right-0 h-[56px] sm:h-[56px] rounded-full
+        transition-all duration-300 pointer-events-none
+        ${showLogout ? "shadow-[0_8px_32px_0_rgba(30,41,59,0.45)] bg-[#23272e]" : ""}
+      `}
+      style={{
+        zIndex: 1,
+        // The shadow ends just before the logout button
+        width: "100%",
+      }}
+    ></div>
+    {/* User Avatar */}
+    <img
+      src="https://ui-avatars.com/api/?name=John+Doe&background=1d1f1f&color=fff"
+      alt="User Avatar"
+      className="w-8 h-8 rounded-full border-2 border-gray-700 relative z-10"
+      onClick={() => setShowLogout((prev) => !prev)}
+      style={{ cursor: "pointer" }}
+    />
+    {/* Username (clickable) */}
+    <button
+      className="font-semibold hidden sm:block bg-transparent border-none outline-none cursor-pointer relative z-10 px-2 py-1"
+      onClick={() => setShowLogout((prev) => !prev)}
+      style={{
+        borderRadius: "9999px",
+        background: showLogout ? "#23272e" : "transparent",
+        boxShadow: showLogout
+          ? "0 8px 32px 0 rgba(30,41,59,0.45)"
+          : "none",
+        transition: "background 0.3s, box-shadow 0.3s",
+      }}
+    >
+      John Doe
+    </button>
+    {/* Logout Dropdown */}
+    {showLogout && (
+      <div className="absolute right-2 top-full mt-5 w-32 bg-white rounded-b shadow-lg z-20">
+        <button
+          className="block w-full rounded-md text-center text-left px-4 py-2 text-sm text-white bg-black hover:bg-black hover:text-white"
+          // onClick={handleLogout}
+        >
+          Logout
+        </button>
       </div>
+    )}
+  </div>
+</div>
 
       {/* Main Top Navigation Bar (with main links) */}
       <header className="bg-white text-gray-900 p-3 sm:p-4 flex items-center justify-start border-b border-gray-200 overflow-x-auto whitespace-nowrap">
