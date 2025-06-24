@@ -1937,8 +1937,8 @@ const App = () => {
                                 <div className="relative group">
                                   <button
                                     className="p-1 rounded-full hover:bg-red-100 transition-colors"
-                                    aria-label="Delete"
-                                   // onClick={() => setSelectedCustomerForDelete(row)}
+                                   aria-label="Delete"
+                                    onClick={() => setSelectedCustomerForDelete(row)}
                                   >
                                     <svg
                                       xmlns="http://www.w3.org/2000/svg"

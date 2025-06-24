@@ -89,7 +89,7 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 10px; /* Horizontal gap between form-items in a row */
-  margin-bottom: 5px; /* Vertical gap between form-rows */
+  margin-bottom: 2px; /* Vertical gap between form-rows */
   align-items: center;
 }
 
@@ -216,7 +216,7 @@ body {
   }
   .form-row {
     flex-direction: column;
-    gap: 5px;
+    gap: 2px;
   }
   .form-item {
     flex-basis: 100%;

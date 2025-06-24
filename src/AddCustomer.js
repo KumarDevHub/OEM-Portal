@@ -5,10 +5,11 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
     const [formData, setFormData] = useState(customerData || {
         customerId: id,
         contact: "", // to be removed once table updated
-        email: "", // to be removed once table updated
+        email1: "",
+        email2:"" ,// to be removed once table updated
         paymentTerms: "",
         Customer: "",
-        phone: "",
+        phone1: "",
         company: "",
         phone2: "",
         shortName: "",
@@ -80,7 +81,7 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                   border-radius: 8px;
                   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
                   width: 90%;
-                  max-width: 900px;
+                  max-width: 75vw;
                   max-height: 95vh;
                   overflow: hidden;
                   display: flex;
@@ -126,7 +127,7 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                 }
 
                 .section {
-                  padding: 5px;
+                  padding: 12px;
                   padding-left: 12px;
                   padding-right: 12px;
                   border: 1px solid #e0e0e0;
@@ -134,17 +135,17 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                   background-color: #f9f9f9;
                 }
 
-                .section h3 {
+                .section .section-header {
                   margin-top: 0;
                   margin-bottom: 10px;
-                  color: #555;
-                  font-size: 16px;
+                  color: #000;
+                  font-size: 18px;
                 }
 
                 .form-row {
                   display: flex;
                   flex-wrap: wrap;
-                  gap: 10px; /* Horizontal gap between form-items in a row */
+                  gap: 3rem; /* Horizontal gap between form-items in a row */
                   margin-bottom: 5px; /* Vertical gap between form-rows */
                   align-items: center;
                 }
@@ -152,15 +153,15 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                 .form-item {
                   display: flex;
                   align-items: center;
-                  flex-basis: calc(50% - 5px); /* Half width for two columns per row */
+                  flex-basis: calc(50% - 3rem); /* Half width for two columns per row */
                   min-width: 280px; /* Minimum width for each column item */
                   gap: 8px; /* Space between label and its input */
                 }
 
                 .form-item label {
                   flex-shrink: 0;
-                  min-width: 110px; /* Consistent width for labels */
-                  text-align: right; /* Align text to the right */
+                  min-width: 20%; /* Consistent width for labels */
+                  text-align: left; /* Align text to the right */
                   font-weight: bold;
                   color: #666;
                   font-size: 12px;
@@ -330,7 +331,7 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
 
                     <div className="modal-body">
                         <div className="section">
-                            <h3>Customer Info</h3>
+                            <h1 className="section-header">Customer Info</h1>
                             <div className="form-row">
                                 <div className="form-item">
                                     <label htmlFor="customerId">Customer ID</label>
@@ -343,11 +344,11 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                                     />
                                 </div>
                                 <div className="form-item">
-                                    <label htmlFor="paymentTerms">Payment Terms</label>
+                                <label htmlFor="phone 1">Phone 1</label>
                                     <input
                                         type="text"
-                                        id="paymentTerms"
-                                        value={formData.paymentTerms}
+                                        id="phone 1"
+                                        value={formData.phone}
                                         onChange={handleInputChange}
                                     />
                                 </div>
@@ -363,30 +364,10 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                                     />
                                 </div>
                                 <div className="form-item">
-                                    <label htmlFor="phone">Phone 1</label>
+                                    <label htmlFor="phone">Phone 2</label>
                                     <input
                                         type="text"
-                                        id="phone"
-                                        value={formData.phone}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                            </div>
-                            <div className="form-row">
-                                <div className="form-item">
-                                    <label htmlFor="name">Name *</label>
-                                    <input
-                                        type="text"
-                                        id="name"
-                                        value={formData.company}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                <div className="form-item">
-                                    <label htmlFor="phone2">Phone 2</label>
-                                    <input
-                                        type="text"
-                                        id="phone2"
+                                        id="phone 2"
                                         value={formData.phone2}
                                         onChange={handleInputChange}
                                     />
@@ -394,7 +375,7 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                             </div>
                             <div className="form-row">
                                 <div className="form-item">
-                                    <label htmlFor="shortName">Short Name</label>
+                                <label htmlFor="shortName">Short Name</label>
                                     <input
                                         type="text"
                                         id="shortName"
@@ -403,18 +384,18 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                                     />
                                 </div>
                                 <div className="form-item">
-                                    <label htmlFor="shippingMethod">Shipping Method</label>
+                                <label htmlFor="email 1">Email 1</label>
                                     <input
                                         type="text"
-                                        id="shippingMethod"
-                                        value={formData.shippingMethod}
+                                        id="email 1"
+                                        value={formData.email}
                                         onChange={handleInputChange}
                                     />
                                 </div>
                             </div>
                             <div className="form-row">
                                 <div className="form-item">
-                                    <label htmlFor="statementName">Statement Name</label>
+                                <label htmlFor="statementName">Statement Name</label>
                                     <input
                                         type="text"
                                         id="statementName"
@@ -423,19 +404,18 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                                     />
                                 </div>
                                 <div className="form-item">
-                                    <label htmlFor="territoryID">Territory ID</label>
+                                <label htmlFor="email 2">Email 2</label>
                                     <input
                                         type="text"
-                                        id="territoryID"
-                                        value={formData.territoryID}
+                                        id="email 2"F
+                                        value={formData.email2}
                                         onChange={handleInputChange}
                                     />
                                 </div>
-                                
                             </div>
                             <div className="form-row">
                                 <div className="form-item">
-                                    <label htmlFor="classID">Class ID</label>
+                                <label htmlFor="classID">Class ID</label>
                                     <input
                                         type="text"
                                         id="classID"
@@ -444,16 +424,38 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                                     />
                                 </div>
                                 <div className="form-item">
-                                    <label htmlFor="email">Email</label>
+                                <label htmlFor="shippingMethod">Shipping Method</label>
                                     <input
                                         type="text"
-                                        id="email"
-                                        value={formData.email}
+                                        id="shippingMethod"
+                                        value={formData.shippingMethod}
+                                        onChange={handleInputChange}
+                                    />
+                                   
+                                </div>
+                                
+                            </div>
+                            <div className="form-row">
+                                <div className="form-item">
+                                <label htmlFor="paymentTerms">Payment Terms</label>
+                                    <input
+                                        type="text"
+                                        id="paymentTerms"
+                                        value={formData.paymentTerms}
+                                        onChange={handleInputChange}
+                                    />
+                                </div>
+                                <div className="form-item">
+                                <label htmlFor="territoryID">Territory ID</label>
+                                    <input
+                                        type="text"
+                                        id="territoryID"
+                                        value={formData.territoryID}
                                         onChange={handleInputChange}
                                     />
                                 </div>
                             </div>
-                            <h3>Address & Contact</h3>
+                            <h1 className="section-header">Address & Contact</h1>
                             <div className="form-row">
                                 <div className="form-item">
                                     <label htmlFor="streetAddress1">Street Address 1 *</label>
@@ -496,11 +498,11 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                             </div>
                             <div className="form-row">
                                 <div className="form-item">
-                                    <label htmlFor="streetAddress3">Street Address 3</label>
+                                <label htmlFor="city">City *</label>
                                     <input
                                         type="text"
-                                        id="streetAddress3"
-                                        value={formData.streetAddress3}
+                                        id="city"
+                                        value={formData.city}
                                         onChange={handleInputChange}
                                     />
                                 </div>
@@ -514,16 +516,7 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                                     />
                                 </div>
                             </div>
-                            <div className="form-row">
-                                <div className="form-item">
-                                    <label htmlFor="city">City *</label>
-                                    <input
-                                        type="text"
-                                        id="city"
-                                        value={formData.city}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
+                            <div className="form-row">                                
                                 <div className="form-item">
                                     <label>Status</label>
                                     <div className="radio-group" style={{display: "contents"}} id="status">
@@ -561,6 +554,9 @@ const AddCustomer = ({onClose, onSave, customerData, id}) => {
                                             <label htmlFor="statusInactive">Inactive</label>
                                         </div>
                                     </div>
+                                </div>
+                                <div className="form-item">
+                                    
                                 </div>
                             </div>
                         </div>
