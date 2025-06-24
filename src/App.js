@@ -2,6 +2,7 @@ import logo from "./logo.svg";
 import "./App.css";
 import { Plus, Edit, Trash2 } from 'lucide-react'; // Import Plus, Edit, and Trash2 icons
 import AddCustomer from "./AddCustomer"
+import InvoiceProgressBar from './components/InvoiceProgressBar';
 import "./cust.css"
 
 import React, { useState, useMemo, useEffect } from "react"; // Added useEffect import
@@ -82,6 +83,48 @@ const mockUOMs = [
   { id: "SET", name: "Set" },
   { id: "PKG", name: "Package" },
 ];
+
+// New popup component for displaying the progress bar
+const ProgressBarPopup = ({ onClose }) => {
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState("Pending"); // Initial status changed to "Pending"
+  const stages = ["Start", "Validation", "Approval", "Posting", "Complete"];
+
+  useEffect(() => {
+    // Set initial progress and status
+    setProgress(0);
+    setStatus("Pending");
+
+    // Clear any existing intervals to prevent multiple running instances
+    // No further progress updates, as per requirement to only show "Pending"
+    return () => {}; // Return an empty cleanup function as no interval is started
+  }, []); // Run only once on mount
+
+  return (
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50 font-sans">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-xl p-6 flex flex-col">
+        <div className="bg-black text-white p-4 -mx-6 -mt-6 rounded-t-lg flex justify-between items-center mb-4">
+          <h2 className="text-xl font-bold">Invoice Processing Progress</h2>
+          <button onClick={onClose} className="text-white hover:text-gray-300 transition-colors duration-200">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+        <div className="p-4">
+          {/* Always pass 0 progress for the "Pending" only state */}
+          <InvoiceProgressBar progress={0} status={status} stages={stages} />
+        </div>
+        <div className="flex justify-end pt-4 border-t border-gray-200 mt-4">
+          <button
+            // onClick={onClose}
+            className="bg-gray-300 text-gray-800 rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-400 transition-colors duration-200"
+          >
+            Download
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // EditDistributionModal Component
 const EditDistributionModal = ({ distribution, onSave, onCancel }) => {
@@ -188,14 +231,11 @@ const EditDistributionModal = ({ distribution, onSave, onCancel }) => {
 const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
   const [distributions, setDistributions] = useState([
     { id: 1, account: '000-1200-00', type: 'RECV', debit: 89198.87, credit: 0.00, description: 'Accounts Receivable' },
-    { id: 2, account: '000-4100-01', type: 'SALES', debit: 0.00, credit: 5645.47, description: 'Product Sales A' },
+    { id: 2, account: '000-4100-01', type: 'SALES', debit: 0.00, credit: 89198.87, description: 'Product Sales A' },
   ]);
 
-  // Removed editingDistribution state
-  const [selectedDistributionId, setSelectedDistributionId] = useState(null); // New state for selected distribution ID
-
-  // Removed handleUpdateDistribution function
-  // Removed handleEditClick function
+  const [editingDistribution, setEditingDistribution] = useState(null); // State for the distribution being edited
+  const [showProgressBarPopup, setShowProgressBarPopup] = useState(false); // New state for progress bar popup
 
   // Handle radio button change for distribution selection
   const handleDistributionSelect = (id) => {
@@ -205,9 +245,41 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
   const functionalTotalsDebit = distributions.reduce((sum, item) => sum + parseFloat(item.debit || 0), 0);
   const functionalTotalsCredit = distributions.reduce((sum, item) => sum + parseFloat(item.credit || 0), 0);
 
+  // State for selected distribution ID (single selection for radio buttons)
+  const [selectedDistributionId, setSelectedDistributionId] = useState(null);
+
+  // Handle edit click
+  const handleEditClick = () => {
+    if (selectedDistributionId) {
+      const distToEdit = distributions.find(dist => dist.id === selectedDistributionId);
+      setEditingDistribution(distToEdit);
+    }
+  };
+
+  // Handle update from modal
+  const handleUpdateDistribution = (updatedDist) => {
+    setDistributions(prevDistributions =>
+      prevDistributions.map(dist =>
+        dist.id === updatedDist.id ? updatedDist : dist
+      )
+    );
+    setEditingDistribution(null); // Close modal
+  };
+
+  // Handle cancel from modal
+  const handleCancelEdit = () => {
+    setEditingDistribution(null); // Close modal
+  };
+
+    // Handle "OK" button click to open progress bar popup
+  const handleOkClick = () => {
+    setShowProgressBarPopup(true);
+  };
+
+
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50 font-sans">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-5xl h-[90vh] max-h-full flex flex-col">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-7xl h-[62vh] max-h-full flex flex-col">
         {/* Header */}
         <div className="bg-black text-white p-4 rounded-t-lg flex justify-between items-center">
           <h2 className="text-xl font-bold">Sales Distribution Entry</h2>
@@ -230,7 +302,7 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
           </div>
           <div className="flex flex-col space-y-3">
             <div className="flex items-center">
-              <label htmlFor="dist-document-no" className="w-28 sm:w-36 text-gray-700 font-medium">Document No</label>
+              <label htmlFor="dist-document-no" className="w-28 sm:w-36 text-gray-700 font-medium">Document No.</label>
               <input type="text" id="dist-document-no" defaultValue={invoiceHeaderData?.documentNumber || ''} readOnly className="flex-grow px-2 py-1 border border-gray-300 rounded-md bg-gray-50 text-xs" />
             </div>
             <div className="flex items-center">
@@ -243,14 +315,14 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
               <label htmlFor="dist-functional-amount" className="w-28 sm:w-36 text-gray-700 font-medium">Functional Amount</label>
               <div className="flex-grow flex items-center gap-2">
                 <span className="mr-1 text-gray-600 font-semibold text-xs">$</span>
-                <input type="text" id="dist-functional-amount" defaultValue="89,198.87" readOnly className="flex-grow px-2 py-1 border border-gray-300 rounded-md bg-gray-50 text-right text-xs" />
+                <input type="text" id="dist-functional-amount" defaultValue="89,198.87" readOnly className="flex-grow px-2 py-1 border border-gray-300 rounded-md bg-gray-50 text-left text-xs" />
               </div>
             </div>
             <div className="flex items-center">
               <label htmlFor="dist-originating-amount" className="w-28 sm:w-36 text-gray-700 font-medium">Originating Amount</label>
               <div className="flex-grow flex items-center gap-2">
                   <span className="mr-1 text-gray-600 font-semibold text-xs">$</span>
-                  <input type="text" id="dist-originating-amount" defaultValue="0.00" readOnly className="flex-grow px-2 py-1 border border-gray-300 rounded-md bg-gray-50 text-right text-xs" />
+                  <input type="text" id="dist-originating-amount" defaultValue="0.00" readOnly className="flex-grow px-2 py-1 border border-gray-300 rounded-md bg-gray-50 text-left text-xs" />
                 </div>
               </div>
             </div>
@@ -261,30 +333,35 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
             <div className="flex justify-between items-center mb-3">
               <h3 className="text-lg font-semibold text-gray-800">Account Distributions</h3>
               <div className="flex items-center space-x-2">
-                {/* Removed Edit button */}
+                <button
+                  onClick={handleEditClick}
+                  className={`rounded-full p-1.5 text-xs font-medium shadow-sm transition-colors duration-200 ${
+                    selectedDistributionId
+                      ? 'bg-black text-white hover:bg-gray-800'
+                      : 'bg-gray-400 text-gray-600 cursor-not-allowed'
+                  }`}
+                  title="Edit Selected Distribution"
+                  disabled={!selectedDistributionId}
+                >
+                  <Edit size={16} />
+                </button>
               </div>
             </div>
             <div className="overflow-x-auto mb-4 border border-gray-300 rounded-lg">
               <table className="w-full border-collapse bg-white">
-                <thead>
-                  <tr>
-                    <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[40px]">
-                       {/* Empty header for radio button column */}
-                    </th>
-                    <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[35%]">Distribution Reference</th>
-                    <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">Type</th>
-                    <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">Originating Debit</th>
-                    <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">Originating Credit</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {distributions.map((dist) => (
+                <thead><tr>
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[20px]"></th> {/* Adjusted width for first column */}
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[35%]">Distribution Reference</th>
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">Type</th>
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">Originating Debit</th>
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">Originating Credit</th>
+                </tr></thead><tbody>{distributions.map((dist) => (
                     <tr
                       key={dist.id}
                       onClick={() => handleDistributionSelect(dist.id)} // Select row on click
                       className={`cursor-pointer ${selectedDistributionId === dist.id ? 'bg-blue-100' : 'hover:bg-gray-50'}`}
                     >
-                      <td className="border border-gray-200 p-2 text-center">
+                      <td className="border border-gray-200 p-2 text-center w-[20px]" style={{width:"3%"}}> {/* Adjusted width for first column */}
                         <input
                           type="radio"
                           name="distributionSelection"
@@ -300,47 +377,53 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
                         {dist.type}
                       </td>
                       <td className="border border-gray-200 p-2">
-                        <input type="text" defaultValue="0.00" readOnly className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-right focus:outline-none" />
+                        <input type="text" value={`${dist.debit}`} readOnly className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-left focus:outline-none" />
                       </td>
                       <td className="border border-gray-200 p-2">
-                        <input type="text" defaultValue="0.00" readOnly className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-right focus:outline-none" />
+                        <input type="text" value={`${dist.credit}`} readOnly className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-left focus:outline-none" />
                       </td>
-
                     </tr>
-                  ))}
-                </tbody>
+                  ))}</tbody>
               </table>
             </div>
 
             {/* Totals Section */}
-            <div className="grid grid-cols-[40%_15%_15%_15%_5%] gap-2 mt-4 text-sm"> {/* Mimic table column widths roughly */}
+            <div className="grid grid-cols-[50%_12%_12%_23%_5%] gap-3 mt-4 text-sm"> {/* Mimic table column widths roughly */}
               {/* Functional Totals Row */}
               <div className="col-span-2 text-right font-semibold text-gray-700 pr-4">Functional Totals</div> {/* Label spanning first two conceptual columns */}
               <div className="flex items-center justify-end col-span-2 space-x-2"> {/* Debit and Credit inputs */}
                 <span className="text-gray-600 font-semibold">$</span>
-                <input type="text" value={functionalTotalsDebit.toFixed(2)} readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-24 sm:w-28 font-bold text-xs sm:text-sm" />
+                <input type="text" value={functionalTotalsDebit.toFixed(2)} readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-52 sm:w-52 font-bold text-xs sm:text-sm" />
                 <span className="text-gray-600 font-semibold">$</span>
-                <input type="text" value={functionalTotalsCredit.toFixed(2)} readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-24 sm:w-28 font-bold text-xs sm:text-sm" />
+                <input type="text" value={functionalTotalsCredit.toFixed(2)} readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-52 sm:w-52 font-bold text-xs sm:text-sm" />
               </div>
-              <div className="col-span-1"></div> {/* Empty column for 'Actions' space */}
 
               {/* Originating Totals Row */}
               <div className="col-span-2 text-right font-semibold text-gray-700 pr-4">Originating Totals</div> {/* Label spanning first two conceptual columns */}
               <div className="flex items-center justify-end col-span-2 space-x-2"> {/* Debit and Credit inputs */}
                 <span className="text-gray-600 font-semibold">$</span>
-                <input type="text" defaultValue="0.00" readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-24 sm:w-28 text-xs sm:text-sm" />
+                <input type="text" defaultValue="0.00" readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-52 sm:w-52 text-xs sm:text-sm" />
                 <span className="text-gray-600 font-semibold">$</span>
-                <input type="text" defaultValue="0.00" readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-right w-24 sm:w-28 text-xs sm:text-sm" />
+                <input type="text" defaultValue="0.00" readOnly className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-52 sm:w-52 text-xs sm:text-sm" />
               </div>
-              <div className="col-span-1"></div> {/* Empty column for 'Actions' space */}
             </div>
           </div>
 
           {/* Footer Buttons */}
           <div className="p-4 bg-gray-100 border-t border-gray-200 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4 rounded-b-lg">
-            <button className="bg-black text-white rounded-md px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200">Generate Invoice</button>
+            <button  onClick={handleOkClick} className="bg-black text-white rounded-md px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200">Generate Invoice</button>
           </div>
         </div>
+        {editingDistribution && (
+          <EditDistributionModal
+            distribution={editingDistribution}
+            onSave={handleUpdateDistribution}
+            onCancel={handleCancelEdit}
+          />
+        )}
+        {showProgressBarPopup && (
+          <ProgressBarPopup onClose={() => setShowProgressBarPopup(false)} />
+        )}
     </div>
   );
 };
