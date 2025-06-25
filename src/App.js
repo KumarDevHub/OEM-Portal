@@ -1935,11 +1935,11 @@ const App = () => {
                     <div className="relative group ml-auto flex justify-end">
                       <button
                         id="addNewCustomerBtn"
-                        className="w-8 h-8 rounded-full bg-[#1d1f1f] hover:bg-[#2c2c2e] shadow text-white flex items-center justify-center transition-colors"
+                        className="bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
                         aria-label="Add New Customer"
                         onClick={handleOpenCustomerModal}
                       >
-                        <svg
+                        {/* <svg
                           xmlns="http://www.w3.org/2000/svg"
                           className="h-4 w-4"
                           fill="none"
@@ -1952,7 +1952,8 @@ const App = () => {
                             strokeWidth="2"
                             d="M12 4v16m8-8H4"
                           />
-                        </svg>
+                        </svg> */}
+                        Add New Customer
                       </button>
                       <span className="absolute left-1/2 -translate-x-1/2 mt-10 px-2 py-1 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
                         New Customer
