@@ -231,8 +231,8 @@ const EditDistributionModal = ({ distribution, onSave, onCancel }) => {
 // SalesDistributionEntry Component (New Component for the Popup)
 const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
   const [distributions, setDistributions] = useState([
-    { id: 1, account: '10000-80000-130030', type: 'RECV', debit: 61070.00, credit: 0.00, description: 'Accounts Receivable' },
-    { id: 2, account: '10000-90000-130020', type: 'SALES', debit: 0.00, credit: 61070.00, description: 'Product Sales A' },
+    { id: 1, account: '10000-80000-130030', type: 'RECV', debit: 61070.00, credit: 0.00, description: 'PFGSL-00022' },
+    { id: 2, account: '10000-90000-130020', type: 'SALES', debit: 0.00, credit: 61070.00, description: 'PFGSL-00022' },
   ]);
 
   const [editingDistribution, setEditingDistribution] = useState(null); // State for the distribution being edited
@@ -369,8 +369,11 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
                           className="accent-black"
                         />
                       </td>
-                      <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
+                      {/* <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
                         {`${dist.account} - $${dist.debit.toFixed(2)} - $${dist.credit.toFixed(2)} - ${dist.description}`}
+                      </td> */}
+                      <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
+                        {`${dist.account} - 130030.0000.000.000000 - ${dist.description}`}
                       </td>
                       <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
                         {dist.type}
@@ -859,7 +862,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
       </div>
     </div>
 
-    <div className="flex justify-between items-center bg-gray-200 text-gray-800 p-2 mb-0 font-semibold text-base border border-gray-300">
+    <div className="flex justify-between items-center bg-gray-200 text-gray-800 p-2 mb-0 font-semibold text-base border border-gray-300 rounded-t-md">
       <span>Line Items by Order Entered</span>
       <div className="flex items-center space-x-2">
         <button
@@ -885,7 +888,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
     </div>
     <div className="overflow-x-auto mb-3 sm:mb-3">
   <div className="relative">
-    <div className="overflow-y-auto max-h-[105px] border border-gray-300"> {/* 2 rows * 48px (approx row height) + header height */}
+    <div className="overflow-y-auto max-h-[105px] border border-gray-300 rounded-b-md"> {/* 2 rows * 48px (approx row height) + header height */}
       <table className="w-full border-collapse bg-white border border-gray-300 rounded-lg">
         <thead className="sticky top-0 bg-white z-10">
           <tr>
