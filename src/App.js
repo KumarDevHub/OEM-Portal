@@ -3,7 +3,7 @@ import "./App.css";
 import { Plus, Edit, Trash2 } from 'lucide-react'; // Import Plus, Edit, and Trash2 icons
 import AddCustomer from "./AddCustomer"
 import InvoiceProgressBar from './components/InvoiceProgressBar';
-import "./cust.css"
+//import "./cust.css"
 
 import React, { useState, useMemo, useEffect } from "react"; // Added useEffect import
 
