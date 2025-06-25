@@ -1364,7 +1364,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
                   <input
                     type="text"
                     id="on-account"
-                    value="$00.00"
+                    value="$150.00"
                     className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
                   />
                 </div>
