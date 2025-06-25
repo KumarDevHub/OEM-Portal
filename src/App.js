@@ -808,297 +808,264 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
   return (
     <div className="flex bg-gray-100 font-sans text-gray-800">
       <div className="form-container bg-white border border-gray-200 rounded-lg shadow-lg w-full">
-        <div className="main-content p-4 sm:p-6 bg-white">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 md:gap-x-10 gap-y-3 md:gap-y-4 mb-6 sm:mb-8 text-sm">
-            <div className="flex flex-col space-y-3">
-              <div className="flex items-center">
-                <label htmlFor="customer-id" className="w-36 text-gray-700 font-medium">Customer ID</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <input type="text" id="customer-id" value={customerId} onChange={handleCustomerIdChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-              {/* NEW POSITION FOR DATE */}
-              <div className="flex items-center">
-                <label htmlFor="date" className="w-36 text-gray-700 font-medium">Date</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <input type="date" id="date" value={documentDate} onChange={handleDocumentDateChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-              {/* Removed Type/Type ID field */}
-              {/* <div className="flex items-center">
-                <label htmlFor="document-no" className="w-36 text-gray-700 font-medium">Document No</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <input type="text" id="document-no" value={documentNumber} onChange={handleDocumentNumberChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div> */}
-              {/* Moved Currency ID here */}
-              {/* <div className="flex items-center">
-                <label htmlFor="currency-id" className="w-36 text-gray-700 font-medium">Currency ID</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <input type="text" defaultValue="USD" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div> */}
-            </div>
-
-            <div className="flex flex-col space-y-3">
-              <div className="flex items-center">
-                <label htmlFor="customer-name" className="w-36 text-gray-700 font-medium">Customer Name</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <input type="text" id="customer-name" value={customerName} onChange={handleCustomerNameChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-              {/* Swap: Customer PO Number moved here */}
-              <div className="flex items-center">
-                <label htmlFor="customer-po-number" className="w-36 text-gray-700 font-medium">Customer PO Number</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <input type="text" defaultValue="PO-78901" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-
-            </div>
-
-            <div className="flex flex-col space-y-3">
-              {/* NEW POSITION FOR SHIP TO ADDRESS */}
-              <div className="flex items-center">
-                {/* Changed label to a button for clickability */}
-                <button type="button" onClick={handleShipToAddressClick} className="w-36 text-red-700 underline cursor-pointer text-sm font-medium text-left">
-                  Ship To Address
-                </button>
-                <div className="flex-grow flex items-center gap-2">
-                  <input type="text" id="ship-to-address" value={shipToAddress} onChange={handleShipToAddressChange} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label htmlFor="default-site-id" className="w-36 text-gray-700 font-medium">Default Site ID</label>
-                <div className="flex-grow flex items-center gap-2">
-                  <input type="text" defaultValue="WAREHOUSE" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-                </div>
-              </div>
-            </div>
+  <div className="main-content p-4 sm:p-6 bg-white sm:pb-4"> {/* Reduced bottom padding */}
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 md:gap-x-10 gap-y-2 md:gap-y-3 mb-4 sm:mb-6 text-sm"> {/* Reduced gap-y and mb */}
+      <div className="flex flex-col space-y-2">
+        <div className="flex items-center">
+          <label htmlFor="customer-id" className="w-36 text-gray-700 font-medium">Customer ID</label>
+          <div className="flex-grow flex items-center gap-2">
+            <input type="text" id="customer-id" value={customerId} onChange={handleCustomerIdChange} className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
           </div>
-
-          <div className="flex justify-between items-center bg-gray-200 text-gray-800 p-2 mb-0 font-semibold text-base border border-gray-300">
-            <span>Line Items by Order Entered</span>
-            <div className="flex items-center space-x-2"> {/* Container for add and delete buttons */}
-              <button
-                onClick={handleAddItem}
-                className="bg-black text-white rounded-full p-1.5 text-xs font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
-                title="Add New Line Item" // Improved clarity
-              >
-                <Plus size={16} /> {/* Increased size for better clarity */}
-              </button>
-              <button
-                onClick={handleDeleteSelected}
-                className={`rounded-full p-1.5 text-xs font-medium shadow-sm transition-colors duration-200 ${
-                  selectedLineItemId
-                    ? 'bg-red-700 text-white hover:bg-red-800'
-                    : 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                }`}
-                title="Delete Selected Line Item" // Improved clarity
-                disabled={!selectedLineItemId} // Disable if no item is selected
-              >
-                <Trash2 size={16} /> {/* Increased size for better clarity */}
-              </button>
-            </div>
+        </div>
+        {/* NEW POSITION FOR DATE */}
+        <div className="flex items-center">
+          <label htmlFor="date" className="w-36 text-gray-700 font-medium">Date</label>
+          <div className="flex-grow flex items-center gap-2">
+            <input type="date" id="date" value={documentDate} onChange={handleDocumentDateChange} className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
           </div>
-          <div className="overflow-x-auto mb-6 sm:mb-8">
-            <table className="w-full border-collapse bg-white border border-gray-300 rounded-lg">
-              <thead>
-                <tr>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[40px]">
-                    {/* Empty header for radio button column */}
-                  </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/4 cursor-pointer" onClick={() => handleSort('itemId')}>
-                    Item Number{' '}
-                    {sortColumn === 'itemId' && (
-                      sortDirection === 'asc' ? '▲' : '▼'
-                    )}
-                  </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer" onClick={() => handleSort('comments')}>
-                    Comments{' '} {/* Changed label to Comments */}
-                    {sortColumn === 'comments' && (
-                      sortDirection === 'asc' ? '▲' : '▼'
-                    )}
-                  </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer" onClick={() => handleSort('qtyOrdered')}>
-                    Qty Ordered{' '}
-                    {sortColumn === 'qtyOrdered' && (
-                      sortDirection === 'asc' ? '▲' : '▼'
-                    )}
-                  </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer" onClick={() => handleSort('unitPrice')}>
-                    Unit Price{' '}
-                    {sortColumn === 'unitPrice' && (
-                      sortDirection === 'asc' ? '▲' : '▼'
-                    )}
-                  </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/4 cursor-pointer" onClick={() => handleSort('extendedPrice')}>
-                    Extended Price{' '}
-                    {sortColumn === 'extendedPrice' && (
-                      sortDirection === 'asc' ? '▲' : '▼'
-                    )}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedLineItems.map((item) => (
-                  <tr
-                    key={item.id}
-                    onClick={() => handleRowClick(item.id)}
-                    className={`cursor-pointer ${selectedLineItemId === item.id ? 'bg-blue-100' : 'hover:bg-gray-50'}`}
-                  >
-                    <td className="border border-gray-200 p-2 text-center">
-                      <input
-                        type="radio"
-                        name="lineItemSelection" // Name attribute for radio buttons ensures only one can be selected
-                        checked={selectedLineItemId === item.id}
-                        onChange={(e) => handleRadioButtonChange(item.id, e)}
-                        className="accent-black"
-                      />
-                    </td>
-                    <td className="border border-gray-200 p-2">
-                      <input // Changed to text input
-                        type="text"
-                        value={item.itemId} // Use itemId field
-                        onChange={(e) => handleLineItemChange(item.id, 'itemId', e.target.value)} // Update itemId field
-                        placeholder="Enter Item ID" // Placeholder for Item Number
-                        className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-                      />
-                    </td>
-                    <td className="border border-gray-200 p-2">
-                      <input // Changed to text input
-                        type="text"
-                        value={item.comments} // Use comments field
-                        onChange={(e) => handleLineItemChange(item.id, 'comments', e.target.value)} // Update comments field
-                        placeholder="Add comments here" // Placeholder for Comments
-                        className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-                      />
-                    </td>
-                    <td className="border border-gray-200 p-2">
-                      <input
-                        type="number"
-                        value={item.qtyOrdered}
-                        onChange={(e) => handleLineItemChange(item.id, 'qtyOrdered', parseFloat(e.target.value) || 0)}
-                        className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-                      />
-                    </td>
-                    <td className="border border-gray-200 p-2">
-                      <input
-                        type="number"
-                        value={item.unitPrice.toFixed(2)}
-                        onChange={(e) => handleLineItemChange(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
-                        className="border-none w-full p-1 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-                      />
-                    </td>
-                    <td className="border border-gray-200 p-2">
-                      <input type="text" value={item.extendedPrice.toFixed(2)} readOnly className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-left focus:outline-none" />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        </div>
+      </div>
+
+      <div className="flex flex-col space-y-2">
+        <div className="flex items-center">
+          <label htmlFor="customer-name" className="w-36 text-gray-700 font-medium">Customer Name</label>
+          <div className="flex-grow flex items-center gap-2">
+            <input type="text" id="customer-name" value={customerName} onChange={handleCustomerNameChange} className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
           </div>
+        </div>
+        <div className="flex items-center">
+          <label htmlFor="customer-po-number" className="w-36 text-gray-700 font-medium">Customer PO Number</label>
+          <div className="flex-grow flex items-center gap-2">
+            <input type="text" defaultValue="PO-78901" className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+          </div>
+        </div>
+      </div>
 
-          {/* Combined summary section into a 2-column layout */}
-          <div className="px-2 py-3 md:px-4 md:py-4 grid grid-cols-1 md:grid-cols-3 gap-x-4 md:gap-x-6 gap-y-2 md:gap-y-3 border-b border-gray-200 text-sm">
-  {/* Left column: Amount Received, Terms Discount Taken, On Account */}
-  <div className="flex flex-col space-y-2">
-    <div className="flex items-center">
-      <label htmlFor="amount-received" className="w-28 sm:w-32 text-gray-700 font-medium">Amount Received</label>
-      <div className="flex-grow flex items-center gap-1">
-        <span className="mr-1 text-gray-600 font-semibold"></span>
-        <input type="text" id="amount-received" value="$00.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"/>
+      <div className="flex flex-col space-y-2">
+        <div className="flex items-center">
+          <button type="button" onClick={handleShipToAddressClick} className="w-36 text-red-700 underline cursor-pointer text-sm font-medium text-left">
+            Ship To Address
+          </button>
+          <div className="flex-grow flex items-center gap-2">
+            <input type="text" id="ship-to-address" value={shipToAddress} onChange={handleShipToAddressChange} className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+          </div>
+        </div>
+        <div className="flex items-center">
+          <label htmlFor="default-site-id" className="w-36 text-gray-700 font-medium">Default Site ID</label>
+          <div className="flex-grow flex items-center gap-2">
+            <input type="text" defaultValue="WAREHOUSE" className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+          </div>
+        </div>
       </div>
     </div>
-    <div className="flex items-center">
-      <label htmlFor="terms-discount-taken" className="w-28 sm:w-32 text-gray-700 font-medium">Terms Discount Taken</label>
-      <div className="flex-grow flex items-center gap-1">
-        <span className="mr-1 text-gray-600 font-semibold"></span>
-        <input type="text" id="terms-discount-taken" value="$00.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-      </div>
-    </div>
-    <div className="flex items-center">
-      <label htmlFor="on-account" className="w-28 sm:w-32 text-gray-700 font-medium">On Account</label>
-      <div className="flex-grow flex items-center gap-1">
-        <span className="mr-1 text-gray-600 font-semibold"></span>
-        <input type="text" id="on-account" value="$00.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-      </div>
-    </div>
-    {/* Moved Comment ID here previously */}
-     <div className="flex items-center">
-      <label htmlFor="comment-id" className="w-36 text-gray-700 font-medium">Requestor Name</label>
-      <div className="flex-grow flex items-center gap-2">
-        <input type="text" id="comment-id" defaultValue="DEREK SYBERT" className="w-full p-2 border border-gray-300 bg-gray-52 text-sm focus:ring-red-700 focus:border-red-700" />
-      </div>
-     </div>
-    <div className="h-6"></div>
-  </div>
 
-    {/* Middle column: Empty */}
-  <div></div>
-
-  {/* Right column: Freight, Miscellaneous, Tax, Subtotal */}
-  <div className="flex flex-col space-y-2">
-    <div className="flex items-center">
-      <label htmlFor="subtotal" className="w-24 sm:w-28 text-gray-700 font-medium">Subtotal</label>
-      <div className="flex-grow flex items-center gap-1">
-        <span className="mr-1 text-gray-600 font-semibold"></span>
-        <input type="text" id="subtotal" value={'$'+totalExtendedPrice.toFixed(2)} className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+    <div className="flex justify-between items-center bg-gray-200 text-gray-800 p-2 mb-0 font-semibold text-base border border-gray-300">
+      <span>Line Items by Order Entered</span>
+      <div className="flex items-center space-x-2">
+        <button
+          onClick={handleAddItem}
+          className="bg-black text-white rounded-full p-1 text-xs font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+          title="Add New Line Item"
+        >
+          <Plus size={14} />
+        </button>
+        <button
+          onClick={handleDeleteSelected}
+          className={`rounded-full p-1 text-xs font-medium shadow-sm transition-colors duration-200 ${
+            selectedLineItemId
+              ? 'bg-red-700 text-white hover:bg-red-800'
+              : 'bg-gray-400 text-gray-600 cursor-not-allowed'
+          }`}
+          title="Delete Selected Line Item"
+          disabled={!selectedLineItemId}
+        >
+          <Trash2 size={14} />
+        </button>
       </div>
     </div>
-    <div className="flex items-center">
-      <label htmlFor="tax" className="w-24 sm:w-28 text-gray-700 font-medium">Tax</label>
-      <div className="flex-grow flex items-center gap-1">
-        <span className="mr-1 text-gray-600 font-semibold"></span>
-        <input type="text" id="tax" value="$00.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-        {/* <CurrencyInput
-            value={0}
-            intlConfig={{ locale: 'en-US', currency: 'USD' }}
-            className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"/> */}
-      </div>
-    </div>
-    <div className="flex items-center">
-      <label htmlFor="freight" className="w-24 sm:w-28 text-gray-700 font-medium">Freight</label>
-      <div className="flex-grow flex items-center gap-1">
-        <span className="mr-1 text-gray-600 font-semibold"></span>
-        <input type="text" id="freight" value="$00.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-      </div>
-    </div>
-    <div className="flex items-center">
-      <label htmlFor="miscellaneous" className="w-24 sm:w-28 text-gray-700 font-medium">Miscellaneous</label>
-      <div className="flex-grow flex items-center gap-1">
-        <span className="mr-1 text-gray-600 font-semibold"></span>
-        <input type="text" id="miscellaneous" value="$0.00" className="w-full p-2 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
-      </div>
+    <div className="overflow-x-auto mb-3 sm:mb-3">
+  <div className="relative">
+    <div className="overflow-y-auto max-h-[105px] border border-gray-300"> {/* 2 rows * 48px (approx row height) + header height */}
+      <table className="w-full border-collapse bg-white border border-gray-300 rounded-lg">
+        <thead className="sticky top-0 bg-white z-10">
+          <tr>
+            <th className="border border-gray-200 p-1 md:p-2 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[40px]"></th>
+            <th className="border border-gray-200 p-1 md:p-2 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/4 cursor-pointer" onClick={() => handleSort('itemId')}>
+              Item Number{' '}
+              {sortColumn === 'itemId' && (
+                sortDirection === 'asc' ? '▲' : '▼'
+              )}
+            </th>
+            <th className="border border-gray-200 p-1 md:p-2 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer" onClick={() => handleSort('comments')}>
+              Comments{' '}
+              {sortColumn === 'comments' && (
+                sortDirection === 'asc' ? '▲' : '▼'
+              )}
+            </th>
+            <th className="border border-gray-200 p-1 md:p-2 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer" onClick={() => handleSort('qtyOrdered')}>
+              Qty Ordered{' '}
+              {sortColumn === 'qtyOrdered' && (
+                sortDirection === 'asc' ? '▲' : '▼'
+              )}
+            </th>
+            <th className="border border-gray-200 p-1 md:p-2 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer" onClick={() => handleSort('unitPrice')}>
+              Unit Price{' '}
+              {sortColumn === 'unitPrice' && (
+                sortDirection === 'asc' ? '▲' : '▼'
+              )}
+            </th>
+            <th className="border border-gray-200 p-1 md:p-2 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/4 cursor-pointer" onClick={() => handleSort('extendedPrice')}>
+              Extended Price{' '}
+              {sortColumn === 'extendedPrice' && (
+                sortDirection === 'asc' ? '▲' : '▼'
+              )}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedLineItems.map((item) => (
+            <tr
+              key={item.id}
+              onClick={() => handleRowClick(item.id)}
+              className={`cursor-pointer ${selectedLineItemId === item.id ? 'bg-blue-100' : 'hover:bg-gray-50'}`}
+            >
+              <td className="border border-gray-200 p-1 text-center">
+                <input
+                  type="radio"
+                  name="lineItemSelection"
+                  checked={selectedLineItemId === item.id}
+                  onChange={(e) => handleRadioButtonChange(item.id, e)}
+                  className="accent-black"
+                />
+              </td>
+              <td className="border border-gray-200 p-1">
+                <input
+                  type="text"
+                  value={item.itemId}
+                  onChange={(e) => handleLineItemChange(item.id, 'itemId', e.target.value)}
+                  placeholder="Enter Item ID"
+                  className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
+                />
+              </td>
+              <td className="border border-gray-200 p-1">
+                <input
+                  type="text"
+                  value={item.comments}
+                  onChange={(e) => handleLineItemChange(item.id, 'comments', e.target.value)}
+                  placeholder="Add comments here"
+                  className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
+                />
+              </td>
+              <td className="border border-gray-200 p-1">
+                <input
+                  type="number"
+                  value={item.qtyOrdered}
+                  onChange={(e) => handleLineItemChange(item.id, 'qtyOrdered', parseFloat(e.target.value) || 0)}
+                  className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
+                />
+              </td>
+              <td className="border border-gray-200 p-1">
+                <input
+                  type="number"
+                  value={item.unitPrice.toFixed(2)}
+                  onChange={(e) => handleLineItemChange(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
+                  className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
+                />
+              </td>
+              <td className="border border-gray-200 p-1">
+                <input type="text" value={item.extendedPrice.toFixed(2)} readOnly className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent text-left focus:outline-none" />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
 
-          <div className="flex flex-col sm:flex-row justify-between items-center mt-4 sm:mt-6 space-y-4 sm:space-y-0">
-            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
-              <button
-                onClick={handleDistributionsButtonClick}
-                className={`rounded-md px-4 py-2.5 text-sm font-medium shadow-sm transition-colors duration-200 w-full sm:w-auto bg-black text-white hover:bg-gray-800`} // Removed disabled prop and conditional classes
-              >
-                Distributions
-              </button>
-              <button
-                onClick={handleGenerateInvoiceClick}
-                className="bg-black text-white hover:bg-gray-800 rounded-md px-4 py-2.5 text-sm font-medium shadow-sm transition-colors duration-200 w-full sm:w-auto"
-              >
-                Generate Invoice
-              </button>
-            </div>
-            <div className="flex items-center w-full sm:w-auto justify-end">
-              <label className="text-gray-700 text-base font-semibold mr-2">Total</label>
-              <div className="flex items-center">
-                <span className="mr-1 text-gray-800 text-md font-bold">$</span>
-                <input type="text" value={(totalExtendedPrice).toFixed(2)} className="p-2 border border-gray-300 bg-gray-50 text-left font-bold text-lg w-28 sm:w-32" readOnly />
-              </div>
-            </div>
+    {/* Summary Section */}
+    <div className="px-2 py-2 md:px-4 md:py-3 grid grid-cols-1 md:grid-cols-3 gap-x-4 md:gap-x-6 gap-y-1 md:gap-y-2 border-b border-gray-200 text-sm">
+      <div className="flex flex-col space-y-1">
+        <div className="flex items-center">
+          <label htmlFor="amount-received" className="w-28 sm:w-32 text-gray-700 font-medium">Amount Received</label>
+          <div className="flex-grow flex items-center gap-1">
+            <input type="text" id="amount-received" value="$00.00" className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"/>
+          </div>
+        </div>
+        <div className="flex items-center">
+          <label htmlFor="terms-discount-taken" className="w-28 sm:w-32 text-gray-700 font-medium">Terms Discount Taken</label>
+          <div className="flex-grow flex items-center gap-1">
+            <input type="text" id="terms-discount-taken" value="$00.00" className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+          </div>
+        </div>
+        <div className="flex items-center">
+          <label htmlFor="on-account" className="w-28 sm:w-32 text-gray-700 font-medium">On Account</label>
+          <div className="flex-grow flex items-center gap-1">
+            <input type="text" id="on-account" value="$00.00" className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+          </div>
+        </div>
+        <div className="flex items-center">
+          <label htmlFor="terms-discount-taken" className="w-28 sm:w-32 text-gray-700 font-medium">Requestor Name</label>
+          <div className="flex-grow flex items-center gap-1 mt-1">
+            <input type="text" id="comment-id" defaultValue="DEREK SYBERT" className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+          </div>
+        </div>
+        <div className="h-2"></div>
+      </div>
+      <div></div>
+      <div className="flex flex-col space-y-1">
+        <div className="flex items-center">
+          <label htmlFor="subtotal" className="w-24 sm:w-28 text-gray-700 font-medium">Subtotal</label>
+          <div className="flex-grow flex items-center gap-1">
+            <input type="text" id="subtotal" value={'$'+totalExtendedPrice.toFixed(2)} className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+          </div>
+        </div>
+        <div className="flex items-center">
+          <label htmlFor="tax" className="w-24 sm:w-28 text-gray-700 font-medium">Tax</label>
+          <div className="flex-grow flex items-center gap-1">
+            <input type="text" id="tax" value="$00.00" className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+          </div>
+        </div>
+        <div className="flex items-center">
+          <label htmlFor="freight" className="w-24 sm:w-28 text-gray-700 font-medium">Freight</label>
+          <div className="flex-grow flex items-center gap-1">
+            <input type="text" id="freight" value="$00.00" className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
+          </div>
+        </div>
+        <div className="flex items-center">
+          <label htmlFor="miscellaneous" className="w-24 sm:w-28 text-gray-700 font-medium">Miscellaneous</label>
+          <div className="flex-grow flex items-center gap-1">
+            <input type="text" id="miscellaneous" value="$0.00" className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700" />
           </div>
         </div>
       </div>
+    </div>
+
+    <div className="flex flex-col sm:flex-row justify-between items-center mt-3 sm:mt-4 space-y-2 sm:space-y-0">
+      <div className="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
+        <button
+          onClick={handleDistributionsButtonClick}
+          className="rounded-md px-3 py-1.5 text-sm font-medium shadow-sm transition-colors duration-200 w-full sm:w-auto bg-black text-white hover:bg-gray-800"
+        >
+          Distributions
+        </button>
+        <button
+          onClick={handleGenerateInvoiceClick}
+          className="bg-black text-white hover:bg-gray-800 rounded-md px-3 py-1.5 text-sm font-medium shadow-sm transition-colors duration-200 w-full sm:w-auto"
+        >
+          Generate Invoice
+        </button>
+      </div>
+      <div className="flex items-center w-full sm:w-auto justify-end">
+        <label className="text-gray-700 text-base font-semibold mr-2">Total</label>
+        <div className="flex items-center">
+          <span className="mr-1 text-gray-800 text-md font-bold">$</span>
+          <input type="text" value={(totalExtendedPrice).toFixed(2)} className="p-1.5 border border-gray-300 bg-gray-50 text-left font-bold text-lg w-24 sm:w-28" readOnly />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
       {showSaveConfirmation && (
         <ConfirmationMessage
           message="Are you sure you want to save the current invoice?"
@@ -2170,11 +2137,11 @@ const App = () => {
 </div>
 
       {/* Main Top Navigation Bar (with main links) */}
-      <header className="bg-white text-gray-900 p-3 sm:p-4 flex items-center justify-start border-b border-gray-200 overflow-x-auto whitespace-nowrap">
+      <header className="bg-white text-gray-900 p-2 sm:p-2 flex items-center justify-start border-b border-gray-200 overflow-x-auto whitespace-nowrap">
         <nav className="flex space-x-3 sm:space-x-6 px-2 sm:px-4">
           <button
             onClick={() => handleTopNavClick("customer", "customer")}
-            className={`py-2 px-3 rounded-sm hover:bg-gray-100 transition-colors duration-200 focus:outline-none font-bold text-sm ${
+            className={`py-1 px-3 rounded-sm hover:bg-gray-100 transition-colors duration-200 focus:outline-none font-bold text-sm ${
               topNavActiveItem === "customer"
                 ? "text-black-700 border-b-2 border-red-700"
                 : "text-gray-700"
@@ -2186,7 +2153,7 @@ const App = () => {
             onClick={() =>
               handleTopNavClick("sales", "sales-transaction-entry")
             }
-            className={`py-2 px-3 rounded-sm hover:bg-gray-100 transition-colors duration-200 focus:outline-none font-bold text-sm ${
+            className={`py-1 px-3 rounded-sm hover:bg-gray-100 transition-colors duration-200 focus:outline-none font-bold text-sm ${
               topNavActiveItem === "sales"
                 ? "text-black-700 border-b-2 border-red-700"
                 : "text-gray-700"
@@ -2196,7 +2163,7 @@ const App = () => {
           </button>
           <button
             onClick={() => handleTopNavClick("profile", "my-profile")}
-            className={`py-2 px-3 rounded-sm  hover:bg-gray-100 transition-colors duration-200 focus:outline-none font-bold text-sm ${
+            className={`py-1 px-3 rounded-sm  hover:bg-gray-100 transition-colors duration-200 focus:outline-none font-bold text-sm ${
               topNavActiveItem === "profile"
                 ? "text-black-700 border-b-2 border-red-700"
                 : "text-gray-700"
