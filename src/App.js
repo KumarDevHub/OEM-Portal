@@ -373,7 +373,7 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
                         {`${dist.account} - $${dist.debit.toFixed(2)} - $${dist.credit.toFixed(2)} - ${dist.description}`}
                       </td> */}
                       <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
-                        {`${dist.account} - 130030.0000.000.000000 - ${dist.description}`}
+                        {`${dist.account} -130030-0000-000-000000- ${dist.description}`}
                       </td>
                       <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
                         {dist.type}
