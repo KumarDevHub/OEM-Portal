@@ -278,7 +278,7 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50 font-sans">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-7xl h-[62vh] max-h-full flex flex-col">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-7xl h-[82vh] max-h-full flex flex-col">
         {/* Header */}
         <div className="bg-black text-white p-4 rounded-t-lg flex justify-between items-center">
           <h2 className="text-xl font-bold">Sales Distribution Entry</h2>
