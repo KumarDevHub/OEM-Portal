@@ -208,7 +208,7 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
 
                 .td-form-item label {
                   flex-shrink: 0;
-                  width: 32%; /* Consistent width for labels */
+                  width: 35%; /* Consistent width for labels */
                   text-align: left; /* Align text to the right */
                   font-weight: bold;
                   color: #666;
@@ -421,7 +421,7 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                         // style={{ borderRadius: "40px" }}
                         className="bg-gray-300 text-gray-800 rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-400 transition-colors duration-200"
                       >
-                        Additional Info
+                        Add Additional Contact
                       </button>
                     </div>
                   </td>
@@ -441,8 +441,8 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                   </td>
                   <td>
                     <div className="td-form-item">
-                      <label htmlFor="escalation contact">
-                        Escalation contact
+                      <label htmlFor="escalationContact">
+                        Escalation Contact Name
                       </label>
                       <input
                         type="text"
@@ -632,32 +632,7 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                   </td>
                   <td>
                     <div className="td-form-item">
-                      <label htmlFor="state">State *</label>
-                      <input
-                        type="text"
-                        id="state"
-                        value={formData.state}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                  </td>
-
-                  <td>
-                    <div className="td-form-item">
-                      <label htmlFor="country">Country</label>
-                      <input
-                        type="text"
-                        id="country"
-                        value={formData.country}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <div className="td-form-item">
-                      <label htmlFor="streetAddress1">Street Address1</label>
+                      <label htmlFor="streetAddress1">Street Address1 *</label>
                       <input
                         type="text"
                         id="streetAddress1"
@@ -666,13 +641,38 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                       />
                     </div>
                   </td>
+
                   <td>
                     <div className="td-form-item">
-                      <label htmlFor="city">City *</label>
+                      <label htmlFor="streetAddress2">Street Address 2</label>
+                      <input
+                        type="text"
+                        id="streetAddress2"
+                        value={formData.streetAddress2}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div className="td-form-item">
+                      <label htmlFor="city">City</label>
                       <input
                         type="text"
                         id="city"
                         value={formData.city}
+                        onChange={handleInputChange}
+                      />
+                    </div>
+                  </td>
+                  <td>
+                    <div className="td-form-item">
+                      <label htmlFor="state">State</label>
+                      <input
+                        type="text"
+                        id="state"
+                        value={formData.state}
                         onChange={handleInputChange}
                       />
                     </div>
@@ -692,11 +692,11 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                 <tr>
                   <td>
                     <div className="td-form-item">
-                      <label htmlFor="streetAddress2">Street Address2</label>
+                      <label htmlFor="country">Country</label>
                       <input
                         type="text"
-                        id="streetAddress2"
-                        value={formData.streetAddress2}
+                        id="country"
+                        value={formData.country}
                         onChange={handleInputChange}
                       />
                     </div>
