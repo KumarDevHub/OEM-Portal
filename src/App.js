@@ -10,7 +10,7 @@ import React, { useState, useMemo, useEffect } from "react"; // Added useEffect 
 
 // Mock data for customer information with multiple shipToAddresses
 const customerData = {
-  "CUST-0056": {
+  "CB00010001": {
     customerName: "Acme Corp.",
     shipToAddresses: [
       "123 Main St, Anytown, USA",
@@ -18,14 +18,14 @@ const customerData = {
       "789 Pine Ln, Anyplace, USA",
     ],
   },
-  "CUST-0077": {
+  "CB00010002": {
     customerName: "Global Solutions Inc.",
     shipToAddresses: [
       "456 Tech Park Dr, Technoville, CA",
       "101 Innovation Blvd, Future City, CA",
     ],
   },
-  "CUST-0099": {
+  "CB00010003": {
     customerName: "Future Innovations Ltd.",
     shipToAddresses: [
       "789 Innovation Way, New City, NY",
@@ -594,7 +594,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
   // Effect to set initial values or clear if customer ID is empty
   useEffect(() => {
     // Set initial customer data if a default ID is desired or if it's dynamic
-    const initialCustomerId = 'CUST-0056'; // Example default
+    const initialCustomerId = 'CB00010001'; // Example default
     const initialCustomerInfo = customerData[initialCustomerId];
     if (initialCustomerInfo) {
       setCustomerId(initialCustomerId);
