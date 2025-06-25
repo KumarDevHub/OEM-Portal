@@ -32,8 +32,10 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
   );
 
   const [showPhone2, setShowPhone2] = useState(!!(customerData && customerData.phone2));
+  const [showEmail2, setShowEmail2] = useState(!!(customerData && customerData.email2));
 
   const handleTogglePhone2 = () => setShowPhone2((prev) => !prev);
+  const handleToggleEmail2 = () => setShowEmail2((prev) => !prev);
 
   // Handle input changes for text fields
   const handleInputChange = (e) => {
@@ -455,7 +457,25 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
             value={formData["email 1"] || formData.email1 || formData.email || ""}
             onChange={handleInputChange}
           />
+          <button
+            type="button"
+            className="icon-btn"
+            onClick={handleToggleEmail2}
+            title={showEmail2 ? "Remove Alternate Email" : "Add Alternate Email"}
+          >
+            {showEmail2 ? <FiMinus /> : <FiPlus />}
+          </button>
         </div>
+        {showEmail2 && (
+          <div className="form-item">
+            <label htmlFor="email 2">Alternate Email</label>
+            <input
+              type="text"
+              id="email 2"
+              value={formData["email 2"] || formData.email2 || ""}
+              onChange={handleInputChange}
+            />
+          </div>)}
         <div className="form-item">
           <label htmlFor="escalationContact">Escalation Contact</label>
           <input
