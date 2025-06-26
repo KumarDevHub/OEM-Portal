@@ -1039,7 +1039,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick , filteredData }) => {
         <div className="main-content p-4 sm:p-6 bg-white sm:pb-4">
           {" "}
           {/* Reduced bottom padding */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 md:gap-x-10 gap-y-2 md:gap-y-3 mb-4 sm:mb-6 text-sm">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 md:gap-x-10 gap-y-2 md:gap-y-3 mb-4 sm:mb-6 text-sm overflow-auto">
             {" "}
             {/* Reduced gap-y and mb */}
             <div className="flex flex-col space-y-2">

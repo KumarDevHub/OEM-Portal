@@ -35,6 +35,18 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
     }
   );
 
+  const [showAdditionalContactModal, setShowAdditionalContactModal] =
+    useState(false);
+  const [additionalContactType, setAdditionalContactType] = useState("");
+  const [additionalContactValue, setAdditionalContactValue] = useState("");
+
+  const additionalContactOptions = [
+    { label: "Phone 3", value: "phone3" },
+    { label: "Phone 4", value: "phone4" },
+    { label: "Email 3", value: "email3" },
+    { label: "Email 4", value: "email4" },
+  ];
+
   // Handle input changes for text fields
   const handleInputChange = (e) => {
     const { id, value } = e.target;
@@ -51,6 +63,17 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
       ...prevData,
       [name]: value,
     }));
+  };
+
+  const handleAddAdditionalContact = () => {
+    if (!additionalContactType || !additionalContactValue) return;
+    setFormData((prevData) => ({
+      ...prevData,
+      [additionalContactType]: additionalContactValue,
+    }));
+    setShowAdditionalContactModal(false);
+    setAdditionalContactType("");
+    setAdditionalContactValue("");
   };
 
   return (
@@ -420,6 +443,7 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                       <button
                         // style={{ borderRadius: "40px" }}
                         className="bg-gray-300 text-gray-800 rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-400 transition-colors duration-200"
+                        onClick={() => setShowAdditionalContactModal(true)}
                       >
                         Add Additional Contact
                       </button>
@@ -769,6 +793,113 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
           </div>
         </div>
       </div>
+      {showAdditionalContactModal && (
+        <div className="modal-overlay" style={{ zIndex: 2000 }}>
+          <div className="modal-content" style={{ maxWidth: 400, padding: 0 }}>
+            <div className="bg-black text-white p-4 rounded-t-lg flex justify-between items-center font-medium">
+              <h2>Add Additional Contact</h2>
+              <button
+                onClick={() => setShowAdditionalContactModal(false)}
+                className="text-white hover:text-gray-300 transition-colors duration-200"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  ></path>
+                </svg>
+              </button>
+            </div>
+            <div className="modal-body" style={{ padding: 20 }}>
+              <div
+                className="form-item"
+                style={{
+                  flexDirection: "column",
+                  alignItems: "stretch",
+                  gap: 16,
+                }}
+              >
+                <label
+                  htmlFor="additionalContactType"
+                  style={{ fontWeight: "bold", color: "#666", fontSize: 13 }}
+                >
+                  Contact Type
+                </label>
+                <select
+                  id="additionalContactType"
+                  value={additionalContactType}
+                  onChange={(e) => setAdditionalContactType(e.target.value)}
+                  style={{
+                    border: "1px solid #ccc",
+                    borderRadius: 0,
+                    padding: "8px",
+                    fontSize: 13,
+                    fontFamily: "Segoe UI",
+                    marginBottom: 10,
+                  }}
+                >
+                  <option value="">Select type...</option>
+                  {additionalContactOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+                <label
+                  htmlFor="additionalContactValue"
+                  style={{ fontWeight: "bold", color: "#666", fontSize: 13 }}
+                >
+                  Contact Value
+                </label>
+                <input
+                  type="text"
+                  id="additionalContactValue"
+                  value={additionalContactValue}
+                  onChange={(e) => setAdditionalContactValue(e.target.value)}
+                  style={{
+                    border: "1px solid #ccc",
+                    borderRadius: 0,
+                    padding: "8px",
+                    fontSize: 13,
+                    fontFamily: "Segoe UI",
+                  }}
+                  placeholder={
+                    additionalContactType.startsWith("phone")
+                      ? "Enter phone number"
+                      : "Enter email address"
+                  }
+                />
+              </div>
+            </div>
+            <div
+              className="modal-footer"
+              style={{ justifyContent: "flex-end", padding: 12 }}
+            >
+              <button
+                className="bg-gray-300 text-gray-800 rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-400 transition-colors duration-200"
+                onClick={() => setShowAdditionalContactModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+                onClick={handleAddAdditionalContact}
+                disabled={!additionalContactType || !additionalContactValue}
+              >
+                Add
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
