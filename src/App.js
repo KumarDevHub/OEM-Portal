@@ -411,7 +411,7 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
               <input
                 type="text"
                 id="dist-customer-name"
-                defaultValue={invoiceHeaderData?.customerName || ""}
+                defaultValue={invoiceHeaderData?.Customer || ""}
                 readOnly
                 className="flex-grow px-2 py-1 border border-gray-300 rounded-md bg-gray-50 text-xs"
               />
@@ -758,7 +758,7 @@ const ShipToAddressSelection = ({ addresses, onSelectAddress, onClose }) => {
 };
 
 // SalesTransactionEntryForm Component
-const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
+const SalesTransactionEntryForm = ({ onDistributionsClick , filteredData }) => {
   // State for line items (mock data for demonstration of sorting)
   const [lineItems, setLineItems] = useState([
     // Initial data, now referencing mock items
@@ -809,12 +809,13 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
 
   // Effect to set initial values or clear if customer ID is empty
   useEffect(() => {
+    console.log("Filtered Data:", filteredData);
     // Set initial customer data if a default ID is desired or if it's dynamic
-    const initialCustomerId = "CB00010001"; // Example default
-    const initialCustomerInfo = customerData[initialCustomerId];
+    const initialCustomerId = filteredData[0]?.customerId; // Example default
+    const initialCustomerInfo = filteredData[0];
     if (initialCustomerInfo) {
       setCustomerId(initialCustomerId);
-      setCustomerName(initialCustomerInfo.customerName);
+      setCustomerName(initialCustomerInfo.Customer);
       setShipToAddress(initialCustomerInfo.shipToAddresses[0] || ""); // Set first address as default
       setAvailableShipToAddresses(initialCustomerInfo.shipToAddresses);
     } else {
@@ -1056,6 +1057,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
                     value={customerId}
                     onChange={handleCustomerIdChange}
                     className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
+                    readOnly
                   />
                 </div>
               </div>
@@ -1093,6 +1095,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
                     value={customerName}
                     onChange={handleCustomerNameChange}
                     className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
+                    readOnly
                   />
                 </div>
               </div>
@@ -1515,118 +1518,6 @@ const SalesTransactionEntryForm = ({ onDistributionsClick }) => {
   );
 };
 
-// Define the structure for side navigation items
-const sideNavSections = {
-  home: [
-    {
-      label: "Overview",
-      page: "overview",
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-9v10a1 1 0 001 1h3M10 2l-2 2m0 0l-7 7m7-7v7"
-          ></path>
-        </svg>
-      ),
-    },
-  ],
-  dashboard: [
-    {
-      label: "Customer",
-      page: "customer",
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m7 0V5a2 2 0 012-2h2a2 2 0 012 2v10m-7 0h7"
-          ></path>
-        </svg>
-      ),
-    },
-    {
-      label: "Reports",
-      page: "reports",
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-          ></path>
-        </svg>
-      ),
-    },
-    {
-      label: "Data Management",
-      page: "data",
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M13 16V9m2 7V9m-2 7H9M6 18h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v10a2 2 0 002 2z"
-          ></path>
-        </svg>
-      ),
-    },
-  ],
-  invoice: [
-    // New Sales category
-    {
-      label: "Manual Invoice",
-      page: "sales-transaction-entry",
-      // Changed label to Invoice Entry
-      icon: (
-        <svg
-          className="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 10a3 3 0 11-6 0 3 3 0 016 0z"
-          ></path>
-        </svg>
-      ),
-    },
-  ],
-};
-
 // Main App component
 const App = () => {
   const [currentPage, setCurrentPage] = useState("customer");
@@ -1645,12 +1536,10 @@ const App = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [showCustomerModal, setShowCustomerModal] = useState(false);
 
-  const [selectedCustomerForEdit, setSelectedCustomerForEdit] = useState(
-    undefined
-  );
-  const [selectedCustomerForDelete, setSelectedCustomerForDelete] = useState(
-    undefined
-  );
+  const [selectedCustomerForEdit, setSelectedCustomerForEdit] =
+    useState(undefined);
+  const [selectedCustomerForDelete, setSelectedCustomerForDelete] =
+    useState(undefined);
   const [modalVisible, setModalVisible] = useState(false);
   const [latestId, setLatestId] = useState(undefined);
 
@@ -1678,6 +1567,11 @@ const App = () => {
       phone: "310-751-2976",
       email: "kumeisha.udriver@belkin.com",
       status: "Active",
+      shipToAddresses: [
+      "123 Main St, Anytown, USA",
+      "456 Oak Ave, Somewhere, USA",
+      "789 Pine Ln, Anyplace, USA",
+    ],
     },
     {
       customerId: "CB00010002",
@@ -1687,6 +1581,11 @@ const App = () => {
       phone: "510-555-1234",
       email: "sarah.lee@logitech.com",
       status: "Active",
+      shipToAddresses: [
+      "123 Main St, Anytown, USA",
+      "456 Oak Ave, Somewhere, USA",
+      "789 Pine Ln, Anyplace, USA",
+    ],
     },
     {
       customerId: "CB00010003",
@@ -1696,6 +1595,11 @@ const App = () => {
       phone: "650-555-5678",
       email: "john.smith@hp.com",
       status: "Inactive",
+      shipToAddresses: [
+      "123 Main St, Anytown, USA",
+      "456 Oak Ave, Somewhere, USA",
+      "789 Pine Ln, Anyplace, USA",
+    ],
     },
     {
       customerId: "CB00010004",
@@ -1705,6 +1609,11 @@ const App = () => {
       phone: "512-555-7890",
       email: "priya.patel@dell.com",
       status: "Active",
+      shipToAddresses: [
+      "123 Main St, Anytown, USA",
+      "456 Oak Ave, Somewhere, USA",
+      "789 Pine Ln, Anyplace, USA",
+    ],
     },
     {
       customerId: "CB00010005",
@@ -1714,6 +1623,11 @@ const App = () => {
       phone: "408-555-2468",
       email: "emily.chen@apple.com",
       status: "Active",
+      shipToAddresses: [
+      "123 Main St, Anytown, USA",
+      "456 Oak Ave, Somewhere, USA",
+      "789 Pine Ln, Anyplace, USA",
+    ],
     },
     {
       customerId: "CB00010005",
@@ -1723,6 +1637,10 @@ const App = () => {
       phone: "408-666-2468",
       email: "Tim.chen@apple.com",
       status: "Active",
+      shipToAddresses: [
+      "456 Tech Park Dr, Technoville, CA",
+      "101 Innovation Blvd, Future City, CA",
+    ],
     },
     {
       customerId: "CB00010006",
@@ -1732,6 +1650,10 @@ const App = () => {
       phone: "+82-2-5555-1234",
       email: "david.kim@samsung.com",
       status: "Inactive",
+      shipToAddresses: [
+      "456 Tech Park Dr, Technoville, CA",
+      "101 Innovation Blvd, Future City, CA",
+    ],
     },
     {
       customerId: "CB00010007",
@@ -1741,6 +1663,12 @@ const App = () => {
       phone: "+81-3-5555-1234",
       email: "hiro.tanaka@sony.com",
       status: "Active",
+      shipToAddresses: [
+      "789 Innovation Way, New City, NY",
+      "202 Research Rd, Old Town, NY",
+      "303 Progress Pl, Anotherburg, NY",
+      "404 Discovery Dr, Distantland, NY",
+    ],
     },
     {
       customerId: "CB00010008",
@@ -1750,6 +1678,12 @@ const App = () => {
       phone: "+86-10-5555-1234",
       email: "wei.zhang@lenovo.com",
       status: "Active",
+      shipToAddresses: [
+      "789 Innovation Way, New City, NY",
+      "202 Research Rd, Old Town, NY",
+      "303 Progress Pl, Anotherburg, NY",
+      "404 Discovery Dr, Distantland, NY",
+    ],
     },
     {
       customerId: "CB00010009",
@@ -1759,6 +1693,10 @@ const App = () => {
       phone: "+886-2-5555-1234",
       email: "lina.wu@acer.com",
       status: "Inactive",
+      shipToAddresses: [
+      "456 Tech Park Dr, Technoville, CA",
+      "101 Innovation Blvd, Future City, CA",
+    ],
     },
     {
       customerId: "CB00010010",
@@ -1768,6 +1706,11 @@ const App = () => {
       phone: "+886-2-5555-5678",
       email: "ken.lee@asus.com",
       status: "Active",
+      shipToAddresses: [
+      "123 Main St, Anytown, USA",
+      "456 Oak Ave, Somewhere, USA",
+      "789 Pine Ln, Anyplace, USA",
+    ],
     },
   ];
   const [CustomerData, setCustomerData] = useState(_initialCustomerData);
@@ -1810,8 +1753,8 @@ const App = () => {
   };
 
   // Function to open the Distributions popup, now accepts data
-  const openDistributionsPopup = (data) => {
-    setInvoiceHeaderDataForDistribution(data); // Store the received data
+  const openDistributionsPopup = (filteredData) => {
+    setInvoiceHeaderDataForDistribution(filteredData); // Store the received data
     setShowDistributionPopup(true);
   };
 
@@ -1823,49 +1766,6 @@ const App = () => {
 
   const renderContent = () => {
     switch (currentPage) {
-      case "overview":
-        return (
-          <>
-            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-8 border border-gray-200">
-              <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-800">
-                Welcome to Your Application!
-              </h2>
-              <p className="text-sm sm:text-base text-gray-700">
-                This is the Overview page. Here you'll find a general summary of
-                your data.
-              </p>
-              <p className="text-xs sm:text-sm text-gray-600 mt-3 sm:mt-4">
-                The side navigation is now always visible.
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-              <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-8 border border-gray-200">
-                <h3 className="text-lg sm:text-xl font-semibold mb-2 text-gray-800">
-                  Overview Card 1
-                </h3>
-                <p className="text-sm sm:text-base text-gray-700">
-                  Display key metrics or important information here.
-                </p>
-              </div>
-              <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-8 border border-gray-200">
-                <h3 className="text-lg sm:text-xl font-semibold mb-2 text-gray-800">
-                  Overview Card 2
-                </h3>
-                <p className="text-sm sm:text-base text-gray-700">
-                  Summarize recent activity or progress.
-                </p>
-              </div>
-              <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-8 border border-gray-200">
-                <h3 className="text-lg sm:text-xl font-semibold mb-2 text-gray-800">
-                  Overview Card 3
-                </h3>
-                <p className="text-sm sm:text-base text-gray-700">
-                  Provide quick links or actions related to your app.
-                </p>
-              </div>
-            </div>
-          </>
-        );
       case "customer":
         return (
           <div id="CustomerInfoSection">
@@ -2006,9 +1906,10 @@ const App = () => {
                             id={selectedCustomerForEdit?.customerId}
                             customerData={selectedCustomerForEdit}
                             onSave={(formData) => {
-                              const currentCustomerData = CustomerData.findIndex(
-                                (c) => c.customerId == formData.customerId
-                              );
+                              const currentCustomerData =
+                                CustomerData.findIndex(
+                                  (c) => c.customerId == formData.customerId
+                                );
                               if (currentCustomerData > -1) {
                                 CustomerData[currentCustomerData] = {
                                   ...formData,
@@ -2288,118 +2189,176 @@ const App = () => {
             </div>
           </div>
         );
-      case "reports":
-        return (
-          <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-8 border border-gray-200">
-            <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-800">
-              Generate Reports
-            </h2>
-            <p className="text-sm sm:text-base text-gray-700">
-              Here you can generate various types of reports based on your data.
-            </p>
-            <ul className="list-disc list-inside mt-3 sm:mt-4 text-xs sm:text-sm text-gray-600">
-              <li>Daily Sales Report</li>
-              <li>Monthly Performance Report</li>
-              <li>User Activity Log</li>
-            </ul>
-          </div>
-        );
-      case "data":
-        return (
-          <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-8 border border-gray-200">
-            <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-800">
-              Data Management
-            </h2>
-            <p className="text-sm sm:text-base text-gray-700">
-              View, add, edit, or delete your application data.
-            </p>
-            <div className="mt-3 sm:mt-4 flex flex-col sm:flex-row space-y-2 sm:space-y-0">
-              <button className="bg-black text-white px-3 py-2 rounded-md hover:bg-gray-800 mr-0 sm:mr-2 transition-colors duration-200 shadow-sm text-sm">
-                Add New Data
-              </button>
-              <button className="bg-gray-200 text-gray-800 px-3 py-2 rounded-md hover:bg-gray-300 transition-colors duration-200 shadow-sm text-sm">
-                Export Data
-              </button>
-            </div>
-            <div className="mt-4 sm:mt-6 border border-gray-200 rounded-lg p-3 sm:p-4">
-              <h3 className="text-base sm:text-lg font-semibold mb-2 text-gray-800">
-                Recent Data Entries
-              </h3>
-              <ul className="list-disc list-inside text-xs sm:text-sm text-gray-700">
-                <li>Entry A - 2025-06-21</li>
-                <li>Entry B - 2025-06-20</li>
-                <li>Entry C - 2025-06-19</li>
-              </ul>
-            </div>
-          </div>
-        );
       case "sales-transaction-entry":
         return (
-          <SalesTransactionEntryForm
-            onDistributionsClick={openDistributionsPopup}
-          />
-        );
-      case "general-settings":
-        return (
-          <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-8 border border-gray-200">
-            <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-800">
-              General Settings
-            </h2>
-            <p className="text-sm sm:text-base text-gray-700">
-              Adjust general application preferences.
-            </p>
-            <form className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
-              <div>
-                <label
-                  htmlFor="language"
-                  className="block text-gray-700 font-medium mb-1 text-sm"
+          // <SalesTransactionEntryForm
+          //   onDistributionsClick={openDistributionsPopup}
+          // />
+          <div id="CustomerInfoSection">
+            <div className="bg-white rounded-lg shadow-md p-4">
+              <div className="flex items-center justify-between mb-2">
+                <form
+                  className="flex items-center space-x-2"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleCustomerSearch();
+                  }}
                 >
-                  Language
-                </label>
-                <select
-                  id="language"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-red-700 focus:border-red-700 text-sm"
-                >
-                  <option>English</option>
-                  <option>Spanish</option>
-                  <option>French</option>
-                </select>
+                  <div className="relative w-48">
+                    <input
+                      type="text"
+                      placeholder="Search Customer or ID..."
+                      value={searchInput}
+                      onChange={(e) => setSearchInput(e.target.value)}
+                      className="w-full px-3 py-1.5 pr-7 border border-gray-200 rounded-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 bg-gray-50 placeholder:text-xs placeholder:font-normal placeholder:font-['Segoe_UI'] shadow-sm font-['Segoe_UI']"
+                    />
+                    {searchInput && (
+                      <button
+                        type="button"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-gray-200 transition-colors"
+                        aria-label="Clear"
+                        onClick={() => setSearchInput("")}
+                        tabIndex={-1}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4 text-gray-500"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
+                  <button
+                    type="submit"
+                    className="p-2 rounded-full hover:bg-gray-200 transition-colors"
+                    aria-label="Search"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M21 21l-4.35-4.35m0 0A7.5 7.5 0 104.5 4.5a7.5 7.5 0 0012.15 12.15z"
+                      />
+                    </svg>
+                  </button>
+                  {/* <h2 className="text-xl font-bold">Non-Retail Customer List</h2> */}
+                  {/* <div className="flex items-center space-x-4">
+                    <div className="relative group ml-auto flex justify-end">
+                      <button
+                        id="addNewCustomerBtn"
+                        className="bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+                        aria-label="Add New Customer"
+                        onClick={handleOpenCustomerModal}
+                      >
+                        {/* <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M12 4v16m8-8H4"
+                          />
+                        </svg> */}
+                        {/* Add New Customer
+                      </button> */}
+                    {/* </div> */}
+                    {/* {showCustomerModal && (
+                      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                        <div
+                          className={`bg-white rounded shadow-lg w-full max-w-2xl mx-2 relative border border-gray-300
+        ${modalVisible ? "modal-fade-in" : "modal-fade-out"}`}
+                        >
+                          <AddCustomer
+                            id={latestId}
+                            onSave={(formData) => {
+                              setCustomerData([...CustomerData, formData]);
+                              setShowCustomerModal(false);
+                            }}
+                            onClose={() => setShowCustomerModal(false)}
+                          />
+                        </div>
+                      </div>
+                    )} */}
+
+                    {/* {selectedCustomerForDelete && (
+                      <DeleteConfirmationMessage
+                        message={
+                          "Are you sure you want to delete the selected customer?"
+                        }
+                        onCancel={() => setSelectedCustomerForDelete(undefined)}
+                        onConfirm={() => {
+                          setCustomerData(
+                            CustomerData.filter(
+                              (data) =>
+                                data.customerId !=
+                                selectedCustomerForDelete.customerId
+                            )
+                          );
+                          setSelectedCustomerForDelete(undefined);
+                        }}
+                      ></DeleteConfirmationMessage>
+                    )} */}
+
+                    {/* {selectedCustomerForEdit && (
+                      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+                        <div
+                          className={`bg-white rounded shadow-lg w-full max-w-2xl mx-2 relative border border-gray-300
+        ${modalVisible ? "modal-fade-in" : "modal-fade-out"}`}
+                        >
+                          <AddCustomer
+                            id={selectedCustomerForEdit?.customerId}
+                            customerData={selectedCustomerForEdit}
+                            onSave={(formData) => {
+                              const currentCustomerData =
+                                CustomerData.findIndex(
+                                  (c) => c.customerId == formData.customerId
+                                );
+                              if (currentCustomerData > -1) {
+                                CustomerData[currentCustomerData] = {
+                                  ...formData,
+                                };
+                              }
+                              setSelectedCustomerForEdit(undefined);
+                            }}
+                            onClose={() =>
+                              setSelectedCustomerForEdit(undefined)
+                            }
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div> */} 
+                </form>
               </div>
-              <button
-                type="submit"
-                className="bg-black text-white px-3 py-2 rounded-md hover:bg-gray-800 transition-colors duration-200 shadow-sm text-sm"
-              >
-                Save Changes
-              </button>
-            </form>
-          </div>
-        );
-      case "security-settings":
-        return (
-          <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-8 border border-gray-200">
-            <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-800">
-              Security Settings
-            </h2>
-            <p className="text-sm sm:text-base text-gray-700">
-              Manage your account's security options.
-            </p>
-            <ul className="mt-3 sm:mt-4 space-y-2 text-sm">
-              <li className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="twoFactor"
-                  className="mr-2 accent-red-700"
-                />
-                <label htmlFor="twoFactor">
-                  Enable Two-Factor Authentication
-                </label>
-              </li>
-              <li className="flex items-center">
-                <button className="text-red-700 hover:underline focus:outline-none">
-                  Change Password
-                </button>
-              </li>
-            </ul>
+              <div>
+                {showTable && (
+                  <SalesTransactionEntryForm
+            onDistributionsClick={openDistributionsPopup}
+            filteredData={filteredData}
+          />
+                )}
+              </div>
+            </div>
           </div>
         );
       case "my-profile":
@@ -2427,55 +2386,6 @@ const App = () => {
             </button>
           </div>
         );
-      case "preferences":
-        return (
-          <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-8 border border-gray-200">
-            <h2 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4 text-gray-800">
-              User Preferences
-            </h2>
-            <p className="text-sm sm:text-base text-gray-700">
-              Customize your application experience.
-            </p>
-            <form className="mt-3 sm:mt-4 space-y-3 sm:space-y-4">
-              <div>
-                <label
-                  htmlFor="notifications"
-                  className="block text-gray-700 font-medium mb-1 text-sm"
-                >
-                  Notifications
-                </label>
-                <input
-                  type="checkbox"
-                  id="notifications"
-                  className="mr-2 accent-red-700"
-                  defaultChecked
-                />{" "}
-                Enable email notifications
-              </div>
-              <div>
-                <label
-                  htmlFor="timezone"
-                  className="block text-gray-700 font-medium mb-1 text-sm"
-                >
-                  Timezone
-                </label>
-                <select
-                  id="timezone"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:ring-red-700 focus:border-red-700 text-sm"
-                >
-                  <option>UTC-5:00 Central Time (US & Canada)</option>
-                  <option>UTC-8:00 Pacific Time (US & Canada)</option>
-                </select>
-              </div>
-              <button
-                type="submit"
-                className="bg-black text-white px-3 py-2 rounded-md hover:bg-gray-800 transition-colors duration-200 shadow-sm text-sm"
-              >
-                Save Preferences
-              </button>
-            </form>
-          </div>
-        );
       default:
         return (
           <div className="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-8 border border-gray-200">
@@ -2489,34 +2399,6 @@ const App = () => {
         );
     }
   };
-
-  // Function to render side navigation links based on the active top navigation item
-  // const renderSideNavLinks = () => {
-  //   const currentSectionItems = sideNavSections[topNavActiveItem] || [];
-  //   return currentSectionItems.map((item, index) => (
-  //     <React.Fragment key={item.page}>
-  //       <li>
-  //         <button
-  //           onClick={() => handleSideNavClick(item.page)}
-  //           className={`block w-full text-left p-3 rounded-md transition-colors duration-200 flex items-center space-x-3 focus:outline-none font-semibold text-sm sm:text-base
-  //             ${
-  //               currentPage === item.page
-  //                 ? "bg-gray-100 text-red-700 border-l-4 border-red-700"
-  //                 : "text-gray-800 hover:bg-gray-50"
-  //             }`}
-  //         >
-  //           {item.icon}
-  //           <span>{item.label}</span>
-  //         </button>
-  //       </li>
-  //       {index < currentSectionItems.length - 1 && (
-  //         <li className="my-2">
-  //           <hr className="border-t border-gray-200" />
-  //         </li>
-  //       )}
-  //     </React.Fragment>
-  //   ));
-  // };
 
   return (
     <div className="bg-gray-100 font-sans text-gray-800 flex flex-col">
@@ -2649,7 +2531,7 @@ const App = () => {
       {showDistributionPopup && (
         <SalesDistributionEntry
           onClose={closeDistributionsPopup}
-          invoiceHeaderData={invoiceHeaderDataForDistribution}
+          invoiceHeaderData={filteredData}
         />
       )}
     </div>
