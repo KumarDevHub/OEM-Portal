@@ -297,7 +297,8 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
       type: "RECV",
       debit: 61070.0,
       credit: 0.0,
-      description: "PFGSL-00022",
+      accountId: "0000-000-000000",
+      description: "PFSGL-00022",
     },
     {
       id: 2,
@@ -305,7 +306,8 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
       type: "SALES",
       debit: 0.0,
       credit: 61070.0,
-      description: "PFGSL-00022",
+      accountId: "0000-000-109290",
+      description: "PFSGL-00022",
     },
   ]);
 
@@ -537,7 +539,7 @@ const SalesDistributionEntry = ({ onClose, invoiceHeaderData }) => {
                         {`${dist.account} - $${dist.debit.toFixed(2)} - $${dist.credit.toFixed(2)} - ${dist.description}`}
                       </td> */}
                     <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
-                      {`${dist.account} -130030-0000-000-000000- ${dist.description}`}
+                      {`${dist.account}-${dist.accountId}-${dist.description}`}
                     </td>
                     <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
                       {dist.type}
@@ -758,16 +760,16 @@ const ShipToAddressSelection = ({ addresses, onSelectAddress, onClose }) => {
 };
 
 // SalesTransactionEntryForm Component
-const SalesTransactionEntryForm = ({ onDistributionsClick , filteredData }) => {
+const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
   // State for line items (mock data for demonstration of sorting)
   const [lineItems, setLineItems] = useState([
     // Initial data, now referencing mock items
     {
       id: 1,
       itemId: "MSC",
-      comments: "Program 1 250 130.00 32,500.00",
-      qtyOrdered: 10,
-      unitPrice: 15.0,
+      comments: "Ea",
+      qtyOrdered: 197,
+      unitPrice: 310.0,
       extendedPrice: 0.0,
     },
   ]);
@@ -1109,7 +1111,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick , filteredData }) => {
                 <div className="flex-grow flex items-center gap-2">
                   <input
                     type="text"
-                    defaultValue="PO-78901"
+                    defaultValue="4100647534 SUPPLEMENT PVF925"
                     className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
                   />
                 </div>
@@ -1144,7 +1146,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick , filteredData }) => {
                 <div className="flex-grow flex items-center gap-2">
                   <input
                     type="text"
-                    defaultValue="WAREHOUSE"
+                    defaultValue="DROP SHIP"
                     className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
                   />
                 </div>
@@ -1196,7 +1198,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick , filteredData }) => {
                         className="border border-gray-200 p-1 md:p-2 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer"
                         onClick={() => handleSort("comments")}
                       >
-                        Comments{" "}
+                        U of M{" "}
                         {sortColumn === "comments" &&
                           (sortDirection === "asc" ? "▲" : "▼")}
                       </th>
@@ -1204,7 +1206,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick , filteredData }) => {
                         className="border border-gray-200 p-1 md:p-2 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-1/6 cursor-pointer"
                         onClick={() => handleSort("qtyOrdered")}
                       >
-                        Qty Ordered{" "}
+                        Invoice Quantity{" "}
                         {sortColumn === "qtyOrdered" &&
                           (sortDirection === "asc" ? "▲" : "▼")}
                       </th>
@@ -1293,26 +1295,36 @@ const SalesTransactionEntryForm = ({ onDistributionsClick , filteredData }) => {
                           />
                         </td>
                         <td className="border border-gray-200 p-1">
-                          <input
-                            type="number"
-                            value={item.unitPrice.toFixed(2)}
-                            onChange={(e) =>
-                              handleLineItemChange(
-                                item.id,
-                                "unitPrice",
-                                parseFloat(e.target.value) || 0
-                              )
-                            }
-                            className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-                          />
+                          <div className="flex items-center">
+                            <span className="text-gray-700 text-xs sm:text-sm mr-1">
+                              $
+                            </span>
+                            <input
+                              type="number"
+                              value={item.unitPrice.toFixed(2)}
+                              onChange={(e) =>
+                                handleLineItemChange(
+                                  item.id,
+                                  "unitPrice",
+                                  parseFloat(e.target.value) || 0
+                                )
+                              }
+                              className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
+                            />
+                          </div>
                         </td>
                         <td className="border border-gray-200 p-1">
+                          <div className="flex items-center">
+                            <span className="text-gray-700 text-xs sm:text-sm mr-1">
+                              $
+                            </span>
                           <input
                             type="text"
                             value={item.extendedPrice.toFixed(2)}
                             readOnly
                             className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent text-left focus:outline-none"
                           />
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -1568,10 +1580,10 @@ const App = () => {
       email: "kumeisha.udriver@belkin.com",
       status: "Active",
       shipToAddresses: [
-      "123 Main St, Anytown, USA",
-      "456 Oak Ave, Somewhere, USA",
-      "789 Pine Ln, Anyplace, USA",
-    ],
+        "123 Main St, Anytown, USA",
+        "456 Oak Ave, Somewhere, USA",
+        "789 Pine Ln, Anyplace, USA",
+      ],
     },
     {
       customerId: "CB00010002",
@@ -1582,10 +1594,10 @@ const App = () => {
       email: "sarah.lee@logitech.com",
       status: "Active",
       shipToAddresses: [
-      "123 Main St, Anytown, USA",
-      "456 Oak Ave, Somewhere, USA",
-      "789 Pine Ln, Anyplace, USA",
-    ],
+        "123 Main St, Anytown, USA",
+        "456 Oak Ave, Somewhere, USA",
+        "789 Pine Ln, Anyplace, USA",
+      ],
     },
     {
       customerId: "CB00010003",
@@ -1596,10 +1608,10 @@ const App = () => {
       email: "john.smith@hp.com",
       status: "Inactive",
       shipToAddresses: [
-      "123 Main St, Anytown, USA",
-      "456 Oak Ave, Somewhere, USA",
-      "789 Pine Ln, Anyplace, USA",
-    ],
+        "123 Main St, Anytown, USA",
+        "456 Oak Ave, Somewhere, USA",
+        "789 Pine Ln, Anyplace, USA",
+      ],
     },
     {
       customerId: "CB00010004",
@@ -1610,10 +1622,10 @@ const App = () => {
       email: "priya.patel@dell.com",
       status: "Active",
       shipToAddresses: [
-      "123 Main St, Anytown, USA",
-      "456 Oak Ave, Somewhere, USA",
-      "789 Pine Ln, Anyplace, USA",
-    ],
+        "123 Main St, Anytown, USA",
+        "456 Oak Ave, Somewhere, USA",
+        "789 Pine Ln, Anyplace, USA",
+      ],
     },
     {
       customerId: "CB00010005",
@@ -1624,10 +1636,10 @@ const App = () => {
       email: "emily.chen@apple.com",
       status: "Active",
       shipToAddresses: [
-      "123 Main St, Anytown, USA",
-      "456 Oak Ave, Somewhere, USA",
-      "789 Pine Ln, Anyplace, USA",
-    ],
+        "123 Main St, Anytown, USA",
+        "456 Oak Ave, Somewhere, USA",
+        "789 Pine Ln, Anyplace, USA",
+      ],
     },
     {
       customerId: "CB00010005",
@@ -1638,9 +1650,9 @@ const App = () => {
       email: "Tim.chen@apple.com",
       status: "Active",
       shipToAddresses: [
-      "456 Tech Park Dr, Technoville, CA",
-      "101 Innovation Blvd, Future City, CA",
-    ],
+        "456 Tech Park Dr, Technoville, CA",
+        "101 Innovation Blvd, Future City, CA",
+      ],
     },
     {
       customerId: "CB00010006",
@@ -1651,9 +1663,9 @@ const App = () => {
       email: "david.kim@samsung.com",
       status: "Inactive",
       shipToAddresses: [
-      "456 Tech Park Dr, Technoville, CA",
-      "101 Innovation Blvd, Future City, CA",
-    ],
+        "456 Tech Park Dr, Technoville, CA",
+        "101 Innovation Blvd, Future City, CA",
+      ],
     },
     {
       customerId: "CB00010007",
@@ -1664,11 +1676,11 @@ const App = () => {
       email: "hiro.tanaka@sony.com",
       status: "Active",
       shipToAddresses: [
-      "789 Innovation Way, New City, NY",
-      "202 Research Rd, Old Town, NY",
-      "303 Progress Pl, Anotherburg, NY",
-      "404 Discovery Dr, Distantland, NY",
-    ],
+        "789 Innovation Way, New City, NY",
+        "202 Research Rd, Old Town, NY",
+        "303 Progress Pl, Anotherburg, NY",
+        "404 Discovery Dr, Distantland, NY",
+      ],
     },
     {
       customerId: "CB00010008",
@@ -1679,11 +1691,11 @@ const App = () => {
       email: "wei.zhang@lenovo.com",
       status: "Active",
       shipToAddresses: [
-      "789 Innovation Way, New City, NY",
-      "202 Research Rd, Old Town, NY",
-      "303 Progress Pl, Anotherburg, NY",
-      "404 Discovery Dr, Distantland, NY",
-    ],
+        "789 Innovation Way, New City, NY",
+        "202 Research Rd, Old Town, NY",
+        "303 Progress Pl, Anotherburg, NY",
+        "404 Discovery Dr, Distantland, NY",
+      ],
     },
     {
       customerId: "CB00010009",
@@ -1694,9 +1706,9 @@ const App = () => {
       email: "lina.wu@acer.com",
       status: "Inactive",
       shipToAddresses: [
-      "456 Tech Park Dr, Technoville, CA",
-      "101 Innovation Blvd, Future City, CA",
-    ],
+        "456 Tech Park Dr, Technoville, CA",
+        "101 Innovation Blvd, Future City, CA",
+      ],
     },
     {
       customerId: "CB00010010",
@@ -1707,10 +1719,10 @@ const App = () => {
       email: "ken.lee@asus.com",
       status: "Active",
       shipToAddresses: [
-      "123 Main St, Anytown, USA",
-      "456 Oak Ave, Somewhere, USA",
-      "789 Pine Ln, Anyplace, USA",
-    ],
+        "123 Main St, Anytown, USA",
+        "456 Oak Ave, Somewhere, USA",
+        "789 Pine Ln, Anyplace, USA",
+      ],
     },
   ];
   const [CustomerData, setCustomerData] = useState(_initialCustomerData);
@@ -1804,7 +1816,7 @@ const App = () => {
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
-                            strokeWidth={2}
+                            strokeWidth="2"
                             d="M6 18L18 6M6 6l12 12"
                           />
                         </svg>
@@ -2230,7 +2242,7 @@ const App = () => {
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
-                            strokeWidth={2}
+                            strokeWidth="2"
                             d="M6 18L18 6M6 6l12 12"
                           />
                         </svg>
@@ -2279,10 +2291,10 @@ const App = () => {
                             d="M12 4v16m8-8H4"
                           />
                         </svg> */}
-                        {/* Add New Customer
+                  {/* Add New Customer
                       </button> */}
-                    {/* </div> */}
-                    {/* {showCustomerModal && (
+                  {/* </div> */}
+                  {/* {showCustomerModal && (
                       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
                         <div
                           className={`bg-white rounded shadow-lg w-full max-w-2xl mx-2 relative border border-gray-300
@@ -2300,7 +2312,7 @@ const App = () => {
                       </div>
                     )} */}
 
-                    {/* {selectedCustomerForDelete && (
+                  {/* {selectedCustomerForDelete && (
                       <DeleteConfirmationMessage
                         message={
                           "Are you sure you want to delete the selected customer?"
@@ -2319,7 +2331,7 @@ const App = () => {
                       ></DeleteConfirmationMessage>
                     )} */}
 
-                    {/* {selectedCustomerForEdit && (
+                  {/* {selectedCustomerForEdit && (
                       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
                         <div
                           className={`bg-white rounded shadow-lg w-full max-w-2xl mx-2 relative border border-gray-300
@@ -2347,15 +2359,15 @@ const App = () => {
                         </div>
                       </div>
                     )}
-                  </div> */} 
+                  </div> */}
                 </form>
               </div>
               <div>
                 {showTable && (
                   <SalesTransactionEntryForm
-            onDistributionsClick={openDistributionsPopup}
-            filteredData={filteredData}
-          />
+                    onDistributionsClick={openDistributionsPopup}
+                    filteredData={filteredData}
+                  />
                 )}
               </div>
             </div>
