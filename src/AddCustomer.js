@@ -2,9 +2,11 @@ import React, { useState } from "react";
 
 const AddCustomer = ({ onClose, onSave, customerData, id }) => {
   // State to hold all form data
+  console.log("AddCustomer component rendered with customerData:", id);
   const [formData, setFormData] = useState(
     customerData || {
       customerId: id,
+      customerName: "",
       escalationContact: "",
       escalationEmail: "",
       customerContactName: "",
@@ -454,7 +456,7 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                       <input
                         type="text"
                         id="customer"
-                        value={formData.customer}
+                        value={formData.Customer}
                         style={{ pointerEvents: "none" }}
                       />
                     </div>
