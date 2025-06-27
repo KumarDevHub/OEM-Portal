@@ -1318,12 +1318,12 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
                             <span className="text-gray-700 text-xs sm:text-sm mr-1">
                               $
                             </span>
-                          <input
-                            type="text"
-                            value={item.extendedPrice.toFixed(2)}
-                            readOnly
-                            className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent text-left focus:outline-none"
-                          />
+                            <input
+                              type="text"
+                              value={item.extendedPrice.toFixed(2)}
+                              readOnly
+                              className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent text-left focus:outline-none"
+                            />
                           </div>
                         </td>
                       </tr>
@@ -1548,10 +1548,12 @@ const App = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [showCustomerModal, setShowCustomerModal] = useState(false);
 
-  const [selectedCustomerForEdit, setSelectedCustomerForEdit] =
-    useState(undefined);
-  const [selectedCustomerForDelete, setSelectedCustomerForDelete] =
-    useState(undefined);
+  const [selectedCustomerForEdit, setSelectedCustomerForEdit] = useState(
+    undefined
+  );
+  const [selectedCustomerForDelete, setSelectedCustomerForDelete] = useState(
+    undefined
+  );
   const [modalVisible, setModalVisible] = useState(false);
   const [latestId, setLatestId] = useState(undefined);
 
@@ -1885,6 +1887,14 @@ const App = () => {
                             }}
                             onClose={() => setShowCustomerModal(false)}
                           />
+                          {/* <AddCustomerWithButton
+                            id={latestId}
+                            onSave={(formData) => {
+                              setCustomerData([...CustomerData, formData]);
+                              setShowCustomerModal(false);
+                            }}
+                            onClose={() => setShowCustomerModal(false)}
+                          /> */}
                         </div>
                       </div>
                     )}
@@ -1918,10 +1928,9 @@ const App = () => {
                             id={selectedCustomerForEdit?.customerId}
                             customerData={selectedCustomerForEdit}
                             onSave={(formData) => {
-                              const currentCustomerData =
-                                CustomerData.findIndex(
-                                  (c) => c.customerId == formData.customerId
-                                );
+                              const currentCustomerData = CustomerData.findIndex(
+                                (c) => c.customerId == formData.customerId
+                              );
                               if (currentCustomerData > -1) {
                                 CustomerData[currentCustomerData] = {
                                   ...formData,
