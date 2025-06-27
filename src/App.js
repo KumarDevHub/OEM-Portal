@@ -827,6 +827,11 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
     setSelectedDistributionId(id);
   };
 
+    // Handle edit click directly from a row's button
+  const handleEditClick = (distributionToEdit) => {
+    setEditingDistribution(distributionToEdit);
+  };
+
   const functionalTotalsDebit = distributions.reduce(
     (sum, item) => sum + parseFloat(item.debit || 0),
     0
@@ -839,17 +844,17 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
   // State for selected distribution ID (single selection for radio buttons)
   const [selectedDistributionId, setSelectedDistributionId] = useState(null);
 
-  // Handle edit click
-  const handleEditClick = () => {
+  // // Handle edit click
+  // const handleEditClick = () => {
     
-    if (selectedDistributionId) {
-      console.log("Edit Distribution Clicked",selectedDistributionId);
-      const distToEdit = distributions.find(
-        (dist) => dist.id === selectedDistributionId
-      );
-      setEditingDistribution(distToEdit);
-    }
-  };
+  //   if (selectedDistributionId) {
+  //     console.log("Edit Distribution Clicked",selectedDistributionId);
+  //     const distToEdit = distributions.find(
+  //       (dist) => dist.id === selectedDistributionId
+  //     );
+  //     setEditingDistribution(distToEdit);
+  //   }
+  // };
 
   // Handle update from modal
   const handleUpdateDistribution = (updatedDist) => {
@@ -921,6 +926,22 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
                   />
                 </div>
               </div>
+             <div className="flex items-center">
+                <label
+                  htmlFor="date"
+                  className="w-36 text-gray-700 font-medium"
+                >
+                  Amount Received
+                </label>
+                <div className="flex-grow flex items-center gap-2">
+                  <input
+                    type="text"
+                    id="amount-received"
+                    value="$00.00"
+                    className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
+                  />
+                </div>
+              </div>
             </div>
             <div className="flex flex-col space-y-2">
               <div className="flex items-center">
@@ -956,6 +977,22 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
                   />
                 </div>
               </div>
+              <div className="flex items-center">
+                <label
+                  htmlFor="customer-po-number"
+                  className="w-36 text-gray-700 font-medium"
+                >
+                  On Account
+                </label>
+                <div className="flex-grow flex items-center gap-2">
+                  <input
+                    type="text"
+                    id="on-account"
+                    value="$150.00"
+                    className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
+                  />
+                </div>
+              </div>
             </div>
             <div className="flex flex-col space-y-2">
               <div className="flex items-center">
@@ -987,6 +1024,21 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
                   <input
                     type="text"
                     defaultValue="PVF925"
+                    className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
+                  />
+                </div>
+              </div>
+              <div className="flex items-center">
+                <label
+                  htmlFor="default-site-id"
+                  className="w-36 text-gray-700 font-medium"
+                >
+                  Requestor Name
+                </label>
+                <div className="flex-grow flex items-center gap-2">
+                  <input
+                    type="text"
+                    defaultValue="DEREK SYBER"
                     className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
                   />
                 </div>
@@ -1176,108 +1228,81 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
           {/* Summary Section */}
           <div
             className="grid grid-cols-1 md:grid-cols-3 gap-x-6 md:gap-x-10 gap-y-2 md:gap-y-3 mb-4 sm:mb-6 text-sm overflow-auto"
-            style={{ paddingTop: "12px" }}
+            style={{ paddingTop: "4px" }}
           >
             <div className="flex flex-col space-y-1">
               {/* Account Distributions Grid */}
               {/* <div className="flex-1 p-4 md:p-6 overflow-y-auto"> */}
               <div>
                 <div className="flex justify-between items-center mb-3">
-            <h3 className="text-lg font-semibold text-gray-800">
-              Account Distributions
-            </h3>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={handleEditClick}
-                className={`rounded-full p-1.5 text-xs font-medium shadow-sm transition-colors duration-200 ${
-                  selectedDistributionId
-                    ? "bg-black text-white hover:bg-gray-800"
-                    : "bg-gray-400 text-gray-600 cursor-not-allowed"
-                }`}
-                title="Edit Selected Distribution"
-                disabled={!selectedDistributionId}
-              >
-                <Edit size={16} />
-              </button>
-            </div>
+            {/* Removed global edit button as requested */}
           </div>
-                <div className="overflow-x-auto mb-4 border border-gray-300 rounded-lg">
-                  <table className="w-full border-collapse bg-white">
-                    <thead>
-                      <tr>
-                        <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[20px]"></th>{" "}
-                        {/* Adjusted width for first column */}
-                        <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[35%]">
-                          Distribution Reference
-                        </th>
-                        <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
-                          Type
-                        </th>
-                        <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
-                          Originating Debit
-                        </th>
-                        <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
-                          Originating Credit
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {distributions.map((dist) => (
-                        <tr
-                          key={dist.id}
-                          onClick={() => handleDistributionSelect(dist.id)} // Select row on click
-                          className={`cursor-pointer ${
-                            selectedDistributionId === dist.id
-                              ? "bg-blue-100"
-                              : "hover:bg-gray-50"
-                          }`}
-                        >
-                          <td
-                            className="border border-gray-200 p-2 text-center w-[20px]"
-                            style={{ width: "3%" }}
-                          >
-                            {" "}
-                            {/* Adjusted width for first column */}
-                            <input
-                              type="radio"
-                              name="distributionSelection"
-                              checked={selectedDistributionId === dist.id}
-                              onChange={() => handleDistributionSelect(dist.id)} // Update state on radio click
-                              className="accent-black"
-                            />
-                          </td>
-                          {/* <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
-                        {`${dist.account} - $${dist.debit.toFixed(2)} - $${dist.credit.toFixed(2)} - ${dist.description}`}
-                      </td> */}
-                          <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
-                            <input
-                              type="text"
-                              defaultValue={`${dist.account}-${dist.accountId}-${dist.description}`}
-                              className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-                            />
-                          </td>
-                          <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
-                            {dist.type}
-                          </td>
-                          <td className="border border-gray-200 p-2">
-                            <input
-                              type="text"
-                              value={"$" + `${dist.debit}`}
-                              className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-left focus:outline-none"
-                            />
-                          </td>
-                          <td className="border border-gray-200 p-2">
-                            <input
-                              type="text"
-                              value={"$" + `${dist.credit}`}
-                              className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-left focus:outline-none"
-                            />
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+          <div className="overflow-x-auto mb-4 border border-gray-300 rounded-lg">
+            <table className="w-full border-collapse bg-white">
+              <thead>
+                <tr>
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[35%]">
+                    Distribution Reference
+                  </th>
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
+                    Type
+                  </th>
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
+                    Originating Debit
+                  </th>
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
+                    Originating Credit
+                  </th>
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[5%]">
+                    Actions {/* New column for inline edit button */}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {distributions.map((dist) => (
+                  <tr
+                    key={dist.id}
+                    className="hover:bg-gray-50" // Removed cursor-pointer and onClick for row selection
+                  >
+                    <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
+                      {`${dist.account}-${dist.accountId}-${dist.description}`}
+                    </td>
+                    <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
+                      {dist.type}
+                    </td>
+                    <td className="border border-gray-200 p-2">
+                      <input
+                        type="text"
+                        value={"$" + `${dist.debit}`}
+                        readOnly
+                        className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-left focus:outline-none"
+                      />
+                    </td>
+                    <td className="border border-gray-200 p-2">
+                      <input
+                        type="text"
+                        value={"$" + `${dist.credit}`}
+                        readOnly
+                        className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-left focus:outline-none"
+                      />
+                    </td>
+                    <td className="border border-gray-200 p-2 text-center w-[5%]"> {/* New column for actions */}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent row click from triggering selection
+                          handleEditClick(dist); // Pass the current distribution object
+                        }}
+                        className="rounded-full p-1.5 text-xs font-medium shadow-sm transition-colors duration-200 bg-black text-white hover:bg-gray-800"
+                        title="Edit Distribution"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-edit"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
                 {/* Totals Section */}
                 {/* <div className="grid grid-cols-[50%_12%_12%_23%_5%] gap-3 mt-4 text-sm"> */}
@@ -1355,73 +1380,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
                 />
               )}
             </div>
-            <div className="flex flex-col space-y-1">
-              <div className="flex items-center">
-                <label
-                  htmlFor="amount-received"
-                  className="w-28 sm:w-32 text-gray-700 font-medium"
-                >
-                  Amount Received
-                </label>
-                <div className="flex-grow flex items-center gap-1">
-                  <input
-                    type="text"
-                    id="amount-received"
-                    value="$00.00"
-                    className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label
-                  htmlFor="terms-discount-taken"
-                  className="w-28 sm:w-32 text-gray-700 font-medium"
-                >
-                  Terms Discount Taken
-                </label>
-                <div className="flex-grow flex items-center gap-1">
-                  <input
-                    type="text"
-                    id="terms-discount-taken"
-                    value="$00.00"
-                    className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label
-                  htmlFor="on-account"
-                  className="w-28 sm:w-32 text-gray-700 font-medium"
-                >
-                  On Account
-                </label>
-                <div className="flex-grow flex items-center gap-1">
-                  <input
-                    type="text"
-                    id="on-account"
-                    value="$150.00"
-                    className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label
-                  htmlFor="terms-discount-taken"
-                  className="w-28 sm:w-32 text-gray-700 font-medium"
-                >
-                  Requestor Name
-                </label>
-                <div className="flex-grow flex items-center gap-1 mt-1">
-                  <input
-                    type="text"
-                    id="comment-id"
-                    defaultValue="DEREK SYBERT"
-                    className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
-                </div>
-              </div>
-              <div className="h-2"></div>
-            </div>
+            <div></div>
             <div className="flex flex-col space-y-1">
               <div className="flex items-center">
                 <label
@@ -1491,12 +1450,12 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
           </div>
           <div className="flex flex-col sm:flex-row justify-between items-center mt-3 sm:mt-4 space-y-2 sm:space-y-0">
             <div className="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
-              <button
+              {/* <button
                 onClick={applyDistributions}
                 className="rounded-md px-3 py-1.5 text-sm font-medium shadow-sm transition-colors duration-200 w-full sm:w-auto bg-black text-white hover:bg-gray-800"
               >
                 Apply Distributions
-              </button>
+              </button> */}
               <button
                 onClick={handleGenerateInvoiceClick}
                 className="bg-black text-white hover:bg-gray-800 rounded-md px-3 py-1.5 text-sm font-medium shadow-sm transition-colors duration-200 w-full sm:w-auto"
