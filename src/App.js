@@ -1740,11 +1740,14 @@ const App = () => {
     },
   ];
   const [CustomerData, setCustomerData] = useState(_initialCustomerData);
-  const filteredData = CustomerData.filter(
-    (row) =>
-      row.company.toLowerCase().includes(searchValue.toLowerCase()) ||
-      row.customerId.toLowerCase().includes(searchValue.toLowerCase())
-  );
+  const filteredData =
+  searchValue.trim() === ""
+    ? []
+    : CustomerData.filter(
+        (row) =>
+          row.company.toLowerCase().includes(searchValue.toLowerCase()) ||
+          row.customerId.toLowerCase().includes(searchValue.toLowerCase())
+      );
 
   const [showLogout, setShowLogout] = useState(false);
 
@@ -1817,7 +1820,7 @@ const App = () => {
                         type="button"
                         className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-gray-200 transition-colors"
                         aria-label="Clear"
-                        onClick={() => setSearchInput("")}
+                        onClick={() => {setSearchInput(""); setShowTable(false)}}
                         tabIndex={-1}
                       >
                         <svg
@@ -1972,49 +1975,6 @@ const App = () => {
                     >
                       <thead className="bg-gray-50">
                         <tr className="border-b-2 border-black">
-                          {/* <th className="px-2 py-2 w-6 text-center align-middle">
-                            <input
-                              type="checkbox"
-                              className="w-3 h-3 accent-black border-gray-400 rounded-sm"
-                              checked={
-                                paginatedData.length > 0 &&
-                                paginatedData.every((row, idx) =>
-                                  selectedRows.includes(
-                                    idx +
-                                      (currentPageNumber - 1) * recordsPerPage
-                                  )
-                                )
-                              }
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  setSelectedRows([
-                                    ...selectedRows,
-                                    ...paginatedData
-                                      .map(
-                                        (_, idx) =>
-                                          idx +
-                                          (currentPageNumber - 1) *
-                                            recordsPerPage
-                                      )
-                                      .filter(
-                                        (idx) => !selectedRows.includes(idx)
-                                      ),
-                                  ]);
-                                } else {
-                                  setSelectedRows(
-                                    selectedRows.filter(
-                                      (idx) =>
-                                        idx <
-                                          (currentPageNumber - 1) *
-                                            recordsPerPage ||
-                                        idx >=
-                                          currentPageNumber * recordsPerPage
-                                    )
-                                  );
-                                }
-                              }}
-                            />
-                          </th> */}
                           <th className="px-2 py-1 text-[13px] text-left cursor-pointer hover:text-blue-600">
                             Customer ID
                           </th>
@@ -2250,7 +2210,7 @@ const App = () => {
                         type="button"
                         className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-gray-200 transition-colors"
                         aria-label="Clear"
-                        onClick={() => setSearchInput("")}
+                        onClick={() => {setSearchInput(""); setShowTable(false)}}
                         tabIndex={-1}
                       >
                         <svg
@@ -2289,106 +2249,19 @@ const App = () => {
                       />
                     </svg>
                   </button>
-                  {/* <h2 className="text-xl font-bold">Non-Retail Customer List</h2> */}
-                  {/* <div className="flex items-center space-x-4">
-                    <div className="relative group ml-auto flex justify-end">
-                      <button
-                        id="addNewCustomerBtn"
-                        className="bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
-                        aria-label="Add New Customer"
-                        onClick={handleOpenCustomerModal}
-                      >
-                        {/* <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M12 4v16m8-8H4"
-                          />
-                        </svg> */}
-                  {/* Add New Customer
-                      </button> */}
-                  {/* </div> */}
-                  {/* {showCustomerModal && (
-                      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                        <div
-                          className={`bg-white rounded shadow-lg w-full max-w-2xl mx-2 relative border border-gray-300
-        ${modalVisible ? "modal-fade-in" : "modal-fade-out"}`}
-                        >
-                          <AddCustomer
-                            id={latestId}
-                            onSave={(formData) => {
-                              setCustomerData([...CustomerData, formData]);
-                              setShowCustomerModal(false);
-                            }}
-                            onClose={() => setShowCustomerModal(false)}
-                          />
-                        </div>
-                      </div>
-                    )} */}
-
-                  {/* {selectedCustomerForDelete && (
-                      <DeleteConfirmationMessage
-                        message={
-                          "Are you sure you want to delete the selected customer?"
-                        }
-                        onCancel={() => setSelectedCustomerForDelete(undefined)}
-                        onConfirm={() => {
-                          setCustomerData(
-                            CustomerData.filter(
-                              (data) =>
-                                data.customerId !=
-                                selectedCustomerForDelete.customerId
-                            )
-                          );
-                          setSelectedCustomerForDelete(undefined);
-                        }}
-                      ></DeleteConfirmationMessage>
-                    )} */}
-
-                  {/* {selectedCustomerForEdit && (
-                      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-                        <div
-                          className={`bg-white rounded shadow-lg w-full max-w-2xl mx-2 relative border border-gray-300
-        ${modalVisible ? "modal-fade-in" : "modal-fade-out"}`}
-                        >
-                          <AddCustomer
-                            id={selectedCustomerForEdit?.customerId}
-                            customerData={selectedCustomerForEdit}
-                            onSave={(formData) => {
-                              const currentCustomerData =
-                                CustomerData.findIndex(
-                                  (c) => c.customerId == formData.customerId
-                                );
-                              if (currentCustomerData > -1) {
-                                CustomerData[currentCustomerData] = {
-                                  ...formData,
-                                };
-                              }
-                              setSelectedCustomerForEdit(undefined);
-                            }}
-                            onClose={() =>
-                              setSelectedCustomerForEdit(undefined)
-                            }
-                          />
-                        </div>
-                      </div>
-                    )}
-                  </div> */}
                 </form>
               </div>
               <div>
-                {showTable && (
+                {showTable && filteredData.length>0 && (
                   <SalesTransactionEntryForm
                     onDistributionsClick={openDistributionsPopup}
                     filteredData={filteredData}
                   />
+                )}
+                {showTable && filteredData.length === 0 && (
+                  <div className="text-center text-gray-500 py-4">
+                    No customers found. Please try a different search.
+                  </div>
                 )}
               </div>
             </div>
