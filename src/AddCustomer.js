@@ -7,6 +7,8 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
       customerId: id,
       escalationContact: "",
       escalationEmail: "",
+      customerContactName: "",
+      customerContactEmail: "",
       accountPayableName: "",
       accountPayableEmail: "",
       attention: "",
@@ -23,6 +25,11 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
       statementName: "",
       territoryID: "",
       classID: "",
+      // Initialize phone3, phone4, and email3 for explicit placement
+      // phone3: "",
+      // phone4: "",
+      // email3: "",
+      // email
       streetAddress1: "",
       state: "",
       streetAddress2: "",
@@ -35,19 +42,18 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
     }
   );
 
-  const [showAdditionalContactModal, setShowAdditionalContactModal] =
-    useState(false);
+  const [showAdditionalContactModal, setShowAdditionalContactModal] = useState(
+    false
+  );
   const [additionalContactType, setAdditionalContactType] = useState("");
   const [additionalContactValue, setAdditionalContactValue] = useState("");
 
   const additionalContactOptions = [
-    { label: "Phone 3", value: "phone3" },
-    { label: "Phone 4", value: "phone4" },
-    { label: "Email 3", value: "email3" },
-    { label: "Email 4", value: "email4" },
+    { label: "Phone", value: "phone" },
+    { label: "Email", value: "email" },
   ];
 
-  // Handle input changes for text fields
+  // Handle input changes for text fields for existing fields
   const handleInputChange = (e) => {
     const { id, value } = e.target;
     setFormData((prevData) => ({
@@ -65,12 +71,26 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
     }));
   };
 
+  // Handle adding new additional phone/email fields dynamically
   const handleAddAdditionalContact = () => {
     if (!additionalContactType || !additionalContactValue) return;
-    setFormData((prevData) => ({
-      ...prevData,
-      [additionalContactType]: additionalContactValue,
-    }));
+
+    setFormData((prevData) => {
+      const existingKeys = Object.keys(prevData);
+      const base = additionalContactType.toLowerCase(); // "phone" or "email"
+
+      // Determine the next available index for phone or email
+      let nextIndex = 1;
+      while (existingKeys.includes(`${base}${nextIndex}`)) {
+        nextIndex++;
+      }
+
+      return {
+        ...prevData,
+        [`${base}${nextIndex}`]: additionalContactValue,
+      };
+    });
+
     setShowAdditionalContactModal(false);
     setAdditionalContactType("");
     setAdditionalContactValue("");
@@ -387,7 +407,7 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                   .radio-item label {
                     font-size: 11px;
                     margin-left: 5px;
-                   
+
                   }
                   .modal-footer button {
                     font-size: 13px;
@@ -400,32 +420,10 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
         <div className="modal-content">
           <div className="bg-black text-white p-4 rounded-t-lg flex justify-between items-center font-medium">
             {customerData ? <h2>Edit Customer</h2> : <h2>Add New Customer</h2>}
-            <button
-              onClick={onClose}
-              className="text-white hover:text-gray-300 transition-colors duration-200"
-            >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M6 18L18 6M6 6l12 12"
-                ></path>
-              </svg>
-            </button>
-          </div>
-          {/* <div className="modal-header">
-            {customerData ? <h2>Edit Customer</h2> : <h2>Add New Customer</h2>}
             <button className="close-button" onClick={onClose}>
               &times;
             </button>
-          </div> */}
+          </div>
 
           <div className="modal-body">
             <div className="section">
@@ -441,7 +439,6 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                     >
                       <h1 className="section-header">Customer Info</h1>
                       <button
-                        // style={{ borderRadius: "40px" }}
                         className="bg-gray-300 text-gray-800 rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-400 transition-colors duration-200"
                         onClick={() => setShowAdditionalContactModal(true)}
                       >
@@ -453,12 +450,11 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                 <tr>
                   <td>
                     <div className="td-form-item">
-                      <label htmlFor="customerId">Customer ID</label>
+                      <label htmlFor="customer">Customer Name</label>
                       <input
                         type="text"
-                        id="customerId"
-                        value={formData.customerId}
-                        readOnly
+                        id="customer"
+                        value={formData.customer}
                         style={{ pointerEvents: "none" }}
                       />
                     </div>
@@ -470,7 +466,7 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                       </label>
                       <input
                         type="text"
-                        id="escalation contact"
+                        id="escalationContact"
                         value={formData.escalationContact}
                         onChange={handleInputChange}
                       />
@@ -491,11 +487,11 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                 <tr>
                   <td>
                     <div className="td-form-item">
-                      <label htmlFor="customer">Customer Name</label>
+                      <label htmlFor="shortName">Short Name</label>
                       <input
                         type="text"
-                        id="customer"
-                        value={formData.customer}
+                        id="shortName"
+                        value={formData.shortName}
                         onChange={handleInputChange}
                       />
                     </div>
@@ -526,11 +522,13 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                 <tr>
                   <td>
                     <div className="td-form-item">
-                      <label htmlFor="shortName">Short Name</label>
+                      <label htmlFor="customerContactName">
+                        Customer Contact Name
+                      </label>
                       <input
                         type="text"
-                        id="shortName"
-                        value={formData.shortName}
+                        id="customerContactName"
+                        value={formData.customerContactName}
                         onChange={handleInputChange}
                       />
                     </div>
@@ -563,11 +561,13 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                 <tr>
                   <td>
                     <div className="td-form-item">
-                      <label htmlFor="statementName">Statement Name</label>
+                      <label htmlFor="customerContactEmail">
+                        Customer Contact Email
+                      </label>
                       <input
                         type="text"
-                        id="statementName"
-                        value={formData.statementName}
+                        id="customerContactEmail"
+                        value={formData.customerContactEmail}
                         onChange={handleInputChange}
                       />
                     </div>
@@ -632,6 +632,90 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                     </div>
                   </td>
                 </tr>
+
+                {/* New row for Phone 3, Phone 4, and Email 3 */}
+                {/* <tr>
+                  <td>
+                    {formData.phone3 && (
+                      <div className="td-form-item">
+                        <label htmlFor="phone3">Phone 3</label>
+                        <input
+                          type="text"
+                          id="phone3"
+                          value={formData.phone3}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    )}
+                  </td>
+                  <td>
+                    {formData.phone4 && (
+                      <div className="td-form-item">
+                        <label htmlFor="phone4">Phone 4</label>
+                        <input
+                          type="text"
+                          id="phone4"
+                          value={formData.phone4}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    )}
+                  </td>
+                  <td>
+                    {formData.email3 && (
+                      <div className="td-form-item">
+                        <label htmlFor="email3">Email 3</label>
+                        <input
+                          type="text"
+                          id="email3"
+                          value={formData.email3}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                    )}
+                  </td>
+                </tr> */}
+
+                {/* Dynamically added phone/email fields for phone5 and beyond, and email4 and beyond */}
+                {Object.keys(formData)
+                  .filter(
+                    (key) =>
+                      (key.startsWith("phone") && parseInt(key.slice(5)) > 2) || // For phone5 and beyond
+                      (key.startsWith("email") && parseInt(key.slice(5)) > 2) // For email4 and beyond
+                  )
+                  .reduce((acc, key, index) => {
+                    // Group 3 items per row
+                    if (index % 3 === 0) {
+                      acc.push([]);
+                    }
+                    acc[acc.length - 1].push(
+                      <td key={key}>
+                        <div className="td-form-item">
+                          <label htmlFor={key}>
+                            {key.startsWith("phone") ? "Phone" : "Email"}{" "}
+                            {key.slice(5)}
+                          </label>
+                          <input
+                            type="text"
+                            id={key}
+                            value={formData[key]}
+                            onChange={handleInputChange}
+                          />
+                        </div>
+                      </td>
+                    );
+                    return acc;
+                  }, [])
+                  .map((rowCells, rowIndex) => (
+                    <tr key={`dynamic-row-${rowIndex}`}>
+                      {rowCells}
+                      {/* Fill remaining cells in the row if less than 3 */}
+                      {rowCells.length < 3 &&
+                        [...Array(3 - rowCells.length)].map((_, i) => (
+                          <td key={`empty-${rowIndex}-${i}`}></td>
+                        ))}
+                    </tr>
+                  ))}
                 <tr>
                   <td colSpan="3">
                     <h1
@@ -777,7 +861,6 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
 
           <div className="modal-footer">
             <button
-              // style={{ borderRadius: "40px" }}
               className="bg-gray-300 text-gray-800 rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-400 transition-colors duration-200"
               onClick={onClose}
             >
@@ -785,7 +868,6 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
             </button>
             <button
               className="bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
-              // style={{ borderRadius: "40px", backgroundColor: "black" }}
               onClick={() => onSave(formData)}
             >
               {customerData ? "Update" : "Save"}
