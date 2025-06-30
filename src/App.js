@@ -526,18 +526,19 @@ const ShipToAddressSelection = ({ addresses, onSelectAddress, onClose }) => {
 
 // SalesTransactionEntryForm Component
 const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
-  // State for line items (mock data for demonstration of sorting)
-  const [lineItems, setLineItems] = useState([
-    // Initial data, now referencing mock items
+  // Initial mock data for line items
+const initialLineItems = [
     {
       id: 1,
       itemId: "MSC",
-      comments: "Initial comment",
+      comments: "Program 1 197 310.00 61,070.00",
       qtyOrdered: 197,
       unitPrice: 310.0,
       extendedPrice: 0.0,
     },
-  ]);
+];
+  // State for line items (mock data for demonstration of sorting)
+  const [lineItems, setLineItems] = useState(initialLineItems);
 
   // UseEffec to calculate extended price when line items change
   useEffect(() => {
@@ -573,6 +574,11 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
   const [showAddressPopup, setShowAddressPopup] = useState(false);
   const [availableShipToAddresses, setAvailableShipToAddresses] = useState([]);
   const [showProgressBarPopup, setShowProgressBarPopup] = useState(false); // New state for progress bar popup
+  const [showTooltip, setShowTooltip] = useState(false); // State for tooltip visibility
+
+
+  // New state to track if save is confirmed
+  const [isSaveConfirmed, setIsSaveConfirmed] = useState(false);
 
   // Effect to set initial values or clear if customer ID is empty
   useEffect(() => {
@@ -660,9 +666,6 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
   const cancelDelete = () => {
     setShowDeleteConfirmation(false); // Close confirmation dialog
   };
-
-  // State for showing save confirmation
-  const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
 
   // Handle sorting logic
   const handleSort = (column) => {
@@ -763,11 +766,19 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
     setShowSaveConfirmation(true);
   };
 
+    // Function to reset all data to initial state
+  const handleResetData = () => {
+    setLineItems(initialLineItems);
+    setDistributions(initialDistributions);
+    setIsSaveConfirmed(false); // Reset save confirmation
+  };
+
   // Confirm save
   const confirmSave = () => {
     // Implement actual save logic here
     console.log("Saving data...");
     setShowSaveConfirmation(false);
+    setIsSaveConfirmed(true); // Set save confirmed to true
     // Optionally, show a success message or redirect
   };
 
@@ -799,9 +810,13 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
     setShowProgressBarPopup(true);
   };
 
-  const [distributions, setDistributions] = useState([
+    // State for showing save confirmation
+  const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
+
+  const initialDistributions = [
     {
       id: 1,
+      distributionReference:"10000-80000-130030-0000-000-000000-PFSGL-00022",
       account: "10000-80000-130030",
       type: "RECV",
       debit: 61070.0,
@@ -811,6 +826,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
     },
     {
       id: 2,
+      distributionReference:"10000-90000-130020-0000-000-109290-PFSGL-00022",
       account: "10000-90000-130020",
       type: "SALES",
       debit: 0.0,
@@ -818,13 +834,33 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
       accountId: "0000-000-109290",
       description: "PFSGL-00022",
     },
-  ]);
+  ];
+
+  const [distributions, setDistributions] = useState(initialDistributions);
 
   const [editingDistribution, setEditingDistribution] = useState(null); // State for the distribution being edited
 
   // Handle radio button change for distribution selection
   const handleDistributionSelect = (id) => {
     setSelectedDistributionId(id);
+  };
+
+  // Handle inline change for distribution fields
+  const handleDistributionChange = (id, field, value) => {
+    setDistributions((prevDistributions) =>
+      prevDistributions.map((dist) => {
+        if (dist.id === id) {
+          // For debit and credit, clean the input value before parsing to float
+          // This allows for backspace and deletion while maintaining currency format display
+          const cleanedValue = value.replace(/[^0-9.-]+/g, ""); // Remove non-numeric characters except '.' and '-'
+          if (field === "debit" || field === "credit") {
+            return { ...dist, [field]: parseFloat(cleanedValue) || 0 };
+          }
+          return { ...dist, [field]: value };
+        }
+        return dist;
+      })
+    );
   };
 
     // Handle edit click directly from a row's button
@@ -988,7 +1024,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
                   <input
                     type="text"
                     id="on-account"
-                    value="$150.00"
+                    value="$61,070.00"
                     className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
                   />
                 </div>
@@ -1227,7 +1263,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
           </div>
           {/* Summary Section */}
           <div
-            className="grid grid-cols-[2fr_1fr] gap-4"
+            className="grid grid-cols-[1.46fr_1fr] gap-4"
             style={{ paddingTop: "4px" }}
           >
             <div className="flex flex-col space-y-1">
@@ -1238,52 +1274,114 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
             <table className="w-full border-collapse bg-white">
               <thead>
                 <tr>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[45%]">
-                    Distribution Reference
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[3%]"/>
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[42%]">
+                    <div className="flex items-center space-x-1">
+                      <span>Distribution Reference</span>
+                      <div
+                        className="relative"
+                        onMouseEnter={() => setShowTooltip(true)}
+                        onMouseLeave={() => setShowTooltip(false)}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="lucide lucide-info text-gray-500 cursor-help"
+                        >
+                          <circle cx="12" cy="12" r="10" />
+                          <path d="M12 16v-4" />
+                          <path d="M12 8h.01" />
+                        </svg>
+                        {showTooltip && (
+                          <div className="absolute z-10 top-1/2 left-full -translate-y-1/2 ml-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-md shadow-lg whitespace-nowrap">
+                            Business -Unit -Market-Account -Cost Center-Product-Location-default-code
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[10%]">
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[5%]">
                     Type
                   </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[10%]">
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
                     Originating Debit
                   </th>
                   <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
                     Originating Credit
                   </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[5%]">
-                    Actions {/* New column for inline edit button */}
-                  </th>
+                  {/* <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[5%]">
+                    Actions
+                  </th> */}
                 </tr>
               </thead>
               <tbody>
                 {distributions.map((dist) => (
                   <tr
                     key={dist.id}
-                    className="hover:bg-gray-50" // Removed cursor-pointer and onClick for row selection
+                    className={`${selectedDistributionId === dist.id ? "bg-blue-50" : "hover:bg-gray-50"}`}
+                    onClick={() => handleDistributionSelect(dist.id)}
                   >
-                    <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
-                      {`${dist.account}-${dist.accountId}-${dist.description}`}
+                  {/* <td className="px-6 py-4 whitespace-nowrap">
+                      <input
+                        type="radio"
+                        name="selectedDistribution"
+                        checked={selectedDistributionId === dist.id}
+                        onChange={() => handleDistributionSelect(dist.id)}
+                        className="form-radio h-4 w-4 text-red-600 transition duration-150 ease-in-out"
+                      />
+                    </td> */}
+                     <td className="border border-gray-200 p-1 text-center">
+                          <input
+                            type="radio"
+                            name="selectedDistribution"
+                            checked={selectedDistributionId === dist.id}
+                            onChange={() => handleDistributionSelect(dist.id)}
+                            className="accent-black"
+                          />
+                        </td>
+                    <td className="border border-gray-200 p-1">
+                      <input
+                        type="text"
+                        value={dist.distributionReference}
+                        onChange={(e) => handleDistributionChange(dist.id, "distributionReference", e.target.value)}
+                        className="order-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
+                      />
                     </td>
+
                     <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
                       {dist.type}
                     </td>
                     <td className="border border-gray-200 p-2">
-                      <input
+                     <input
+                        type="text"
+                        // value={"$" + `${dist.debit}`}
+                        value={dist.debit.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        onChange={(e) => handleDistributionChange(dist.id, "debit", e.target.value)}
+                        className="order-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
+                      />
+                      {/* <input
                         type="text"
                         value={"$" + `${dist.debit}`}
-                        readOnly
                         className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-left focus:outline-none"
-                      />
+                      /> */}
                     </td>
                     <td className="border border-gray-200 p-2">
-                      <input
+                    <input
                         type="text"
-                        value={"$" + `${dist.credit}`}
-                        readOnly
-                        className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-left focus:outline-none"
+                        // value={"$" + `${dist.debit}`}
+                        value={dist.credit.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        onChange={(e) => handleDistributionChange(dist.id, "credit", e.target.value)}
+                        className="order-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
                       />
                     </td>
-                    <td className="border border-gray-200 p-2 text-center w-[5%]"> {/* New column for actions */}
+                    {/* <td className="border border-gray-200 p-2 text-center w-[5%]">
                       <button
                         onClick={(e) => {
                           e.stopPropagation(); // Prevent row click from triggering selection
@@ -1294,7 +1392,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-edit"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                       </button>
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>
@@ -1443,6 +1541,23 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
                   />
                 </div>
               </div>
+
+              <div className="flex items-center">
+                <label
+                  htmlFor="miscellaneous"
+                  className="w-24 sm:w-28 text-gray-700 font-medium"
+                >
+                  Total
+                </label>
+                <div className="flex-grow flex items-center gap-1">
+                  <input
+                    type="text"
+                    id="miscellaneous"
+                     value={totalExtendedPrice.toFixed(2)}
+                    className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
+                  />
+                </div>
+              </div>
             </div>
           </div>
           <div className="flex flex-col sm:flex-row justify-between items-center mt-3 sm:mt-4 space-y-2 sm:space-y-0">
@@ -1454,13 +1569,30 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
                 Apply Distributions
               </button> */}
               <button
+              onClick={handleSaveClick}
+              className="bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+            >
+              Save
+            </button>
+           <button
+              onClick={handleResetData} // Add Reset button
+              className="bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+            >
+              Reset
+            </button>
+              <button
                 onClick={handleGenerateInvoiceClick}
-                className="bg-black text-white hover:bg-gray-800 rounded-md px-3 py-1.5 text-sm font-medium shadow-sm transition-colors duration-200 w-full sm:w-auto"
+                disabled={!isSaveConfirmed} // Disable if save is not confirmed
+                className={`px-5 py-2.5 text-sm font-medium shadow-sm transition-colors duration-200 rounded-md ${
+                isSaveConfirmed
+                  ? "bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
+              }`}
               >
                 Generate Invoice
               </button>
             </div>
-            <div className="flex items-center w-full sm:w-auto justify-end">
+            {/* <div className="flex items-center w-full sm:w-auto justify-end">
               <label className="text-gray-700 text-base font-semibold mr-2">
                 Total
               </label>
@@ -1473,7 +1605,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
                   readOnly
                 />
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
@@ -2583,7 +2715,7 @@ const App = () => {
                 : "text-gray-700"
             }`}
           >
-            Manual Invoice
+            Invoice
           </button>
           <button
             onClick={() => handleTopNavClick("profile", "my-profile")}
