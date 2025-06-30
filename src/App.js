@@ -1227,27 +1227,24 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
           </div>
           {/* Summary Section */}
           <div
-            className="grid grid-cols-1 md:grid-cols-3 gap-x-6 md:gap-x-10 gap-y-2 md:gap-y-3 mb-4 sm:mb-6 text-sm overflow-auto"
+            className="grid grid-cols-[2fr_1fr] gap-4"
             style={{ paddingTop: "4px" }}
           >
             <div className="flex flex-col space-y-1">
               {/* Account Distributions Grid */}
               {/* <div className="flex-1 p-4 md:p-6 overflow-y-auto"> */}
               <div>
-                <div className="flex justify-between items-center mb-3">
-            {/* Removed global edit button as requested */}
-          </div>
           <div className="overflow-x-auto mb-4 border border-gray-300 rounded-lg">
             <table className="w-full border-collapse bg-white">
               <thead>
                 <tr>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[35%]">
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[45%]">
                     Distribution Reference
                   </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[10%]">
                     Type
                   </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
+                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[10%]">
                     Originating Debit
                   </th>
                   <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
@@ -1314,10 +1311,10 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
               Functional Totals
             </div>{" "} */}
                   {/* Label spanning first two conceptual columns */}
-                  <div className="flex items-center justify-end col-span-2 space-x-2">
+                  <div className="flex col-span-2 space-x-2">
                     {" "}
                     {/* Debit and Credit inputs */}
-                    <span className="text-gray-600 font-semibold">
+                    <span className="text-gray-600 font-semibold" style={{paddingRight:'3rem'}}>
                       {" "}
                       Functional Totals
                     </span>
@@ -1325,14 +1322,14 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
                       type="text"
                       value={"$" + functionalTotalsDebit.toFixed(2)}
                       readOnly
-                      className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-52 sm:w-52 font-bold text-xs sm:text-sm"
+                      className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-56 sm:w-56 font-bold text-xs sm:text-sm"
                     />
                     <span className="text-gray-600 font-semibold"></span>
                     <input
                       type="text"
                       value={"$" + functionalTotalsCredit.toFixed(2)}
                       readOnly
-                      className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-52 sm:w-52 font-bold text-xs sm:text-sm"
+                      className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-56 sm:w-56 font-bold text-xs sm:text-sm"
                     />
                   </div>
                   {/* Originating Totals Row */}
@@ -1340,10 +1337,10 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
               Originating Totals
             </div>{" "} */}
                   {/* Label spanning first two conceptual columns */}
-                  <div className="flex items-center justify-end col-span-2 space-x-2">
+                  <div className="flex col-span-2 space-x-2">
                     {" "}
                     {/* Debit and Credit inputs */}
-                    <span className="text-gray-600 font-semibold">
+                    <span className="text-gray-600 font-semibold" style={{paddingRight:'41px'}}>
                       {" "}
                       Originating Totals
                     </span>
@@ -1351,14 +1348,14 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
                       type="text"
                       defaultValue="$0.00"
                       readOnly
-                      className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-52 sm:w-52 text-xs sm:text-sm"
+                      className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-56 sm:w-56 text-xs sm:text-sm"
                     />
                     <span className="text-gray-600 font-semibold"></span>
                     <input
                       type="text"
                       defaultValue="$0.00"
                       readOnly
-                      className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-52 sm:w-52 text-xs sm:text-sm"
+                      className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-56 sm:w-56 text-xs sm:text-sm"
                     />
                   </div>
                 </div>
@@ -1380,7 +1377,7 @@ const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
                 />
               )}
             </div>
-            <div></div>
+            {/* <div></div> */}
             <div className="flex flex-col space-y-1">
               <div className="flex items-center">
                 <label
@@ -2362,20 +2359,18 @@ const App = () => {
                                 {row.defaultSiteid}
                               </td>
                               <td className="px-2 py-1 text-[13px] flex gap-1">
-                                {/* Edit Button */}
+                                {/* Create Button */}
                                 <div className="relative group">
                                   <button
-                                    className="p-1 rounded-full hover:bg-blue-100 transition-colors"
-                                    aria-label="Edit"
+                                    id="createInvoiceBtn"
+                                    className="bg-black text-white rounded-md px-3 py-1.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+                                    aria-label="Create"
                                     onClick={() => {
                                       generateManualInvoice(row);
                                     }}
                                   >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11.08V8l-6-6H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h6"/><path d="M14 3v5h5M18 21v-6M15 18h6"/></svg>
-                                  </button>
-                                  <span className="absolute left-1/2 -translate-x-1/2 mt-7 px-2 py-1 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
                                     Create Invoice
-                                  </span>
+                                  </button>
                                 </div>
                               </td>
                             </tr>
