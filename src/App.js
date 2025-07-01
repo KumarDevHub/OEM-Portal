@@ -1,11 +1,12 @@
 import logo from "./logo.png";
 import "./App.css";
-import { Plus, Edit, Trash2 } from "lucide-react"; // Import Plus, Edit, and Trash2 icons
+import { Plus, Edit, Trash2,Info } from "lucide-react"; // Import Plus, Edit, and Trash2 icons
 import AddCustomer from "./AddCustomer";
 import InvoiceProgressBar from "./components/InvoiceProgressBar";
 //import "./cust.css"
 
 import React, { useState, useMemo, useEffect } from "react"; // Added useEffect import
+import CurrencyInput from "./components/CurrencyInput";
 
 // Mock data for customer information with multiple shipToAddresses
 const customerData = {
@@ -542,8 +543,9 @@ const initialLineItems = [
 
   // UseEffec to calculate extended price when line items change
   useEffect(() => {
-    setLineItems((prevLineItems) =>
-      prevLineItems.map((item) => ({
+    console.log("Unit Price");
+    setLineItems(() =>
+      lineItems.map((item) => ({
         ...item,
         extendedPrice: (item.qtyOrdered || 0) * (item.unitPrice || 0),
       }))
@@ -569,6 +571,9 @@ const initialLineItems = [
   const [shipToAddress, setShipToAddress] = useState(""); // New state for ship-to address
   const [documentNumber, setDocumentNumber] = useState("ORD-001234");
   const [documentDate, setDocumentDate] = useState("2017-04-12");
+  const [amountReceived, setAmountReceived] = useState('');
+  const [onAccount, setOnAccount] = useState('61,070.00'); //61,070.00
+  const [invoiceTotal, setInvoiceTotal] = useState('61,070.00');
 
   // State for Ship To Address popup
   const [showAddressPopup, setShowAddressPopup] = useState(false);
@@ -601,8 +606,9 @@ const initialLineItems = [
 
   // Handle changes in line item fields
   const handleLineItemChange = (id, field, value) => {
-    setLineItems((prevLineItems) =>
-      prevLineItems.map((item) => {
+    console.log("Unit Price");
+    setLineItems(() =>
+      lineItems.map((item) => {
         if (item.id === id) {
           let updatedItem = { ...item, [field]: value };
 
@@ -630,6 +636,7 @@ const initialLineItems = [
 
   // Function to add a new line item
   const handleAddItem = () => {
+    console.log("Unit Price");
     setLineItems((prevLineItems) => [
       ...prevLineItems,
       {
@@ -708,22 +715,22 @@ const initialLineItems = [
   const handleCustomerIdChange = (e) => {
     const id = e.target.value;
     setCustomerId(id);
-    const customerInfo = customerData[id];
-    if (customerInfo) {
-      setCustomerName(customerInfo.customerName);
-      setShipToAddress(customerInfo.shipToAddresses[0] || ""); // Set first address as default
-      setAvailableShipToAddresses(customerInfo.shipToAddresses);
-    } else {
-      // Clear fields if customer ID not found
-      setCustomerName("");
-      setShipToAddress("");
-      setAvailableShipToAddresses([]);
-    }
   };
   const handleCustomerNameChange = (e) => setCustomerName(e.target.value);
   const handleShipToAddressChange = (e) => setShipToAddress(e.target.value); // Handler for Ship To Address
   const handleDocumentNumberChange = (e) => setDocumentNumber(e.target.value);
   const handleDocumentDateChange = (e) => setDocumentDate(e.target.value);
+  const handleAmountReceivedChange = (value) => {
+    setAmountReceived(value);
+    const cleanString = onAccount.replace(/[$,€£\s]/g, '').replace(/,/g, '');
+    const OnAccountValue = parseFloat(cleanString) - value;
+    setOnAccount(OnAccountValue.toString());
+  };
+  const handleInvoiceTotalChange = (value) => setInvoiceTotal(value);
+  const handleOnAccountChange = (value) => {
+    setOnAccount(value);
+    setInvoiceTotal(value);
+  }
 
   // Handler for opening the Ship To Address popup
   const handleShipToAddressClick = () => {
@@ -847,14 +854,14 @@ const initialLineItems = [
 
   // Handle inline change for distribution fields
   const handleDistributionChange = (id, field, value) => {
-    setDistributions((prevDistributions) =>
-      prevDistributions.map((dist) => {
+    setDistributions(() =>
+      distributions.map((dist) => {
         if (dist.id === id) {
           // For debit and credit, clean the input value before parsing to float
           // This allows for backspace and deletion while maintaining currency format display
-          const cleanedValue = value.replace(/[^0-9.-]+/g, ""); // Remove non-numeric characters except '.' and '-'
+          //const cleanedValue = value.replace(/[^0-9.-]+/g, ""); // Remove non-numeric characters except '.' and '-'
           if (field === "debit" || field === "credit") {
-            return { ...dist, [field]: parseFloat(cleanedValue) || 0 };
+            return { ...dist, [field]: parseFloat(value) || 0 };
           }
           return { ...dist, [field]: value };
         }
@@ -940,7 +947,6 @@ const initialLineItems = [
                     value={customerId}
                     onChange={handleCustomerIdChange}
                     className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                    readOnly
                   />
                 </div>
               </div>
@@ -970,11 +976,14 @@ const initialLineItems = [
                   Amount Received
                 </label>
                 <div className="flex-grow flex items-center gap-2">
-                  <input
-                    type="text"
-                    id="amount-received"
-                    value="$00.00"
-                    className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
+                  <CurrencyInput
+                    id="currencyInput"
+                    value={amountReceived}
+                    onChange={handleAmountReceivedChange}
+                    currencySymbol="$" // You can change this symbol
+                    decimalSeparator="." // You can change this separator
+                    groupSeparator="," // You can change this separator
+                    precision={2} // Number of decimal places
                   />
                 </div>
               </div>
@@ -994,7 +1003,6 @@ const initialLineItems = [
                     value={customerName}
                     onChange={handleCustomerNameChange}
                     className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                    readOnly
                   />
                 </div>
               </div>
@@ -1021,11 +1029,15 @@ const initialLineItems = [
                   On Account
                 </label>
                 <div className="flex-grow flex items-center gap-2">
-                  <input
-                    type="text"
-                    id="on-account"
-                    value="$61,070.00"
-                    className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
+                 <CurrencyInput
+                    id="currencyInput"
+                    value={onAccount}
+                    onChange={handleOnAccountChange}
+                    currencySymbol="$" // You can change this symbol
+                    decimalSeparator="." // You can change this separator
+                    groupSeparator="," // You can change this separator
+                    precision={2} // Number of decimal places
+                    readOnly
                   />
                 </div>
               </div>
@@ -1224,12 +1236,10 @@ const initialLineItems = [
                         </td>
                         <td className="border border-gray-200 p-1">
                           <div className="flex items-center">
-                            <span className="text-gray-700 text-xs sm:text-sm mr-1">
-                              $
-                            </span>
                             <input
-                              type="number"
-                              value={item.unitPrice.toFixed(2)}
+                              // type="number"
+                               //value={item.unitPrice.toFixed(2)}
+                              value={item.unitPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                               onChange={(e) =>
                                 handleLineItemChange(
                                   item.id,
@@ -1237,20 +1247,20 @@ const initialLineItems = [
                                   parseFloat(e.target.value) || 0
                                 )
                               }
-                              className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
+                              className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700 text-right"
                             />
                           </div>
                         </td>
                         <td className="border border-gray-200 p-1">
                           <div className="flex items-center">
-                            <span className="text-gray-700 text-xs sm:text-sm mr-1">
+                            {/* <span className="text-gray-700 text-xs sm:text-sm mr-1 text-right">
                               $
-                            </span>
+                            </span> */}
                             <input
                               type="text"
-                              value={item.extendedPrice.toFixed(2)}
+                              value={item.extendedPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                               readOnly
-                              className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent text-left focus:outline-none"
+                              className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent text-left focus:outline-none text-right"
                             />
                           </div>
                         </td>
@@ -1261,154 +1271,102 @@ const initialLineItems = [
               </div>
             </div>
           </div>
-          {/* Summary Section */}
           <div
-            className="grid grid-cols-[1.46fr_1fr] gap-4"
+            className="grid grid-cols-5 gap-3"
             style={{ paddingTop: "4px" }}
           >
-            <div className="flex flex-col space-y-1">
+            <div className="col-span-3">
               {/* Account Distributions Grid */}
               {/* <div className="flex-1 p-4 md:p-6 overflow-y-auto"> */}
               <div>
-          <div className="overflow-x-auto mb-4 border border-gray-300 rounded-lg">
-            <table className="w-full border-collapse bg-white">
-              <thead>
-                <tr>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[3%]"/>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[42%]">
-                    <div className="flex items-center space-x-1">
-                      <span>Distribution Reference</span>
-                      <div
-                        className="relative"
-                        onMouseEnter={() => setShowTooltip(true)}
-                        onMouseLeave={() => setShowTooltip(false)}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-info text-gray-500 cursor-help"
-                        >
-                          <circle cx="12" cy="12" r="10" />
-                          <path d="M12 16v-4" />
-                          <path d="M12 8h.01" />
-                        </svg>
-                        {showTooltip && (
-                          <div className="absolute z-10 top-1/2 left-full -translate-y-1/2 ml-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-md shadow-lg whitespace-nowrap">
-                            Business -Unit -Market-Account -Cost Center-Product-Location-default-code
+              <div className="overflow-x-auto mb-4 border border-gray-300 rounded-lg">
+                <table className="w-full border-collapse bg-white min-w-full">
+                  <thead>
+                    <tr>
+                      <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[40px]"></th>
+                      <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm min-w-[250px]">
+                        <div className="flex items-center space-x-1">
+                          <span>Distribution Reference</span>
+                          <div
+                            className="relative"
+                            onMouseEnter={() => setShowTooltip(true)}
+                            onMouseLeave={() => setShowTooltip(false)}
+                          >
+                            <Info size={16} className="text-gray-500 cursor-help" />
+                            {showTooltip && (
+                              <div className="absolute z-10 top-1/2 left-full -translate-y-1/2 ml-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-md shadow-lg whitespace-nowrap">
+                                Business -Unit -Market-Account -Cost Center-Product-Location-default-code
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </div>
-                  </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[5%]">
-                    Type
-                  </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
-                    Originating Debit
-                  </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
-                    Originating Credit
-                  </th>
-                  {/* <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[5%]">
-                    Actions
-                  </th> */}
-                </tr>
-              </thead>
-              <tbody>
-                {distributions.map((dist) => (
-                  <tr
-                    key={dist.id}
-                    className={`${selectedDistributionId === dist.id ? "bg-blue-50" : "hover:bg-gray-50"}`}
-                    onClick={() => handleDistributionSelect(dist.id)}
-                  >
-                  {/* <td className="px-6 py-4 whitespace-nowrap">
-                      <input
-                        type="radio"
-                        name="selectedDistribution"
-                        checked={selectedDistributionId === dist.id}
-                        onChange={() => handleDistributionSelect(dist.id)}
-                        className="form-radio h-4 w-4 text-red-600 transition duration-150 ease-in-out"
-                      />
-                    </td> */}
-                     <td className="border border-gray-200 p-1 text-center">
+                        </div>
+                      </th>
+                      <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm min-w-[80px]">
+                        Type
+                      </th>
+                      <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm min-w-[120px]">
+                        Originating Debit
+                      </th>
+                      <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm min-w-[120px]">
+                        Originating Credit
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {distributions.map((dist) => (
+                      <tr
+                        key={dist.id}
+                        className={`${selectedDistributionId === dist.id ? "bg-blue-50" : "hover:bg-gray-50"}`}
+                        onClick={() => handleDistributionSelect(dist.id)}
+                      >
+                       <td className="border border-gray-200 p-1 text-center w-[40px]">
+                            <input
+                              type="radio"
+                              name="selectedDistribution"
+                              checked={selectedDistributionId === dist.id}
+                              onChange={() => handleDistributionSelect(dist.id)}
+                              className="accent-black"
+                            />
+                          </td>
+                        <td className="border border-gray-200 p-1 min-w-[250px]">
                           <input
-                            type="radio"
-                            name="selectedDistribution"
-                            checked={selectedDistributionId === dist.id}
-                            onChange={() => handleDistributionSelect(dist.id)}
-                            className="accent-black"
+                            type="text"
+                            value={dist.distributionReference}
+                            onChange={(e) => handleDistributionChange(dist.id, "distributionReference", e.target.value)}
+                            className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
                           />
                         </td>
-                    <td className="border border-gray-200 p-1">
-                      <input
-                        type="text"
-                        value={dist.distributionReference}
-                        onChange={(e) => handleDistributionChange(dist.id, "distributionReference", e.target.value)}
-                        className="order-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-                      />
-                    </td>
 
-                    <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
-                      {dist.type}
-                    </td>
-                    <td className="border border-gray-200 p-2">
-                     <input
-                        type="text"
-                        // value={"$" + `${dist.debit}`}
-                        value={dist.debit.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        onChange={(e) => handleDistributionChange(dist.id, "debit", e.target.value)}
-                        className="order-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-                      />
-                      {/* <input
-                        type="text"
-                        value={"$" + `${dist.debit}`}
-                        className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-left focus:outline-none"
-                      /> */}
-                    </td>
-                    <td className="border border-gray-200 p-2">
-                    <input
-                        type="text"
-                        // value={"$" + `${dist.debit}`}
-                        value={dist.credit.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        onChange={(e) => handleDistributionChange(dist.id, "credit", e.target.value)}
-                        className="order-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-                      />
-                    </td>
-                    {/* <td className="border border-gray-200 p-2 text-center w-[5%]">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent row click from triggering selection
-                          handleEditClick(dist); // Pass the current distribution object
-                        }}
-                        className="rounded-full p-1.5 text-xs font-medium shadow-sm transition-colors duration-200 bg-black text-white hover:bg-gray-800"
-                        title="Edit Distribution"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-edit"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                      </button>
-                    </td> */}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                        <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700 min-w-[80px]">
+                          {dist.type}
+                        </td>
+                        <td className="border border-gray-200 p-2 min-w-[120px]">
+                         <input
+                            type="text"
+                            value={dist.debit.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            onChange={(e) => handleDistributionChange(dist.id, "debit", parseFloat(e.target.value.replace(/[^0-9.-]+/g,"")) || 0)}
+                            className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700 text-right"
+                          />
+
+                        </td>
+                        <td className="border border-gray-200 p-2 min-w-[120px]">
+                        <input
+                            type="text"
+                            value={dist.credit.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            onChange={(e) => handleDistributionChange(dist.id, "credit", parseFloat(e.target.value.replace(/[^0-9.-]+/g,"")) || 0)}
+                            className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700 text-right"
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
                 {/* Totals Section */}
                 {/* <div className="grid grid-cols-[50%_12%_12%_23%_5%] gap-3 mt-4 text-sm"> */}
                 <div class="grid grid-flow-col grid-rows-2 gap-4">
                   {" "}
-                  {/* Mimic table column widths roughly */}
-                  {/* Functional Totals Row */}
-                  {/* <div className="col-span-2 text-right font-semibold text-gray-700 pr-4">
-              Functional Totals
-            </div>{" "} */}
-                  {/* Label spanning first two conceptual columns */}
                   <div className="flex col-span-2 space-x-2">
                     {" "}
                     {/* Debit and Credit inputs */}
@@ -1420,21 +1378,16 @@ const initialLineItems = [
                       type="text"
                       value={"$" + functionalTotalsDebit.toFixed(2)}
                       readOnly
-                      className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-56 sm:w-56 font-bold text-xs sm:text-sm"
+                      className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-56 sm:w-56 font-bold text-xs sm:text-sm text-right"
                     />
                     <span className="text-gray-600 font-semibold"></span>
                     <input
                       type="text"
                       value={"$" + functionalTotalsCredit.toFixed(2)}
                       readOnly
-                      className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-56 sm:w-56 font-bold text-xs sm:text-sm"
+                      className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-56 sm:w-56 font-bold text-xs sm:text-sm text-right"
                     />
                   </div>
-                  {/* Originating Totals Row */}
-                  {/* <div className="col-span-2 text-right font-semibold text-gray-700 pr-4">
-              Originating Totals
-            </div>{" "} */}
-                  {/* Label spanning first two conceptual columns */}
                   <div className="flex col-span-2 space-x-2">
                     {" "}
                     {/* Debit and Credit inputs */}
@@ -1446,27 +1399,18 @@ const initialLineItems = [
                       type="text"
                       defaultValue="$0.00"
                       readOnly
-                      className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-56 sm:w-56 text-xs sm:text-sm"
+                      className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-56 sm:w-56 text-xs sm:text-sm text-right"
                     />
                     <span className="text-gray-600 font-semibold"></span>
                     <input
                       type="text"
                       defaultValue="$0.00"
                       readOnly
-                      className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-56 sm:w-56 text-xs sm:text-sm"
+                      className="p-1 border border-gray-300 rounded-md bg-gray-50 text-left w-56 sm:w-56 text-xs sm:text-sm text-right"
                     />
                   </div>
                 </div>
               </div>
-              {/* Footer Buttons */}
-              {/* <div className="p-4 bg-gray-100 border-t border-gray-200 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4 rounded-b-lg">
-          <button
-            onClick={handleOkClick}
-            className="bg-black text-white rounded-md px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
-          >
-            Apply
-          </button>
-        </div> */}
               {editingDistribution && (
                 <EditDistributionModal
                   distribution={editingDistribution}
@@ -1475,90 +1419,107 @@ const initialLineItems = [
                 />
               )}
             </div>
-            {/* <div></div> */}
-            <div className="flex flex-col space-y-1">
-              <div className="flex items-center">
-                <label
-                  htmlFor="subtotal"
-                  className="w-24 sm:w-28 text-gray-700 font-medium"
-                >
-                  Subtotal
-                </label>
-                <div className="flex-grow flex items-center gap-1">
-                  <input
-                    type="text"
-                    id="subtotal"
-                    value={"$" + totalExtendedPrice.toFixed(2)}
-                    className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label
-                  htmlFor="tax"
-                  className="w-24 sm:w-28 text-gray-700 font-medium"
-                >
-                  Tax
-                </label>
-                <div className="flex-grow flex items-center gap-1">
-                  <input
-                    type="text"
-                    id="tax"
-                    value="$00.00"
-                    className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label
-                  htmlFor="freight"
-                  className="w-24 sm:w-28 text-gray-700 font-medium"
-                >
-                  Freight
-                </label>
-                <div className="flex-grow flex items-center gap-1">
-                  <input
-                    type="text"
-                    id="freight"
-                    value="$00.00"
-                    className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
-                </div>
-              </div>
-              <div className="flex items-center">
-                <label
-                  htmlFor="miscellaneous"
-                  className="w-24 sm:w-28 text-gray-700 font-medium"
-                >
-                  Miscellaneous
-                </label>
-                <div className="flex-grow flex items-center gap-1">
-                  <input
-                    type="text"
-                    id="miscellaneous"
-                    value="$0.00"
-                    className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center">
-                <label
-                  htmlFor="miscellaneous"
-                  className="w-24 sm:w-28 text-gray-700 font-medium"
-                >
-                  Total
-                </label>
-                <div className="flex-grow flex items-center gap-1">
-                  <input
-                    type="text"
-                    id="miscellaneous"
-                     value={totalExtendedPrice.toFixed(2)}
-                    className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
-                  />
-                </div>
+            <div className="col-span-1"></div>
+          <div className="col-span-full md:col-span-1 flex flex-col space-y-2"> {/* Changed col-span-1 to col-span-full md:col-span-1 */}
+            {/* Subtotal */}
+            <div className="flex items-center">
+              <label
+                htmlFor="subtotal"
+                className="w-32 sm:w-40 text-gray-700 font-medium"
+              >
+                Subtotal
+              </label>
+              <div className="flex-grow flex items-center gap-1">
+                {/* <CurrencyInput
+                    id="currencyInput"
+                    value={invoiceTotal}
+                    onChange={handleInvoiceTotal}
+                    currencySymbol="$" // You can change this symbol
+                    decimalSeparator="." // You can change this separator
+                    groupSeparator="," // You can change this separator
+                    precision={2} // Number of decimal places
+                  /> */}
+                <input
+                  type="text"
+                  id="subtotal"
+                  value={totalExtendedPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  readOnly
+                  className="p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700 text-right w-full max-w-[300px]"
+                />
               </div>
             </div>
+            {/* Tax */}
+            <div className="flex items-center">
+              <label
+                htmlFor="tax"
+                className="w-32 sm:w-40 text-gray-700 font-medium"
+              >
+                Tax
+              </label>
+              <div className="flex-grow flex items-center gap-1">
+                <input
+                  type="text"
+                  id="tax"
+                  value="$0.00"
+                  className="p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700 text-right w-full max-w-[300px]"
+                />
+              </div>
+            </div>
+            {/* Freight */}
+            <div className="flex items-center">
+              <label
+                htmlFor="freight"
+                className="w-32 sm:w-40 text-gray-700 font-medium"
+              >
+                Freight
+              </label>
+              <div className="flex-grow flex items-center gap-1">
+                <input
+                  type="text"
+                  id="freight"
+                  value="$0.00"
+                  readOnly
+                  className="p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700 text-right w-full max-w-[300px]"
+                />
+              </div>
+            </div>
+            {/* Miscellaneous */}
+            <div className="flex items-center">
+              <label
+                htmlFor="miscellaneous"
+                className="w-32 sm:w-40 text-gray-700 font-medium"
+              >
+                Miscellaneous
+              </label>
+              <div className="flex-grow flex items-center gap-1">
+                <input
+                  type="text"
+                  id="miscellaneous"
+                  value="$0.00"
+                  readOnly
+                  className="p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700 text-right w-full max-w-[300px]"
+                />
+              </div>
+            </div>
+            {/* Total */}
+            <div className="flex items-center">
+              <label
+                htmlFor="total"
+                className="w-32 sm:w-40 text-gray-700 font-medium"
+              >
+                Total
+              </label>
+              <div className="flex-grow flex items-center gap-1">
+                <input
+                  type="text"
+                  id="total"
+                  value={totalExtendedPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  readOnly
+                  className="p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700 text-right w-full max-w-[300px]"
+                />
+              </div>
+            </div>
+          </div>
           </div>
           <div className="flex flex-col sm:flex-row justify-between items-center mt-3 sm:mt-4 space-y-2 sm:space-y-0">
             <div className="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
@@ -1592,20 +1553,6 @@ const initialLineItems = [
                 Generate Invoice
               </button>
             </div>
-            {/* <div className="flex items-center w-full sm:w-auto justify-end">
-              <label className="text-gray-700 text-base font-semibold mr-2">
-                Total
-              </label>
-              <div className="flex items-center">
-                <span className="mr-1 text-gray-800 text-md font-bold">$</span>
-                <input
-                  type="text"
-                  value={totalExtendedPrice.toFixed(2)}
-                  className="p-1.5 border border-gray-300 bg-gray-50 text-left font-bold text-lg w-24 sm:w-28"
-                  readOnly
-                />
-              </div>
-            </div> */}
           </div>
         </div>
       </div>
