@@ -525,9 +525,13 @@ const ShipToAddressSelection = ({ addresses, onSelectAddress, onClose }) => {
 };
 
 // SalesTransactionEntryForm Component
-const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
+const SalesTransactionEntryForm = ({
+  onDistributionsClick,
+  filteredData,
+  existingInvoice,
+}) => {
   // Initial mock data for line items
-const initialLineItems = [
+  const initialLineItems = [
     {
       id: 1,
       itemId: "MSC",
@@ -536,7 +540,7 @@ const initialLineItems = [
       unitPrice: 310.0,
       extendedPrice: 0.0,
     },
-];
+  ];
   // State for line items (mock data for demonstration of sorting)
   const [lineItems, setLineItems] = useState(initialLineItems);
 
@@ -576,9 +580,10 @@ const initialLineItems = [
   const [showProgressBarPopup, setShowProgressBarPopup] = useState(false); // New state for progress bar popup
   const [showTooltip, setShowTooltip] = useState(false); // State for tooltip visibility
 
-
   // New state to track if save is confirmed
-  const [isSaveConfirmed, setIsSaveConfirmed] = useState(false);
+  const [isSaveConfirmed, setIsSaveConfirmed] = useState(
+    existingInvoice ? true : false
+  );
 
   // Effect to set initial values or clear if customer ID is empty
   useEffect(() => {
@@ -766,7 +771,7 @@ const initialLineItems = [
     setShowSaveConfirmation(true);
   };
 
-    // Function to reset all data to initial state
+  // Function to reset all data to initial state
   const handleResetData = () => {
     setLineItems(initialLineItems);
     setDistributions(initialDistributions);
@@ -810,13 +815,13 @@ const initialLineItems = [
     setShowProgressBarPopup(true);
   };
 
-    // State for showing save confirmation
+  // State for showing save confirmation
   const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
 
   const initialDistributions = [
     {
       id: 1,
-      distributionReference:"10000-80000-130030-0000-000-000000-PFSGL-00022",
+      distributionReference: "10000-80000-130030-0000-000-000000-PFSGL-00022",
       account: "10000-80000-130030",
       type: "RECV",
       debit: 61070.0,
@@ -826,7 +831,7 @@ const initialLineItems = [
     },
     {
       id: 2,
-      distributionReference:"10000-90000-130020-0000-000-109290-PFSGL-00022",
+      distributionReference: "10000-90000-130020-0000-000-109290-PFSGL-00022",
       account: "10000-90000-130020",
       type: "SALES",
       debit: 0.0,
@@ -863,7 +868,7 @@ const initialLineItems = [
     );
   };
 
-    // Handle edit click directly from a row's button
+  // Handle edit click directly from a row's button
   const handleEditClick = (distributionToEdit) => {
     setEditingDistribution(distributionToEdit);
   };
@@ -882,7 +887,7 @@ const initialLineItems = [
 
   // // Handle edit click
   // const handleEditClick = () => {
-    
+
   //   if (selectedDistributionId) {
   //     console.log("Edit Distribution Clicked",selectedDistributionId);
   //     const distToEdit = distributions.find(
@@ -962,7 +967,7 @@ const initialLineItems = [
                   />
                 </div>
               </div>
-             <div className="flex items-center">
+              <div className="flex items-center">
                 <label
                   htmlFor="date"
                   className="w-36 text-gray-700 font-medium"
@@ -1270,65 +1275,70 @@ const initialLineItems = [
               {/* Account Distributions Grid */}
               {/* <div className="flex-1 p-4 md:p-6 overflow-y-auto"> */}
               <div>
-          <div className="overflow-x-auto mb-4 border border-gray-300 rounded-lg">
-            <table className="w-full border-collapse bg-white">
-              <thead>
-                <tr>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[3%]"/>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[42%]">
-                    <div className="flex items-center space-x-1">
-                      <span>Distribution Reference</span>
-                      <div
-                        className="relative"
-                        onMouseEnter={() => setShowTooltip(true)}
-                        onMouseLeave={() => setShowTooltip(false)}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="lucide lucide-info text-gray-500 cursor-help"
-                        >
-                          <circle cx="12" cy="12" r="10" />
-                          <path d="M12 16v-4" />
-                          <path d="M12 8h.01" />
-                        </svg>
-                        {showTooltip && (
-                          <div className="absolute z-10 top-1/2 left-full -translate-y-1/2 ml-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-md shadow-lg whitespace-nowrap">
-                            Business -Unit -Market-Account -Cost Center-Product-Location-default-code
+                <div className="overflow-x-auto mb-4 border border-gray-300 rounded-lg">
+                  <table className="w-full border-collapse bg-white">
+                    <thead>
+                      <tr>
+                        <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[3%]" />
+                        <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[42%]">
+                          <div className="flex items-center space-x-1">
+                            <span>Distribution Reference</span>
+                            <div
+                              className="relative"
+                              onMouseEnter={() => setShowTooltip(true)}
+                              onMouseLeave={() => setShowTooltip(false)}
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="lucide lucide-info text-gray-500 cursor-help"
+                              >
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M12 16v-4" />
+                                <path d="M12 8h.01" />
+                              </svg>
+                              {showTooltip && (
+                                <div className="absolute z-10 top-1/2 left-full -translate-y-1/2 ml-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-md shadow-lg whitespace-nowrap">
+                                  Business -Unit -Market-Account -Cost
+                                  Center-Product-Location-default-code
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        )}
-                      </div>
-                    </div>
-                  </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[5%]">
-                    Type
-                  </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
-                    Originating Debit
-                  </th>
-                  <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
-                    Originating Credit
-                  </th>
-                  {/* <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[5%]">
+                        </th>
+                        <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[5%]">
+                          Type
+                        </th>
+                        <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
+                          Originating Debit
+                        </th>
+                        <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[15%]">
+                          Originating Credit
+                        </th>
+                        {/* <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[5%]">
                     Actions
                   </th> */}
-                </tr>
-              </thead>
-              <tbody>
-                {distributions.map((dist) => (
-                  <tr
-                    key={dist.id}
-                    className={`${selectedDistributionId === dist.id ? "bg-blue-50" : "hover:bg-gray-50"}`}
-                    onClick={() => handleDistributionSelect(dist.id)}
-                  >
-                  {/* <td className="px-6 py-4 whitespace-nowrap">
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {distributions.map((dist) => (
+                        <tr
+                          key={dist.id}
+                          className={`${
+                            selectedDistributionId === dist.id
+                              ? "bg-blue-50"
+                              : "hover:bg-gray-50"
+                          }`}
+                          onClick={() => handleDistributionSelect(dist.id)}
+                        >
+                          {/* <td className="px-6 py-4 whitespace-nowrap">
                       <input
                         type="radio"
                         name="selectedDistribution"
@@ -1337,51 +1347,79 @@ const initialLineItems = [
                         className="form-radio h-4 w-4 text-red-600 transition duration-150 ease-in-out"
                       />
                     </td> */}
-                     <td className="border border-gray-200 p-1 text-center">
-                          <input
-                            type="radio"
-                            name="selectedDistribution"
-                            checked={selectedDistributionId === dist.id}
-                            onChange={() => handleDistributionSelect(dist.id)}
-                            className="accent-black"
-                          />
-                        </td>
-                    <td className="border border-gray-200 p-1">
-                      <input
-                        type="text"
-                        value={dist.distributionReference}
-                        onChange={(e) => handleDistributionChange(dist.id, "distributionReference", e.target.value)}
-                        className="order-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-                      />
-                    </td>
+                          <td className="border border-gray-200 p-1 text-center">
+                            <input
+                              type="radio"
+                              name="selectedDistribution"
+                              checked={selectedDistributionId === dist.id}
+                              onChange={() => handleDistributionSelect(dist.id)}
+                              className="accent-black"
+                            />
+                          </td>
+                          <td className="border border-gray-200 p-1">
+                            <input
+                              type="text"
+                              value={dist.distributionReference}
+                              onChange={(e) =>
+                                handleDistributionChange(
+                                  dist.id,
+                                  "distributionReference",
+                                  e.target.value
+                                )
+                              }
+                              className="order-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
+                            />
+                          </td>
 
-                    <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
-                      {dist.type}
-                    </td>
-                    <td className="border border-gray-200 p-2">
-                     <input
-                        type="text"
-                        // value={"$" + `${dist.debit}`}
-                        value={dist.debit.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        onChange={(e) => handleDistributionChange(dist.id, "debit", e.target.value)}
-                        className="order-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-                      />
-                      {/* <input
+                          <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700">
+                            {dist.type}
+                          </td>
+                          <td className="border border-gray-200 p-2">
+                            <input
+                              type="text"
+                              // value={"$" + `${dist.debit}`}
+                              value={dist.debit.toLocaleString("en-US", {
+                                style: "currency",
+                                currency: "USD",
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })}
+                              onChange={(e) =>
+                                handleDistributionChange(
+                                  dist.id,
+                                  "debit",
+                                  e.target.value
+                                )
+                              }
+                              className="order-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
+                            />
+                            {/* <input
                         type="text"
                         value={"$" + `${dist.debit}`}
                         className="border-none w-full p-1 text-xs sm:text-sm bg-transparent text-left focus:outline-none"
                       /> */}
-                    </td>
-                    <td className="border border-gray-200 p-2">
-                    <input
-                        type="text"
-                        // value={"$" + `${dist.debit}`}
-                        value={dist.credit.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                        onChange={(e) => handleDistributionChange(dist.id, "credit", e.target.value)}
-                        className="order-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-                      />
-                    </td>
-                    {/* <td className="border border-gray-200 p-2 text-center w-[5%]">
+                          </td>
+                          <td className="border border-gray-200 p-2">
+                            <input
+                              type="text"
+                              // value={"$" + `${dist.debit}`}
+                              value={dist.credit.toLocaleString("en-US", {
+                                style: "currency",
+                                currency: "USD",
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })}
+                              onChange={(e) =>
+                                handleDistributionChange(
+                                  dist.id,
+                                  "credit",
+                                  e.target.value
+                                )
+                              }
+                              className="order-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
+                            />
+                          </td>
+                          {/* <td className="border border-gray-200 p-2 text-center w-[5%]">
                       <button
                         onClick={(e) => {
                           e.stopPropagation(); // Prevent row click from triggering selection
@@ -1393,11 +1431,11 @@ const initialLineItems = [
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-edit"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
                       </button>
                     </td> */}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
 
                 {/* Totals Section */}
                 {/* <div className="grid grid-cols-[50%_12%_12%_23%_5%] gap-3 mt-4 text-sm"> */}
@@ -1412,7 +1450,10 @@ const initialLineItems = [
                   <div className="flex col-span-2 space-x-2">
                     {" "}
                     {/* Debit and Credit inputs */}
-                    <span className="text-gray-600 font-semibold" style={{paddingRight:'3rem'}}>
+                    <span
+                      className="text-gray-600 font-semibold"
+                      style={{ paddingRight: "3rem" }}
+                    >
                       {" "}
                       Functional Totals
                     </span>
@@ -1438,7 +1479,10 @@ const initialLineItems = [
                   <div className="flex col-span-2 space-x-2">
                     {" "}
                     {/* Debit and Credit inputs */}
-                    <span className="text-gray-600 font-semibold" style={{paddingRight:'41px'}}>
+                    <span
+                      className="text-gray-600 font-semibold"
+                      style={{ paddingRight: "41px" }}
+                    >
                       {" "}
                       Originating Totals
                     </span>
@@ -1553,7 +1597,7 @@ const initialLineItems = [
                   <input
                     type="text"
                     id="miscellaneous"
-                     value={totalExtendedPrice.toFixed(2)}
+                    value={totalExtendedPrice.toFixed(2)}
                     className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
                   />
                 </div>
@@ -1569,25 +1613,25 @@ const initialLineItems = [
                 Apply Distributions
               </button> */}
               <button
-              onClick={handleSaveClick}
-              className="bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
-            >
-              Save
-            </button>
-           <button
-              onClick={handleResetData} // Add Reset button
-              className="bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
-            >
-              Reset
-            </button>
+                onClick={handleSaveClick}
+                className="bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+              >
+                Save
+              </button>
+              <button
+                onClick={handleResetData} // Add Reset button
+                className="bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+              >
+                Reset
+              </button>
               <button
                 onClick={handleGenerateInvoiceClick}
                 disabled={!isSaveConfirmed} // Disable if save is not confirmed
                 className={`px-5 py-2.5 text-sm font-medium shadow-sm transition-colors duration-200 rounded-md ${
-                isSaveConfirmed
-                  ? "bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
-                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
-              }`}
+                  isSaveConfirmed
+                    ? "bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                }`}
               >
                 Generate Invoice
               </button>
@@ -1680,182 +1724,193 @@ const App = () => {
     setTimeout(() => setShowCustomerModal(false), 250); // match animation duration
   };
   const _initialCustomerData = [
-  {
-    customerId: "CB00010001",
-    Customer: "Belkin",
-    company: "Belkin Corp",
-    contact: "Kamesh Driver",
-    phone: "310-751-2976",
-    email: "kumeisha.udriver@belkin.com",
-    status: "Active",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "123 Main St, Anytown, USA",
-      "456 Oak Ave, Somewhere, USA",
-      "789 Pine Ln, Anyplace, USA",
-    ],
-  },
-  {
-    customerId: "CB00010002",
-    Customer: "Logitech",
-    company: "Logitech Inc",
-    contact: "Sarah Lee",
-    phone: "510-555-1234",
-    email: "sarah.lee@logitech.com",
-    status: "Active",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "123 Main St, Anytown, USA",
-      "456 Oak Ave, Somewhere, USA",
-      "789 Pine Ln, Anyplace, USA",
-    ],
-  },
-  {
-    customerId: "CB00010003",
-    Customer: "HP",
-    company: "HP Inc",
-    contact: "John Smith",
-    phone: "650-555-5678",
-    email: "john.smith@hp.com",
-    status: "Inactive",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "123 Main St, Anytown, USA",
-      "456 Oak Ave, Somewhere, USA",
-      "789 Pine Ln, Anyplace, USA",
-    ],
-  },
-  {
-    customerId: "CB00010004",
-    Customer: "Dell",
-    company: "Dell Technologies",
-    contact: "Priya Patel",
-    phone: "512-555-7890",
-    email: "priya.patel@dell.com",
-    status: "Active",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "123 Main St, Anytown, USA",
-      "456 Oak Ave, Somewhere, USA",
-      "789 Pine Ln, Anyplace, USA",
-    ],
-  },
-  {
-    customerId: "CB00010005",
-    Customer: "Apple",
-    company: "Apple Inc",
-    contact: "Emily Chen",
-    phone: "408-555-2468",
-    email: "emily.chen@apple.com",
-    status: "Active",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "123 Main St, Anytown, USA",
-      "456 Oak Ave, Somewhere, USA",
-      "789 Pine Ln, Anyplace, USA",
-    ],
-  },
-  {
-    customerId: "CB00010005",
-    Customer: "Apple",
-    company: "Apple Inc",
-    contact: "Tim Chen",
-    phone: "408-666-2468",
-    email: "Tim.chen@apple.com",
-    status: "Active",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "456 Tech Park Dr, Technoville, CA",
-      "101 Innovation Blvd, Future City, CA",
-    ],
-  },
-  {
-    customerId: "CB00010006",
-    Customer: "Samsung",
-    company: "Samsung Electronics",
-    contact: "David Kim",
-    phone: "+82-2-5555-1234",
-    email: "david.kim@samsung.com",
-    status: "Inactive",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "456 Tech Park Dr, Technoville, CA",
-      "101 Innovation Blvd, Future City, CA",
-    ],
-  },
-  {
-    customerId: "CB00010007",
-    Customer: "Sony",
-    company: "Sony Corp",
-    contact: "Hiro Tanaka",
-    phone: "+81-3-5555-1234",
-    email: "hiro.tanaka@sony.com",
-    status: "Active",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "789 Innovation Way, New City, NY",
-      "202 Research Rd, Old Town, NY",
-      "303 Progress Pl, Anotherburg, NY",
-      "404 Discovery Dr, Distantland, NY",
-    ],
-  },
-  {
-    customerId: "CB00010008",
-    Customer: "Lenovo",
-    company: "Lenovo Group",
-    contact: "Wei Zhang",
-    phone: "+86-10-5555-1234",
-    email: "wei.zhang@lenovo.com",
-    status: "Active",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "789 Innovation Way, New City, NY",
-      "202 Research Rd, Old Town, NY",
-      "303 Progress Pl, Anotherburg, NY",
-      "404 Discovery Dr, Distantland, NY",
-    ],
-  },
-  {
-    customerId: "CB00010009",
-    Customer: "Acer",
-    company: "Acer Inc",
-    contact: "Lina Wu",
-    phone: "+886-2-5555-1234",
-    email: "lina.wu@acer.com",
-    status: "Inactive",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "456 Tech Park Dr, Technoville, CA",
-      "101 Innovation Blvd, Future City, CA",
-    ],
-  },
-  {
-    customerId: "CB00010010",
-    Customer: "Asus",
-    company: "AsusTek",
-    contact: "Ken Lee",
-    phone: "+886-2-5555-5678",
-    email: "ken.lee@asus.com",
-    status: "Active",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "123 Main St, Anytown, USA",
-      "456 Oak Ave, Somewhere, USA",
-      "789 Pine Ln, Anyplace, USA",
-    ],
-  },
-];
+    {
+      customerId: "CB00010001",
+      Customer: "Belkin",
+      company: "Belkin Corp",
+      contact: "Kamesh Driver",
+      phone: "310-751-2976",
+      email: "kumeisha.udriver@belkin.com",
+      status: "Active",
+      PONumber: "4100647534",
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      invoiceExisting: "1234567890",
+      shipToAddresses: [
+        "123 Main St, Anytown, USA",
+        "456 Oak Ave, Somewhere, USA",
+        "789 Pine Ln, Anyplace, USA",
+      ],
+    },
+    {
+      customerId: "CB00010002",
+      Customer: "Logitech",
+      company: "Logitech Inc",
+      contact: "Sarah Lee",
+      phone: "510-555-1234",
+      email: "sarah.lee@logitech.com",
+      status: "Active",
+      PONumber: "4100647534",
+      invoiceExisting: null,
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "123 Main St, Anytown, USA",
+        "456 Oak Ave, Somewhere, USA",
+        "789 Pine Ln, Anyplace, USA",
+      ],
+    },
+    {
+      customerId: "CB00010003",
+      Customer: "HP",
+      company: "HP Inc",
+      contact: "John Smith",
+      phone: "650-555-5678",
+      email: "john.smith@hp.com",
+      status: "Inactive",
+      PONumber: "4100647534",
+      invoiceExisting: null,
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "123 Main St, Anytown, USA",
+        "456 Oak Ave, Somewhere, USA",
+        "789 Pine Ln, Anyplace, USA",
+      ],
+    },
+    {
+      customerId: "CB00010004",
+      Customer: "Dell",
+      company: "Dell Technologies",
+      contact: "Priya Patel",
+      phone: "512-555-7890",
+      email: "priya.patel@dell.com",
+      status: "Active",
+      PONumber: "4100647534",
+      invoiceExisting: null,
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "123 Main St, Anytown, USA",
+        "456 Oak Ave, Somewhere, USA",
+        "789 Pine Ln, Anyplace, USA",
+      ],
+    },
+    {
+      customerId: "CB00010005",
+      Customer: "Apple",
+      company: "Apple Inc",
+      contact: "Emily Chen",
+      phone: "408-555-2468",
+      email: "emily.chen@apple.com",
+      status: "Active",
+      PONumber: "4100647534",
+      invoiceExisting: "1234567891",
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "123 Main St, Anytown, USA",
+        "456 Oak Ave, Somewhere, USA",
+        "789 Pine Ln, Anyplace, USA",
+      ],
+    },
+    {
+      customerId: "CB00010005",
+      Customer: "Apple",
+      company: "Apple Inc",
+      contact: "Tim Chen",
+      phone: "408-666-2468",
+      email: "Tim.chen@apple.com",
+      status: "Active",
+      PONumber: "4100647534",
+      invoiceExisting: null,
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "456 Tech Park Dr, Technoville, CA",
+        "101 Innovation Blvd, Future City, CA",
+      ],
+    },
+    {
+      customerId: "CB00010006",
+      Customer: "Samsung",
+      company: "Samsung Electronics",
+      contact: "David Kim",
+      phone: "+82-2-5555-1234",
+      email: "david.kim@samsung.com",
+      status: "Inactive",
+      PONumber: "4100647534",
+      invoiceExisting: null,
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "456 Tech Park Dr, Technoville, CA",
+        "101 Innovation Blvd, Future City, CA",
+      ],
+    },
+    {
+      customerId: "CB00010007",
+      Customer: "Sony",
+      company: "Sony Corp",
+      contact: "Hiro Tanaka",
+      phone: "+81-3-5555-1234",
+      email: "hiro.tanaka@sony.com",
+      status: "Active",
+      PONumber: "4100647534",
+      invoiceExisting: null,
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "789 Innovation Way, New City, NY",
+        "202 Research Rd, Old Town, NY",
+        "303 Progress Pl, Anotherburg, NY",
+        "404 Discovery Dr, Distantland, NY",
+      ],
+    },
+    {
+      customerId: "CB00010008",
+      Customer: "Lenovo",
+      company: "Lenovo Group",
+      contact: "Wei Zhang",
+      phone: "+86-10-5555-1234",
+      email: "wei.zhang@lenovo.com",
+      status: "Active",
+      PONumber: "4100647534",
+      invoiceExisting: null,
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "789 Innovation Way, New City, NY",
+        "202 Research Rd, Old Town, NY",
+        "303 Progress Pl, Anotherburg, NY",
+        "404 Discovery Dr, Distantland, NY",
+      ],
+    },
+    {
+      customerId: "CB00010009",
+      Customer: "Acer",
+      company: "Acer Inc",
+      contact: "Lina Wu",
+      phone: "+886-2-5555-1234",
+      email: "lina.wu@acer.com",
+      status: "Inactive",
+      PONumber: "4100647534",
+      invoiceExisting: null,
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "456 Tech Park Dr, Technoville, CA",
+        "101 Innovation Blvd, Future City, CA",
+      ],
+    },
+    {
+      customerId: "CB00010010",
+      Customer: "Asus",
+      company: "AsusTek",
+      contact: "Ken Lee",
+      phone: "+886-2-5555-5678",
+      email: "ken.lee@asus.com",
+      status: "Active",
+      PONumber: "4100647534",
+      invoiceExisting: "234567890",
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "123 Main St, Anytown, USA",
+        "456 Oak Ave, Somewhere, USA",
+        "789 Pine Ln, Anyplace, USA",
+      ],
+    },
+  ];
 
   const [CustomerData, setCustomerData] = useState(_initialCustomerData);
   const filteredData =
@@ -1864,10 +1919,12 @@ const App = () => {
       : CustomerData.filter(
           (row) =>
             row.company.toLowerCase().includes(searchValue.toLowerCase()) ||
-            row.customerId.toLowerCase().includes(searchValue.toLowerCase())
+            row.customerId.toLowerCase().includes(searchValue.toLowerCase()) ||
+            (row.invoiceExisting || "").toLowerCase().includes(searchValue.toLowerCase())
         );
 
   const [showLogout, setShowLogout] = useState(false);
+  const [existingInvoice, setExistingInvoice] = useState(false);
 
   // State for pagination
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
@@ -1911,9 +1968,12 @@ const App = () => {
     setInvoiceHeaderDataForDistribution(null); // Clear data when closing
   };
 
-  const generateManualInvoice = (row) => {
+  const generateManualInvoice = (existingInvoice) => {
     setShowInvoice(true);
     setShowTable(false);
+    if (existingInvoice) {
+      setExistingInvoice(true);
+    }
   };
 
   const renderContent = () => {
@@ -2397,6 +2457,7 @@ const App = () => {
                     onClick={() => {
                       setShowInvoice(false);
                       setShowTable(true);
+                      setExistingInvoice(false);
                     }}
                   >
                     <svg
@@ -2441,6 +2502,9 @@ const App = () => {
                           </th>
                           <th className="px-2 py-1 text-[13px] text-left">
                             Default Site ID
+                          </th>
+                          <th className="px-2 py-1 text-[13px] text-left">
+                            Existing Invoice
                           </th>
                           <th className="px-2 py-1 text-[13px] text-left">
                             Actions
@@ -2490,6 +2554,23 @@ const App = () => {
                               <td className="px-2 py-1 text-[13px]">
                                 {row.defaultSiteid}
                               </td>
+                              <td className="px-2 py-1 text-[13px]">
+                                <div className="relative group">
+                                  <button
+                                    id="createInvoiceBtn"
+                                    className="bg-transparent text-black rounded-md px-3 py-1.5 text-sm font-medium shadow-none transition-colors duration-200 hover:underline"
+                                    aria-label="Create"
+                                    style={{ boxShadow: "none" }}
+                                    onClick={() => {
+                                      generateManualInvoice(
+                                        row.invoiceExisting
+                                      );
+                                    }}
+                                  >
+                                    {row.invoiceExisting}
+                                  </button>
+                                </div>
+                              </td>
                               <td className="px-2 py-1 text-[13px] flex gap-1">
                                 {/* Create Button */}
                                 <div className="relative group">
@@ -2498,7 +2579,7 @@ const App = () => {
                                     className="bg-black text-white rounded-md px-3 py-1.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
                                     aria-label="Create"
                                     onClick={() => {
-                                      generateManualInvoice(row);
+                                      generateManualInvoice();
                                     }}
                                   >
                                     Create Invoice
@@ -2562,12 +2643,22 @@ const App = () => {
                 )}
               </div>
               <div>
-                {showInvoice && filteredData.length > 0 && (
+                {showInvoice && filteredData.length > 0 && !existingInvoice && (
                   <SalesTransactionEntryForm
                     onDistributionsClick={openDistributionsPopup}
                     filteredData={filteredData}
                     id={selectedCustomerForEdit?.customerId}
                     customerData={selectedCustomerForEdit}
+                    existingInvoice={false}
+                  />
+                )}
+                {showInvoice && filteredData.length > 0 && existingInvoice && (
+                  <SalesTransactionEntryForm
+                    onDistributionsClick={openDistributionsPopup}
+                    filteredData={filteredData}
+                    id={selectedCustomerForEdit?.customerId}
+                    customerData={selectedCustomerForEdit}
+                    existingInvoice={true}
                   />
                 )}
                 {/* {showTable && filteredData.length === 0 && (
