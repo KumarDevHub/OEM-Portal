@@ -607,8 +607,8 @@ const initialLineItems = [
   // Handle changes in line item fields
   const handleLineItemChange = (id, field, value) => {
     console.log("Unit Price");
-    setLineItems(() =>
-      lineItems.map((item) => {
+    setLineItems((preLineItems) =>
+      preLineItems.map((item) => {
         if (item.id === id) {
           let updatedItem = { ...item, [field]: value };
 
@@ -722,14 +722,14 @@ const initialLineItems = [
   const handleDocumentDateChange = (e) => setDocumentDate(e.target.value);
   const handleAmountReceivedChange = (value) => {
     setAmountReceived(value);
-    const cleanString = onAccount.replace(/[$,€£\s]/g, '').replace(/,/g, '');
-    const OnAccountValue = parseFloat(cleanString) - value;
-    setOnAccount(OnAccountValue.toString());
+    // const cleanString = onAccount.replace(/[$,€£\s]/g, '').replace(/,/g, '');
+    // const OnAccountValue = parseFloat(cleanString) - value;
+    // setOnAccount(OnAccountValue.toString());
   };
   const handleInvoiceTotalChange = (value) => setInvoiceTotal(value);
   const handleOnAccountChange = (value) => {
     setOnAccount(value);
-    setInvoiceTotal(value);
+    // setInvoiceTotal(value);
   }
 
   // Handler for opening the Ship To Address popup
