@@ -452,12 +452,13 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                 <tr>
                   <td>
                     <div className="td-form-item">
-                      <label htmlFor="customer">Customer Name</label>
+                      <label htmlFor="customer">Customer Name *</label>
                       <input
                         type="text"
                         id="customer"
                         value={formData.Customer}
                         style={{ pointerEvents: "none" }}
+                        required
                       />
                     </div>
                   </td>
@@ -476,12 +477,13 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                   </td>
                   <td>
                     <div className="td-form-item">
-                      <label htmlFor="phone1">Phone 1</label>
+                      <label htmlFor="phone1">Phone 1 *</label>
                       <input
                         type="text"
                         id="phone1"
                         value={formData.phone1}
                         onChange={handleInputChange}
+                        required
                       />
                     </div>
                   </td>
@@ -525,13 +527,14 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                   <td>
                     <div className="td-form-item">
                       <label htmlFor="customerContactName">
-                        Customer Contact Name
+                        Customer Contact Name*
                       </label>
                       <input
                         type="text"
                         id="customerContactName"
                         value={formData.customerContactName}
                         onChange={handleInputChange}
+                        required
                       />
                     </div>
                   </td>
@@ -550,12 +553,13 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                   </td>
                   <td>
                     <div className="td-form-item">
-                      <label htmlFor="email1">Email 1</label>
+                      <label htmlFor="email1">Email 1 *</label>
                       <input
                         type="text"
                         id="email1"
                         value={formData.email1}
                         onChange={handleInputChange}
+                        required
                       />
                     </div>
                   </td>
@@ -564,13 +568,14 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                   <td>
                     <div className="td-form-item">
                       <label htmlFor="customerContactEmail">
-                        Customer Contact Email
+                        Customer Contact Email *
                       </label>
                       <input
                         type="text"
                         id="customerContactEmail"
                         value={formData.customerContactEmail}
                         onChange={handleInputChange}
+                        required
                       />
                     </div>
                   </td>
@@ -613,12 +618,13 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                   </td>
                   <td>
                     <div className="td-form-item">
-                      <label htmlFor="classID">Class ID</label>
+                      <label htmlFor="classID">Class ID *</label>
                       <input
                         type="text"
                         id="classID"
                         value={formData.classID}
                         onChange={handleInputChange}
+                        required
                       />
                     </div>
                   </td>
@@ -748,6 +754,7 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                         id="streetAddress1"
                         value={formData.streetAddress1}
                         onChange={handleInputChange}
+                        required
                       />
                     </div>
                   </td>
@@ -767,23 +774,25 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                 <tr>
                   <td>
                     <div className="td-form-item">
-                      <label htmlFor="city">City</label>
+                      <label htmlFor="city">City *</label>
                       <input
                         type="text"
                         id="city"
                         value={formData.city}
                         onChange={handleInputChange}
+                        required
                       />
                     </div>
                   </td>
                   <td>
                     <div className="td-form-item">
-                      <label htmlFor="state">State</label>
+                      <label htmlFor="state">State *</label>
                       <input
                         type="text"
                         id="state"
                         value={formData.state}
                         onChange={handleInputChange}
+                        required
                       />
                     </div>
                   </td>
