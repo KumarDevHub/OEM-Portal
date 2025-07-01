@@ -477,7 +477,7 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                   </td>
                   <td>
                     <div className="td-form-item">
-                      <label htmlFor="phone1">Phone 1*</label>
+                      <label htmlFor="phone1">Phone 1 *</label>
                       <input
                         type="text"
                         id="phone1"
