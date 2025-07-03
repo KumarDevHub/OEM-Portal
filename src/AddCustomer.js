@@ -221,7 +221,7 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                   text-align: left; /* Align text to the right */
                   font-weight: bold;
                   color: #666;
-                  font-size: 12px;
+                  font-size: 13px;
                 }
 
                 .form-item input[type="text"] {
@@ -253,11 +253,11 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
 
                 .td-form-item label {
                   flex-shrink: 0;
-                  width: 35%; /* Consistent width for labels */
+                  width: 38%; /* Consistent width for labels */
                   text-align: left; /* Align text to the right */
                   font-weight: bold;
                   color: #666;
-                  font-size: 12px;
+                  font-size: 13px;
                 }
 
                 .td-form-item input[type="text"] {
@@ -267,7 +267,7 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                   padding: 6px 10px;
                   border: 1px solid #ccc;
                   border-radius: 4px;
-                  font-size: 12px;
+                  font-size: 13px;
                   box-sizing: border-box;
                 }
 
@@ -288,7 +288,7 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                   text-align: right; /* Align to the right like other labels */
                   font-weight: normal; /* Keep as normal based on original request/screenshot */
                   color: #666; /* Consistent color */
-                  font-size: 12px;
+                  font-size: 13px;
                   margin-right: 0; /* Remove specific margin, rely on parent gap */
                 }
 
@@ -458,7 +458,6 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                         id="customer"
                         value={formData.Customer}
                         style={{ pointerEvents: "none" }}
-                        required
                       />
                     </div>
                   </td>
@@ -483,7 +482,6 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                         id="phone1"
                         value={formData.phone1}
                         onChange={handleInputChange}
-                        required
                       />
                     </div>
                   </td>
@@ -534,7 +532,6 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                         id="customerContactName"
                         value={formData.customerContactName}
                         onChange={handleInputChange}
-                        required
                       />
                     </div>
                   </td>
@@ -559,7 +556,6 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                         id="email1"
                         value={formData.email1}
                         onChange={handleInputChange}
-                        required
                       />
                     </div>
                   </td>
@@ -575,7 +571,6 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                         id="customerContactEmail"
                         value={formData.customerContactEmail}
                         onChange={handleInputChange}
-                        required
                       />
                     </div>
                   </td>
@@ -624,7 +619,6 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                         id="classID"
                         value={formData.classID}
                         onChange={handleInputChange}
-                        required
                       />
                     </div>
                   </td>
@@ -754,7 +748,6 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                         id="streetAddress1"
                         value={formData.streetAddress1}
                         onChange={handleInputChange}
-                        required
                       />
                     </div>
                   </td>
@@ -780,7 +773,6 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                         id="city"
                         value={formData.city}
                         onChange={handleInputChange}
-                        required
                       />
                     </div>
                   </td>
@@ -792,7 +784,6 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
                         id="state"
                         value={formData.state}
                         onChange={handleInputChange}
-                        required
                       />
                     </div>
                   </td>
