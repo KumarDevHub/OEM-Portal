@@ -421,7 +421,7 @@ const AddCustomer = ({ onClose, onSave, customerData, id }) => {
       <div className="modal-overlay">
         <div className="modal-content">
           <div className="bg-black text-white p-4 rounded-t-lg flex justify-between items-center font-medium">
-            {customerData ? <h2>Edit Customer</h2> : <h2>Add New Customer</h2>}
+            {customerData ? <h2> - Customer Id</h2> : <h2>Add New Customer</h2>}
             <button className="close-button" onClick={onClose}>
               &times;
             </button>

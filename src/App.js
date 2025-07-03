@@ -89,7 +89,7 @@ const mockUOMs = [
 const ProgressBarPopup = ({ onClose }) => {
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState("Pending"); // Initial status changed to "Pending"
-  const stages = ["Start", "Validation", "Approval", "Posting", "Complete"];
+  const stages = ["Started", "InProgress","Complete"];
 
   useEffect(() => {
     // Set initial progress and status
@@ -946,6 +946,7 @@ const initialLineItems = [
                     id="customer-id"
                     value={customerId}
                     onChange={handleCustomerIdChange}
+                    readOnly
                     className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
                   />
                 </div>
@@ -1002,6 +1003,7 @@ const initialLineItems = [
                     id="customer-name"
                     value={customerName}
                     onChange={handleCustomerNameChange}
+                    readOnly
                     className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
                   />
                 </div>
@@ -1057,6 +1059,7 @@ const initialLineItems = [
                     id="ship-to-address"
                     value={shipToAddress}
                     onChange={handleShipToAddressChange}
+                    readOnly
                     className="w-full p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700"
                   />
                 </div>
@@ -1420,25 +1423,16 @@ const initialLineItems = [
               )}
             </div>
             <div className="col-span-1"></div>
-          <div className="col-span-full md:col-span-1 flex flex-col space-y-2"> {/* Changed col-span-1 to col-span-full md:col-span-1 */}
+          <div className="col-span-full md:col-span-1 flex flex-col space-y-2">
             {/* Subtotal */}
             <div className="flex items-center">
               <label
                 htmlFor="subtotal"
-                className="w-32 sm:w-40 text-gray-700 font-medium"
+                className="w-[160px] text-gray-700 font-medium"
               >
                 Subtotal
               </label>
-              <div className="flex-grow flex items-center gap-1">
-                {/* <CurrencyInput
-                    id="currencyInput"
-                    value={invoiceTotal}
-                    onChange={handleInvoiceTotal}
-                    currencySymbol="$" // You can change this symbol
-                    decimalSeparator="." // You can change this separator
-                    groupSeparator="," // You can change this separator
-                    precision={2} // Number of decimal places
-                  /> */}
+              <div className="flex-grow flex justify-end">
                 <input
                   type="text"
                   id="subtotal"
@@ -1452,15 +1446,16 @@ const initialLineItems = [
             <div className="flex items-center">
               <label
                 htmlFor="tax"
-                className="w-32 sm:w-40 text-gray-700 font-medium"
+                className="w-[160px] text-gray-700 font-medium"
               >
                 Tax
               </label>
-              <div className="flex-grow flex items-center gap-1">
+              <div className="flex-grow flex justify-end">
                 <input
                   type="text"
                   id="tax"
                   value="$0.00"
+                  readOnly
                   className="p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700 text-right w-full max-w-[300px]"
                 />
               </div>
@@ -1469,11 +1464,11 @@ const initialLineItems = [
             <div className="flex items-center">
               <label
                 htmlFor="freight"
-                className="w-32 sm:w-40 text-gray-700 font-medium"
+                className="w-[160px] text-gray-700 font-medium"
               >
                 Freight
               </label>
-              <div className="flex-grow flex items-center gap-1">
+              <div className="flex-grow flex justify-end">
                 <input
                   type="text"
                   id="freight"
@@ -1487,11 +1482,11 @@ const initialLineItems = [
             <div className="flex items-center">
               <label
                 htmlFor="miscellaneous"
-                className="w-32 sm:w-40 text-gray-700 font-medium"
+                className="w-[160px] text-gray-700 font-medium"
               >
                 Miscellaneous
               </label>
-              <div className="flex-grow flex items-center gap-1">
+              <div className="flex-grow flex justify-end">
                 <input
                   type="text"
                   id="miscellaneous"
@@ -1505,17 +1500,17 @@ const initialLineItems = [
             <div className="flex items-center">
               <label
                 htmlFor="total"
-                className="w-32 sm:w-40 text-gray-700 font-medium"
+                className="w-[160px] text-gray-700 font-bold"
               >
-                Total
+                <strong>Total</strong>
               </label>
-              <div className="flex-grow flex items-center gap-1">
+              <div font-boldclassName="flex-grow flex justify-end">
                 <input
                   type="text"
                   id="total"
                   value={totalExtendedPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   readOnly
-                  className="p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700 text-right w-full max-w-[300px]"
+                  className="font-bold p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700 text-right w-full max-w-[300px]"
                 />
               </div>
             </div>
@@ -1708,10 +1703,10 @@ const App = () => {
     ],
   },
   {
-    customerId: "CB00010005",
-    Customer: "Apple",
-    company: "Apple Inc",
-    contact: "Tim Chen",
+    customerId: "CB00010004",
+    Customer: "Google",
+    company: "Google Inc",
+    contact: "Tim Ling",
     phone: "408-666-2468",
     email: "Tim.chen@apple.com",
     status: "Active",
@@ -2054,11 +2049,11 @@ const App = () => {
                             Customer ID
                           </th>
                           <th className="px-2 py-1 text-[13px] text-left cursor-pointer hover:text-blue-600">
-                            Customer
+                            Customer Name
                           </th>
-                          <th className="px-2 py-1 text-[13px] text-left cursor-pointer hover:text-blue-600">
+                          {/* <th className="px-2 py-1 text-[13px] text-left cursor-pointer hover:text-blue-600">
                             Company Name
-                          </th>
+                          </th> */}
                           <th className="px-2 py-1 text-[13px] text-left cursor-pointer hover:text-blue-600">
                             Contact
                           </th>
@@ -2113,9 +2108,9 @@ const App = () => {
                               <td className="px-2 py-1 text-[13px]">
                                 {row.Customer}
                               </td>
-                              <td className="px-2 py-1 text-[13px]">
+                              {/* <td className="px-2 py-1 text-[13px]">
                                 {row.company}
-                              </td>
+                              </td> */}
                               <td className="px-2 py-1 text-[13px]">
                                 {row.contact}
                               </td>
@@ -2128,7 +2123,7 @@ const App = () => {
                               <td className="px-2 py-1 text-[13px]">
                                 {row.status}
                               </td>
-                              <td className="px-2 py-1 text-[13px] flex gap-1">
+                              <td className="px-4 py-1 text-[13px] flex gap-1">
                                 {/* Edit Button */}
                                 <div className="relative group">
                                   <button
@@ -2158,7 +2153,7 @@ const App = () => {
                                   </span>
                                 </div>
                                 {/* Delete Button */}
-                                <div className="relative group">
+                                {/* <div className="relative group">
                                   <button
                                     className="p-1 rounded-full hover:bg-red-100 transition-colors"
                                     aria-label="Delete"
@@ -2196,7 +2191,7 @@ const App = () => {
                                   <span className="absolute left-1/2 -translate-x-1/2 mt-7 px-2 py-1 rounded bg-gray-800 text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
                                     Delete
                                   </span>
-                                </div>
+                                </div> */}
                               </td>
                             </tr>
                           );
@@ -2381,13 +2376,19 @@ const App = () => {
                             Customer ID
                           </th>
                           <th className="px-2 py-1 text-[13px] text-left cursor-pointer hover:text-blue-600">
-                            Company Name
+                            Customer Name
                           </th>
                           <th className="px-2 py-1 text-[13px] text-left cursor-pointer hover:text-blue-600">
-                            Customer PO Number
+                            Contact
                           </th>
                           <th className="px-2 py-1 text-[13px] text-left">
-                            Default Site ID
+                            Phone
+                          </th>
+                          <th className="px-2 py-1 text-[13px] text-left">
+                            Email
+                          </th>
+                          <th className="px-2 py-1 text-[13px] text-left">
+                            Status
                           </th>
                           <th className="px-2 py-1 text-[13px] text-left">
                             Actions
@@ -2432,10 +2433,16 @@ const App = () => {
                                 {row.company}
                               </td>
                               <td className="px-2 py-1 text-[13px]">
-                                {row.PONumber}
+                                {row.contact}
                               </td>
                               <td className="px-2 py-1 text-[13px]">
-                                {row.defaultSiteid}
+                                {row.phone}
+                              </td>
+                              <td className="px-2 py-1 text-[13px]">
+                                {row.email}
+                              </td>
+                              <td className="px-2 py-1 text-[13px]">
+                                {row.status}
                               </td>
                               <td className="px-2 py-1 text-[13px] flex gap-1">
                                 {/* Create Button */}
@@ -2568,16 +2575,16 @@ const App = () => {
   return (
     <div className="bg-gray-100 font-sans text-gray-800 flex flex-col">
       {/* New Top Bar for Application Title/Branding */}
-      <div className="bg-black p-3 sm:p-4 flex items-center justify-between border-b border-gray-800 shadow-sm">
+      <div className="bg-black p-1 sm:p-1 flex items-center justify-between border-b border-gray-800 shadow-sm">
         <div className="flex items-center space-x-1 sm:space-x-2">
           {/* Verizon Logo */}
           <img
             src={logo}
             alt="Verizon Logo"
-            className="h-6 sm:h-6 w-auto mr-2 inline-block align-middle"
+            className="h-6 sm:h-10 w-auto mr-2 inline-block align-middle"
           />
-          <span className="text-sm sm:text-xl font-bold text-white hidden sm:block">
-            | Vision 2.0
+          <span className="text-sm sm:text-base font-bold text-white hidden sm:block">
+            Accounts-Revenue Console-Contracts
           </span>
         </div>
         <div
