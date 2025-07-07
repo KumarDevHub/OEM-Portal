@@ -1,6 +1,6 @@
 import logo from "./logo.png";
 import "./App.css";
-import { Plus, Edit, Trash2,Info } from "lucide-react"; // Import Plus, Edit, and Trash2 icons
+import { Plus, Edit, Trash2, Info } from "lucide-react"; // Import Plus, Edit, and Trash2 icons
 import AddCustomer from "./AddCustomer";
 import InvoiceProgressBar from "./components/InvoiceProgressBar";
 //import "./cust.css"
@@ -89,7 +89,7 @@ const mockUOMs = [
 const ProgressBarPopup = ({ onClose }) => {
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState("Pending"); // Initial status changed to "Pending"
-  const stages = ["Started", "InProgress","Complete"];
+  const stages = ["Started", "InProgress", "Complete"];
 
   useEffect(() => {
     // Set initial progress and status
@@ -528,7 +528,7 @@ const ShipToAddressSelection = ({ addresses, onSelectAddress, onClose }) => {
 // SalesTransactionEntryForm Component
 const SalesTransactionEntryForm = ({ onDistributionsClick, filteredData }) => {
   // Initial mock data for line items
-const initialLineItems = [
+  const initialLineItems = [
     {
       id: 1,
       itemId: "MSC",
@@ -537,7 +537,7 @@ const initialLineItems = [
       unitPrice: 310.0,
       extendedPrice: 0.0,
     },
-];
+  ];
   // State for line items (mock data for demonstration of sorting)
   const [lineItems, setLineItems] = useState(initialLineItems);
 
@@ -571,16 +571,15 @@ const initialLineItems = [
   const [shipToAddress, setShipToAddress] = useState(""); // New state for ship-to address
   const [documentNumber, setDocumentNumber] = useState("ORD-001234");
   const [documentDate, setDocumentDate] = useState("2017-04-12");
-  const [amountReceived, setAmountReceived] = useState('');
-  const [onAccount, setOnAccount] = useState('61,070.00'); //61,070.00
-  const [invoiceTotal, setInvoiceTotal] = useState('61,070.00');
+  const [amountReceived, setAmountReceived] = useState("");
+  const [onAccount, setOnAccount] = useState("61,070.00"); //61,070.00
+  const [invoiceTotal, setInvoiceTotal] = useState("61,070.00");
 
   // State for Ship To Address popup
   const [showAddressPopup, setShowAddressPopup] = useState(false);
   const [availableShipToAddresses, setAvailableShipToAddresses] = useState([]);
   const [showProgressBarPopup, setShowProgressBarPopup] = useState(false); // New state for progress bar popup
   const [showTooltip, setShowTooltip] = useState(false); // State for tooltip visibility
-
 
   // New state to track if save is confirmed
   const [isSaveConfirmed, setIsSaveConfirmed] = useState(false);
@@ -730,7 +729,7 @@ const initialLineItems = [
   const handleOnAccountChange = (value) => {
     setOnAccount(value);
     // setInvoiceTotal(value);
-  }
+  };
 
   // Handler for opening the Ship To Address popup
   const handleShipToAddressClick = () => {
@@ -773,7 +772,7 @@ const initialLineItems = [
     setShowSaveConfirmation(true);
   };
 
-    // Function to reset all data to initial state
+  // Function to reset all data to initial state
   const handleResetData = () => {
     setLineItems(initialLineItems);
     setDistributions(initialDistributions);
@@ -817,13 +816,13 @@ const initialLineItems = [
     setShowProgressBarPopup(true);
   };
 
-    // State for showing save confirmation
+  // State for showing save confirmation
   const [showSaveConfirmation, setShowSaveConfirmation] = useState(false);
 
   const initialDistributions = [
     {
       id: 1,
-      distributionReference:"10000-80000-130030-0000-000-000000-PFSGL-00022",
+      distributionReference: "10000-80000-130030-0000-000-000000-PFSGL-00022",
       account: "10000-80000-130030",
       type: "RECV",
       debit: 61070.0,
@@ -833,7 +832,7 @@ const initialLineItems = [
     },
     {
       id: 2,
-      distributionReference:"10000-90000-130020-0000-000-109290-PFSGL-00022",
+      distributionReference: "10000-90000-130020-0000-000-109290-PFSGL-00022",
       account: "10000-90000-130020",
       type: "SALES",
       debit: 0.0,
@@ -870,7 +869,7 @@ const initialLineItems = [
     );
   };
 
-    // Handle edit click directly from a row's button
+  // Handle edit click directly from a row's button
   const handleEditClick = (distributionToEdit) => {
     setEditingDistribution(distributionToEdit);
   };
@@ -889,7 +888,7 @@ const initialLineItems = [
 
   // // Handle edit click
   // const handleEditClick = () => {
-    
+
   //   if (selectedDistributionId) {
   //     console.log("Edit Distribution Clicked",selectedDistributionId);
   //     const distToEdit = distributions.find(
@@ -969,7 +968,7 @@ const initialLineItems = [
                   />
                 </div>
               </div>
-             <div className="flex items-center">
+              <div className="flex items-center">
                 <label
                   htmlFor="date"
                   className="w-36 text-gray-700 font-medium"
@@ -1031,7 +1030,7 @@ const initialLineItems = [
                   On Account
                 </label>
                 <div className="flex-grow flex items-center gap-2">
-                 <CurrencyInput
+                  <CurrencyInput
                     id="currencyInput"
                     value={onAccount}
                     onChange={handleOnAccountChange}
@@ -1241,8 +1240,13 @@ const initialLineItems = [
                           <div className="flex items-center">
                             <input
                               // type="number"
-                               //value={item.unitPrice.toFixed(2)}
-                              value={item.unitPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                              //value={item.unitPrice.toFixed(2)}
+                              value={item.unitPrice.toLocaleString("en-US", {
+                                style: "currency",
+                                currency: "USD",
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })}
                               onChange={(e) =>
                                 handleLineItemChange(
                                   item.id,
@@ -1261,7 +1265,15 @@ const initialLineItems = [
                             </span> */}
                             <input
                               type="text"
-                              value={item.extendedPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                              value={item.extendedPrice.toLocaleString(
+                                "en-US",
+                                {
+                                  style: "currency",
+                                  currency: "USD",
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }
+                              )}
                               readOnly
                               className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent text-left focus:outline-none text-right"
                             />
@@ -1274,55 +1286,60 @@ const initialLineItems = [
               </div>
             </div>
           </div>
-          <div
-            className="grid grid-cols-5 gap-3"
-            style={{ paddingTop: "4px" }}
-          >
+          <div className="grid grid-cols-5 gap-3" style={{ paddingTop: "4px" }}>
             <div className="col-span-3">
               {/* Account Distributions Grid */}
               {/* <div className="flex-1 p-4 md:p-6 overflow-y-auto"> */}
               <div>
-              <div className="overflow-x-auto mb-4 border border-gray-300 rounded-lg">
-                <table className="w-full border-collapse bg-white min-w-full">
-                  <thead>
-                    <tr>
-                      <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[40px]"></th>
-                      <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm min-w-[250px]">
-                        <div className="flex items-center space-x-1">
-                          <span>Distribution Reference</span>
-                          <div
-                            className="relative"
-                            onMouseEnter={() => setShowTooltip(true)}
-                            onMouseLeave={() => setShowTooltip(false)}
-                          >
-                            <Info size={16} className="text-gray-500 cursor-help" />
-                            {showTooltip && (
-                              <div className="absolute z-10 top-1/2 left-full -translate-y-1/2 ml-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-md shadow-lg whitespace-nowrap">
-                                Business -Unit -Market-Account -Cost Center-Product-Location-default-code
-                              </div>
-                            )}
+                <div className="overflow-x-auto mb-4 border border-gray-300 rounded-lg">
+                  <table className="w-full border-collapse bg-white min-w-full">
+                    <thead>
+                      <tr>
+                        <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm w-[40px]"></th>
+                        <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm min-w-[250px]">
+                          <div className="flex items-center space-x-1">
+                            <span>Distribution Reference</span>
+                            <div
+                              className="relative"
+                              onMouseEnter={() => setShowTooltip(true)}
+                              onMouseLeave={() => setShowTooltip(false)}
+                            >
+                              <Info
+                                size={16}
+                                className="text-gray-500 cursor-help"
+                              />
+                              {showTooltip && (
+                                <div className="absolute z-10 top-1/2 left-full -translate-y-1/2 ml-2 px-3 py-2 bg-gray-800 text-white text-xs rounded-md shadow-lg whitespace-nowrap">
+                                  Business -Unit -Market-Account -Cost
+                                  Center-Product-Location-default-code
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </th>
-                      <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm min-w-[80px]">
-                        Type
-                      </th>
-                      <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm min-w-[120px]">
-                        Originating Debit
-                      </th>
-                      <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm min-w-[120px]">
-                        Originating Credit
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {distributions.map((dist) => (
-                      <tr
-                        key={dist.id}
-                        className={`${selectedDistributionId === dist.id ? "bg-blue-50" : "hover:bg-gray-50"}`}
-                        onClick={() => handleDistributionSelect(dist.id)}
-                      >
-                       <td className="border border-gray-200 p-1 text-center w-[40px]">
+                        </th>
+                        <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm min-w-[80px]">
+                          Type
+                        </th>
+                        <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm min-w-[120px]">
+                          Originating Debit
+                        </th>
+                        <th className="border border-gray-200 p-2 md:p-3 text-left bg-gray-100 font-semibold text-gray-700 text-xs sm:text-sm min-w-[120px]">
+                          Originating Credit
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {distributions.map((dist) => (
+                        <tr
+                          key={dist.id}
+                          className={`${
+                            selectedDistributionId === dist.id
+                              ? "bg-blue-50"
+                              : "hover:bg-gray-50"
+                          }`}
+                          onClick={() => handleDistributionSelect(dist.id)}
+                        >
+                          <td className="border border-gray-200 p-1 text-center w-[40px]">
                             <input
                               type="radio"
                               name="selectedDistribution"
@@ -1331,40 +1348,71 @@ const initialLineItems = [
                               className="accent-black"
                             />
                           </td>
-                        <td className="border border-gray-200 p-1 min-w-[250px]">
-                          <input
-                            type="text"
-                            value={dist.distributionReference}
-                            onChange={(e) => handleDistributionChange(dist.id, "distributionReference", e.target.value)}
-                            className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
-                          />
-                        </td>
+                          <td className="border border-gray-200 p-1 min-w-[250px]">
+                            <input
+                              type="text"
+                              value={dist.distributionReference}
+                              onChange={(e) =>
+                                handleDistributionChange(
+                                  dist.id,
+                                  "distributionReference",
+                                  e.target.value
+                                )
+                              }
+                              className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700"
+                            />
+                          </td>
 
-                        <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700 min-w-[80px]">
-                          {dist.type}
-                        </td>
-                        <td className="border border-gray-200 p-2 min-w-[120px]">
-                         <input
-                            type="text"
-                            value={dist.debit.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                            onChange={(e) => handleDistributionChange(dist.id, "debit", parseFloat(e.target.value.replace(/[^0-9.-]+/g,"")) || 0)}
-                            className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700 text-right"
-                          />
-
-                        </td>
-                        <td className="border border-gray-200 p-2 min-w-[120px]">
-                        <input
-                            type="text"
-                            value={dist.credit.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                            onChange={(e) => handleDistributionChange(dist.id, "credit", parseFloat(e.target.value.replace(/[^0-9.-]+/g,"")) || 0)}
-                            className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700 text-right"
-                          />
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                          <td className="border border-gray-200 p-2 text-xs sm:text-sm text-gray-700 min-w-[80px]">
+                            {dist.type}
+                          </td>
+                          <td className="border border-gray-200 p-2 min-w-[120px]">
+                            <input
+                              type="text"
+                              value={dist.debit.toLocaleString("en-US", {
+                                style: "currency",
+                                currency: "USD",
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })}
+                              onChange={(e) =>
+                                handleDistributionChange(
+                                  dist.id,
+                                  "debit",
+                                  parseFloat(
+                                    e.target.value.replace(/[^0-9.-]+/g, "")
+                                  ) || 0
+                                )
+                              }
+                              className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700 text-right"
+                            />
+                          </td>
+                          <td className="border border-gray-200 p-2 min-w-[120px]">
+                            <input
+                              type="text"
+                              value={dist.credit.toLocaleString("en-US", {
+                                style: "currency",
+                                currency: "USD",
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              })}
+                              onChange={(e) =>
+                                handleDistributionChange(
+                                  dist.id,
+                                  "credit",
+                                  parseFloat(
+                                    e.target.value.replace(/[^0-9.-]+/g, "")
+                                  ) || 0
+                                )
+                              }
+                              className="border-none w-full p-0.5 text-xs sm:text-sm bg-transparent focus:outline-none focus:ring-red-700 focus:border-red-700 text-right"
+                            />
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
 
                 {/* Totals Section */}
                 {/* <div className="grid grid-cols-[50%_12%_12%_23%_5%] gap-3 mt-4 text-sm"> */}
@@ -1373,7 +1421,10 @@ const initialLineItems = [
                   <div className="flex col-span-2 space-x-2">
                     {" "}
                     {/* Debit and Credit inputs */}
-                    <span className="text-gray-600 font-semibold" style={{paddingRight:'3rem'}}>
+                    <span
+                      className="text-gray-600 font-semibold"
+                      style={{ paddingRight: "3rem" }}
+                    >
                       {" "}
                       Functional Totals
                     </span>
@@ -1394,7 +1445,10 @@ const initialLineItems = [
                   <div className="flex col-span-2 space-x-2">
                     {" "}
                     {/* Debit and Credit inputs */}
-                    <span className="text-gray-600 font-semibold" style={{paddingRight:'41px'}}>
+                    <span
+                      className="text-gray-600 font-semibold"
+                      style={{ paddingRight: "41px" }}
+                    >
                       {" "}
                       Originating Totals
                     </span>
@@ -1423,98 +1477,108 @@ const initialLineItems = [
               )}
             </div>
             <div className="col-span-1"></div>
-          <div className="col-span-full md:col-span-1 flex flex-col space-y-2">
-            {/* Subtotal */}
-            <div className="flex items-center">
-              <label
-                htmlFor="subtotal"
-                className="w-[160px] text-gray-700 font-medium"
-              >
-                Subtotal
-              </label>
-              <div className="flex-grow flex justify-end">
-                <input
-                  type="text"
-                  id="subtotal"
-                  value={totalExtendedPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  readOnly
-                  className="p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700 text-right w-full max-w-[300px]"
-                />
+            <div className="col-span-full md:col-span-1 flex flex-col space-y-2">
+              {/* Subtotal */}
+              <div className="flex items-center">
+                <label
+                  htmlFor="subtotal"
+                  className="w-[160px] text-gray-700 font-medium"
+                >
+                  Subtotal
+                </label>
+                <div className="flex-grow flex justify-end">
+                  <input
+                    type="text"
+                    id="subtotal"
+                    value={totalExtendedPrice.toLocaleString("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                    readOnly
+                    className="p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700 text-right w-full max-w-[300px]"
+                  />
+                </div>
+              </div>
+              {/* Tax */}
+              <div className="flex items-center">
+                <label
+                  htmlFor="tax"
+                  className="w-[160px] text-gray-700 font-medium"
+                >
+                  Tax
+                </label>
+                <div className="flex-grow flex justify-end">
+                  <input
+                    type="text"
+                    id="tax"
+                    value="$0.00"
+                    readOnly
+                    className="p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700 text-right w-full max-w-[300px]"
+                  />
+                </div>
+              </div>
+              {/* Freight */}
+              <div className="flex items-center">
+                <label
+                  htmlFor="freight"
+                  className="w-[160px] text-gray-700 font-medium"
+                >
+                  Freight
+                </label>
+                <div className="flex-grow flex justify-end">
+                  <input
+                    type="text"
+                    id="freight"
+                    value="$0.00"
+                    readOnly
+                    className="p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700 text-right w-full max-w-[300px]"
+                  />
+                </div>
+              </div>
+              {/* Miscellaneous */}
+              <div className="flex items-center">
+                <label
+                  htmlFor="miscellaneous"
+                  className="w-[160px] text-gray-700 font-medium"
+                >
+                  Miscellaneous
+                </label>
+                <div className="flex-grow flex justify-end">
+                  <input
+                    type="text"
+                    id="miscellaneous"
+                    value="$0.00"
+                    readOnly
+                    className="p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700 text-right w-full max-w-[300px]"
+                  />
+                </div>
+              </div>
+              {/* Total */}
+              <div className="flex items-center">
+                <label
+                  htmlFor="total"
+                  className="w-[160px] text-gray-700 font-bold"
+                >
+                  <strong>Total</strong>
+                </label>
+                <div font-boldclassName="flex-grow flex justify-end">
+                  <input
+                    type="text"
+                    id="total"
+                    value={totalExtendedPrice.toLocaleString("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                    readOnly
+                    className="font-bold p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700 text-right w-full max-w-[300px]"
+                  />
+                </div>
               </div>
             </div>
-            {/* Tax */}
-            <div className="flex items-center">
-              <label
-                htmlFor="tax"
-                className="w-[160px] text-gray-700 font-medium"
-              >
-                Tax
-              </label>
-              <div className="flex-grow flex justify-end">
-                <input
-                  type="text"
-                  id="tax"
-                  value="$0.00"
-                  readOnly
-                  className="p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700 text-right w-full max-w-[300px]"
-                />
-              </div>
-            </div>
-            {/* Freight */}
-            <div className="flex items-center">
-              <label
-                htmlFor="freight"
-                className="w-[160px] text-gray-700 font-medium"
-              >
-                Freight
-              </label>
-              <div className="flex-grow flex justify-end">
-                <input
-                  type="text"
-                  id="freight"
-                  value="$0.00"
-                  readOnly
-                  className="p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700 text-right w-full max-w-[300px]"
-                />
-              </div>
-            </div>
-            {/* Miscellaneous */}
-            <div className="flex items-center">
-              <label
-                htmlFor="miscellaneous"
-                className="w-[160px] text-gray-700 font-medium"
-              >
-                Miscellaneous
-              </label>
-              <div className="flex-grow flex justify-end">
-                <input
-                  type="text"
-                  id="miscellaneous"
-                  value="$0.00"
-                  readOnly
-                  className="p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700 text-right w-full max-w-[300px]"
-                />
-              </div>
-            </div>
-            {/* Total */}
-            <div className="flex items-center">
-              <label
-                htmlFor="total"
-                className="w-[160px] text-gray-700 font-bold"
-              >
-                <strong>Total</strong>
-              </label>
-              <div font-boldclassName="flex-grow flex justify-end">
-                <input
-                  type="text"
-                  id="total"
-                  value={totalExtendedPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                  readOnly
-                  className="font-bold p-1.5 border border-gray-300 bg-gray-50 text-sm focus:ring-red-700 focus:border-red-700 text-right w-full max-w-[300px]"
-                />
-              </div>
-            </div>
-          </div>
           </div>
           <div className="flex flex-col sm:flex-row justify-between items-center mt-3 sm:mt-4 space-y-2 sm:space-y-0">
             <div className="flex flex-col sm:flex-row space-y-1 sm:space-y-0 sm:space-x-2 w-full sm:w-auto">
@@ -1525,25 +1589,25 @@ const initialLineItems = [
                 Apply Distributions
               </button> */}
               <button
-              onClick={handleSaveClick}
-              className="bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
-            >
-              Save
-            </button>
-           <button
-              onClick={handleResetData} // Add Reset button
-              className="bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
-            >
-              Reset
-            </button>
+                onClick={handleSaveClick}
+                className="bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+              >
+                Save
+              </button>
+              <button
+                onClick={handleResetData} // Add Reset button
+                className="bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+              >
+                Reset
+              </button>
               <button
                 onClick={handleGenerateInvoiceClick}
                 disabled={!isSaveConfirmed} // Disable if save is not confirmed
                 className={`px-5 py-2.5 text-sm font-medium shadow-sm transition-colors duration-200 rounded-md ${
-                isSaveConfirmed
-                  ? "bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
-                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
-              }`}
+                  isSaveConfirmed
+                    ? "bg-black text-white rounded-md px-5 py-2.5 text-sm font-medium shadow-sm hover:bg-gray-800 transition-colors duration-200"
+                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                }`}
               >
                 Generate Invoice
               </button>
@@ -1598,10 +1662,12 @@ const App = () => {
   const [selectedRows, setSelectedRows] = useState([]);
   const [showCustomerModal, setShowCustomerModal] = useState(false);
 
-  const [selectedCustomerForEdit, setSelectedCustomerForEdit] =
-    useState(undefined);
-  const [selectedCustomerForDelete, setSelectedCustomerForDelete] =
-    useState(undefined);
+  const [selectedCustomerForEdit, setSelectedCustomerForEdit] = useState(
+    undefined
+  );
+  const [selectedCustomerForDelete, setSelectedCustomerForDelete] = useState(
+    undefined
+  );
   const [modalVisible, setModalVisible] = useState(false);
   const [latestId, setLatestId] = useState(undefined);
 
@@ -1622,182 +1688,182 @@ const App = () => {
     setTimeout(() => setShowCustomerModal(false), 250); // match animation duration
   };
   const _initialCustomerData = [
-  {
-    customerId: "CB00010001",
-    Customer: "Belkin",
-    company: "Belkin Corp",
-    contact: "Kamesh Driver",
-    phone: "310-751-2976",
-    email: "kumeisha.udriver@belkin.com",
-    status: "Active",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "123 Main St, Anytown, USA",
-      "456 Oak Ave, Somewhere, USA",
-      "789 Pine Ln, Anyplace, USA",
-    ],
-  },
-  {
-    customerId: "CB00010002",
-    Customer: "Logitech",
-    company: "Logitech Inc",
-    contact: "Sarah Lee",
-    phone: "510-555-1234",
-    email: "sarah.lee@logitech.com",
-    status: "Active",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "123 Main St, Anytown, USA",
-      "456 Oak Ave, Somewhere, USA",
-      "789 Pine Ln, Anyplace, USA",
-    ],
-  },
-  {
-    customerId: "CB00010003",
-    Customer: "HP",
-    company: "HP Inc",
-    contact: "John Smith",
-    phone: "650-555-5678",
-    email: "john.smith@hp.com",
-    status: "Inactive",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "123 Main St, Anytown, USA",
-      "456 Oak Ave, Somewhere, USA",
-      "789 Pine Ln, Anyplace, USA",
-    ],
-  },
-  {
-    customerId: "CB00010004",
-    Customer: "Dell",
-    company: "Dell Technologies",
-    contact: "Priya Patel",
-    phone: "512-555-7890",
-    email: "priya.patel@dell.com",
-    status: "Active",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "123 Main St, Anytown, USA",
-      "456 Oak Ave, Somewhere, USA",
-      "789 Pine Ln, Anyplace, USA",
-    ],
-  },
-  {
-    customerId: "CB00010005",
-    Customer: "Apple",
-    company: "Apple Inc",
-    contact: "Emily Chen",
-    phone: "408-555-2468",
-    email: "emily.chen@apple.com",
-    status: "Active",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "123 Main St, Anytown, USA",
-      "456 Oak Ave, Somewhere, USA",
-      "789 Pine Ln, Anyplace, USA",
-    ],
-  },
-  {
-    customerId: "CB00010004",
-    Customer: "Google",
-    company: "Google Inc",
-    contact: "Tim Ling",
-    phone: "408-666-2468",
-    email: "Tim.chen@apple.com",
-    status: "Active",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "456 Tech Park Dr, Technoville, CA",
-      "101 Innovation Blvd, Future City, CA",
-    ],
-  },
-  {
-    customerId: "CB00010006",
-    Customer: "Samsung",
-    company: "Samsung Electronics",
-    contact: "David Kim",
-    phone: "+82-2-5555-1234",
-    email: "david.kim@samsung.com",
-    status: "Inactive",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "456 Tech Park Dr, Technoville, CA",
-      "101 Innovation Blvd, Future City, CA",
-    ],
-  },
-  {
-    customerId: "CB00010007",
-    Customer: "Sony",
-    company: "Sony Corp",
-    contact: "Hiro Tanaka",
-    phone: "+81-3-5555-1234",
-    email: "hiro.tanaka@sony.com",
-    status: "Active",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "789 Innovation Way, New City, NY",
-      "202 Research Rd, Old Town, NY",
-      "303 Progress Pl, Anotherburg, NY",
-      "404 Discovery Dr, Distantland, NY",
-    ],
-  },
-  {
-    customerId: "CB00010008",
-    Customer: "Lenovo",
-    company: "Lenovo Group",
-    contact: "Wei Zhang",
-    phone: "+86-10-5555-1234",
-    email: "wei.zhang@lenovo.com",
-    status: "Active",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "789 Innovation Way, New City, NY",
-      "202 Research Rd, Old Town, NY",
-      "303 Progress Pl, Anotherburg, NY",
-      "404 Discovery Dr, Distantland, NY",
-    ],
-  },
-  {
-    customerId: "CB00010009",
-    Customer: "Acer",
-    company: "Acer Inc",
-    contact: "Lina Wu",
-    phone: "+886-2-5555-1234",
-    email: "lina.wu@acer.com",
-    status: "Inactive",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "456 Tech Park Dr, Technoville, CA",
-      "101 Innovation Blvd, Future City, CA",
-    ],
-  },
-  {
-    customerId: "CB00010010",
-    Customer: "Asus",
-    company: "AsusTek",
-    contact: "Ken Lee",
-    phone: "+886-2-5555-5678",
-    email: "ken.lee@asus.com",
-    status: "Active",
-    PONumber: "4100647534",
-    defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
-    shipToAddresses: [
-      "123 Main St, Anytown, USA",
-      "456 Oak Ave, Somewhere, USA",
-      "789 Pine Ln, Anyplace, USA",
-    ],
-  },
-];
+    {
+      customerId: "CB00010001",
+      Customer: "Belkin",
+      company: "Belkin Corp",
+      contact: "Kamesh Driver",
+      phone: "310-751-2976",
+      email: "kumeisha.udriver@belkin.com",
+      status: "Active",
+      PONumber: "4100647534",
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "123 Main St, Anytown, USA",
+        "456 Oak Ave, Somewhere, USA",
+        "789 Pine Ln, Anyplace, USA",
+      ],
+    },
+    {
+      customerId: "CB00010002",
+      Customer: "Logitech",
+      company: "Logitech Inc",
+      contact: "Sarah Lee",
+      phone: "510-555-1234",
+      email: "sarah.lee@logitech.com",
+      status: "Active",
+      PONumber: "4100647534",
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "123 Main St, Anytown, USA",
+        "456 Oak Ave, Somewhere, USA",
+        "789 Pine Ln, Anyplace, USA",
+      ],
+    },
+    {
+      customerId: "CB00010003",
+      Customer: "HP",
+      company: "HP Inc",
+      contact: "John Smith",
+      phone: "650-555-5678",
+      email: "john.smith@hp.com",
+      status: "Inactive",
+      PONumber: "4100647534",
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "123 Main St, Anytown, USA",
+        "456 Oak Ave, Somewhere, USA",
+        "789 Pine Ln, Anyplace, USA",
+      ],
+    },
+    {
+      customerId: "CB00010004",
+      Customer: "Dell",
+      company: "Dell Technologies",
+      contact: "Priya Patel",
+      phone: "512-555-7890",
+      email: "priya.patel@dell.com",
+      status: "Active",
+      PONumber: "4100647534",
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "123 Main St, Anytown, USA",
+        "456 Oak Ave, Somewhere, USA",
+        "789 Pine Ln, Anyplace, USA",
+      ],
+    },
+    {
+      customerId: "CB00010005",
+      Customer: "Apple",
+      company: "Apple Inc",
+      contact: "Emily Chen",
+      phone: "408-555-2468",
+      email: "emily.chen@apple.com",
+      status: "Active",
+      PONumber: "4100647534",
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "123 Main St, Anytown, USA",
+        "456 Oak Ave, Somewhere, USA",
+        "789 Pine Ln, Anyplace, USA",
+      ],
+    },
+    {
+      customerId: "CB00010004",
+      Customer: "Google",
+      company: "Google Inc",
+      contact: "Tim Ling",
+      phone: "408-666-2468",
+      email: "Tim.chen@apple.com",
+      status: "Active",
+      PONumber: "4100647534",
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "456 Tech Park Dr, Technoville, CA",
+        "101 Innovation Blvd, Future City, CA",
+      ],
+    },
+    {
+      customerId: "CB00010006",
+      Customer: "Samsung",
+      company: "Samsung Electronics",
+      contact: "David Kim",
+      phone: "+82-2-5555-1234",
+      email: "david.kim@samsung.com",
+      status: "Inactive",
+      PONumber: "4100647534",
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "456 Tech Park Dr, Technoville, CA",
+        "101 Innovation Blvd, Future City, CA",
+      ],
+    },
+    {
+      customerId: "CB00010007",
+      Customer: "Sony",
+      company: "Sony Corp",
+      contact: "Hiro Tanaka",
+      phone: "+81-3-5555-1234",
+      email: "hiro.tanaka@sony.com",
+      status: "Active",
+      PONumber: "4100647534",
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "789 Innovation Way, New City, NY",
+        "202 Research Rd, Old Town, NY",
+        "303 Progress Pl, Anotherburg, NY",
+        "404 Discovery Dr, Distantland, NY",
+      ],
+    },
+    {
+      customerId: "CB00010008",
+      Customer: "Lenovo",
+      company: "Lenovo Group",
+      contact: "Wei Zhang",
+      phone: "+86-10-5555-1234",
+      email: "wei.zhang@lenovo.com",
+      status: "Active",
+      PONumber: "4100647534",
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "789 Innovation Way, New City, NY",
+        "202 Research Rd, Old Town, NY",
+        "303 Progress Pl, Anotherburg, NY",
+        "404 Discovery Dr, Distantland, NY",
+      ],
+    },
+    {
+      customerId: "CB00010009",
+      Customer: "Acer",
+      company: "Acer Inc",
+      contact: "Lina Wu",
+      phone: "+886-2-5555-1234",
+      email: "lina.wu@acer.com",
+      status: "Inactive",
+      PONumber: "4100647534",
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "456 Tech Park Dr, Technoville, CA",
+        "101 Innovation Blvd, Future City, CA",
+      ],
+    },
+    {
+      customerId: "CB00010010",
+      Customer: "Asus",
+      company: "AsusTek",
+      contact: "Ken Lee",
+      phone: "+886-2-5555-5678",
+      email: "ken.lee@asus.com",
+      status: "Active",
+      PONumber: "4100647534",
+      defaultSiteid: Math.random() > 0.5 ? "DROP SHIP" : "WAREHOUSE",
+      shipToAddresses: [
+        "123 Main St, Anytown, USA",
+        "456 Oak Ave, Somewhere, USA",
+        "789 Pine Ln, Anyplace, USA",
+      ],
+    },
+  ];
 
   const [CustomerData, setCustomerData] = useState(_initialCustomerData);
   const filteredData =
@@ -2012,10 +2078,9 @@ const App = () => {
                             id={selectedCustomerForEdit?.customerId}
                             customerData={selectedCustomerForEdit}
                             onSave={(formData) => {
-                              const currentCustomerData =
-                                CustomerData.findIndex(
-                                  (c) => c.customerId == formData.customerId
-                                );
+                              const currentCustomerData = CustomerData.findIndex(
+                                (c) => c.customerId == formData.customerId
+                              );
                               if (currentCustomerData > -1) {
                                 CustomerData[currentCustomerData] = {
                                   ...formData,
@@ -2583,9 +2648,11 @@ const App = () => {
             alt="Verizon Logo"
             className="h-6 sm:h-10 w-auto mr-2 inline-block align-middle"
           />
-          <span className="text-sm sm:text-base font-bold text-white hidden sm:block">
-            Accounts-Revenue Console-Contracts
-          </span>
+          <h1 className="text-sm sm:text-base font-bold text-white hidden sm:block">
+            <span className="first-letter">A</span>ccounts-
+            <span className="first-letter">R</span>evenue-
+            <span className="first-letter">C</span>ontracts
+          </h1>
         </div>
         <div
           className={`flex items-center space-x-2 mr-6 sm:space-x-4 text-white text-xs sm:text-sm relative transition-shadow duration-300
