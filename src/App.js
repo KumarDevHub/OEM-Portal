@@ -2646,7 +2646,7 @@ const App = () => {
           <img
             src={logo}
             alt="Verizon Logo"
-            className="h-6 sm:h-10 w-auto mr-2 inline-block align-middle"
+            className="h-6 sm:h-12 w-auto mr-2 inline-block align-middle"
           />
           <h1 className="text-sm sm:text-base font-bold text-white hidden sm:block">
             <span className="first-letter">A</span>ccounts-
